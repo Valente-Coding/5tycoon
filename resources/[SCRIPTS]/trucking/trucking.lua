@@ -1,19 +1,28 @@
-local blipX, blipY, blipZ = 1208.5696, -3115.0537, 5.5403
-local blipHeading = 273.7826
+local truckDepos = {
+    {coords = vector3(1208.5696, -3115.0537, 5.5403)},
+    {coords = vector3(-320.4866, -1389.6117, 36.5002)}
+}
 
-local blip = AddBlipForCoord(blipX, blipY, blipZ)
-SetBlipSprite(blip, 477)
-SetBlipDisplay(blip, 4)
-SetBlipScale(blip, 1.0)
-SetBlipColour(blip, 5)
-SetBlipAsShortRange(blip, true)
-BeginTextCommandSetBlipName("STRING")
-AddTextComponentString("Trucking Depot")
-EndTextCommandSetBlipName(blip)
+Citizen.CreateThread(function()
+    local blips = {}
+
+    for _, location in pairs(truckDepos) do
+        local blip = AddBlipForCoord(location.coords.x, location.coords.y, location.coords.z)
+        SetBlipSprite(blip, 477)
+        SetBlipDisplay(blip, 4)
+        SetBlipScale(blip, 1.0)
+        SetBlipColour(blip, 5)
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString("Trucking Depot")
+        EndTextCommandSetBlipName(blip)
+
+    end
+end)
 
 
-local truckDepotCoords = vector3(1208.5696, -3115.0537, 5.5403)
-local truckSpawnCoords = vector4(1207.7811, -3091.3716, 5.5371, 90.6691)
+local truckSpawnCoords1 = vector4(1207.7811, -3091.3716, 5.5371, 90.6691)
+local truckDepotCoords2 = vector4(-340.8572, -1400.7527, 30.6168, 149.6355)
 local truckMissionState = 0
 local truckDeliveryPoints = {
     vector3(857.8163, -2346.6355, 30.3312),
@@ -51,7 +60,7 @@ function SpawnVehicle(modelHash)
             Citizen.Wait(0)
         end
 
-        local vehicle = CreateVehicle(modelHash, truckSpawnCoords.x, truckSpawnCoords.y, truckSpawnCoords.z, truckSpawnCoords.w, true, false)
+        local vehicle = CreateVehicle(modelHash, truckSpawnCoords1.x, truckSpawnCoords1.y, truckSpawnCoords1.z, truckSpawnCoords1.w, true, false)
 
         -- Set the vehicle as the player's ped vehicle (optional)
         local playerPed = PlayerPedId()
@@ -67,7 +76,7 @@ end
 function SelectVehicle()
     local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
     local modelHash = nil
-    local trailerHash = nil -- Add this variable for the trailer model
+    local trailerHash = nil
 
     if truckData.level < 9 then
         if truckData.level == 0 or truckData.level == 1 then
@@ -85,12 +94,12 @@ function SelectVehicle()
     elseif truckData.level == 9 or truckData.level == 10 then
         modelHash = GetHashKey("phantom")
         trailerHash = GetHashKey("trailers")
-        local truck = SpawnVehicle(modelHash) -- Spawn the truck
+        local truck = SpawnVehicle(modelHash)
 
         if trailerHash then
-            local trailer = SpawnVehicle(trailerHash) -- Spawn the trailer
+            local trailer = SpawnVehicle(trailerHash)
             if trailer then
-                AttachVehicleToTrailer(truck, trailer, 10.0) -- Attach the trailer to the truck
+                AttachVehicleToTrailer(truck, trailer, 10.0)
             end
         end
 
@@ -132,17 +141,17 @@ Citizen.CreateThread(function()
                         truckMissionState = 2
                         if truckData.level < 2 then
                             TriggerEvent('chatMessage', 'Go back to the depot to receive your paycheck.', {255, 0, 0})
-                            SetNewWaypoint(truckSpawnCoords.x, truckSpawnCoords.y)
+                            SetNewWaypoint(truckSpawnCoords1.x, truckSpawnCoords1.y)
                         else
-                            SetEntityCoords(missionVeh, truckSpawnCoords.x, truckSpawnCoords.y, truckSpawnCoords.z, 0, 0, 0, false)
+                            SetEntityCoords(missionVeh, truckSpawnCoords1.x, truckSpawnCoords1.y, truckSpawnCoords1.z, 0, 0, 0, false)
                         end
                     end
                 end
             end
 
-            distance = #(vehCoords - vector3(truckSpawnCoords.x, truckSpawnCoords.y, truckSpawnCoords.z))
+            distance = #(vehCoords - vector3(truckSpawnCoords1.x, truckSpawnCoords1.y, truckSpawnCoords1.z))
             if truckMissionState == 2 and distance < 50 then
-                DrawMarker(25, truckSpawnCoords.x, truckSpawnCoords.y, truckSpawnCoords.z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
+                DrawMarker(25, truckSpawnCoords1.x, truckSpawnCoords1.y, truckSpawnCoords1.z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
                 if distance < 5 then
                     truckMissionState = 0
                     TriggerEvent('chatMessage', 'You got paid.', {255, 0, 0})

@@ -56,7 +56,9 @@ local vehicleLocations = {
             {model = "revolter", price = 150000, spawnCoords = vector4(1220.4451, 2708.1797, 37.5136, 272.8931)},
             {model = "entityxf", price = 150000, spawnCoords = vector4(1228.6248, 2708.5330, 37.4072, 182.3869)},
             {model = "infernus2", price = 150000, spawnCoords = vector4(1234.7684, 2708.6638, 37.5308, 91.0315)},
-            {model = "sultan", price = 150000, spawnCoords = vector4(1227.8799, 2718.9260, 37.3985, 180.2785)}
+            {model = "sultan", price = 150000, spawnCoords = vector4(1227.8799, 2718.9260, 37.3985, 180.2785)},
+            {model = "elegy", price = 150000, spawnCoords = vector4(1221.9530, 2719.4041, 37.3304, 178.5236)},
+            {model = "sentinel4", price = 150000, spawnCoords = vector4(1233.3958, 2719.3184, 37.4361, 182.0307)}
         }
     }
 }
@@ -69,7 +71,7 @@ Citizen.CreateThread(function()
     for _, location in ipairs(vehicleLocations) do
         local blip = AddBlipForCoord(location.coords.x, location.coords.y, location.coords.z + 1.0)
         SetBlipSprite(blip, 225)
-        SetBlipScale(blip, 1.0)
+        SetBlipScale(blip, 0.7)
         SetBlipColour(blip, 3)
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("STRING")

@@ -8,7 +8,7 @@ function CreateMapBlip()
     -- Set the blip properties
     SetBlipSprite(blip, 496) -- You can change the sprite ID as needed.
     SetBlipDisplay(blip, 4)
-    SetBlipScale(blip, 1.0)
+    SetBlipScale(blip, 0.7)
     SetBlipColour(blip, 2) -- You can change the color as needed.
     SetBlipAsShortRange(blip, true)
 

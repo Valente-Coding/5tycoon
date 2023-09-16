@@ -6,6 +6,9 @@ local repairLocations = {
     {coords = vector3(110.6880, 6626.7266, 31.7872)}
 }
 
+local menuDisplay = false
+local vehHealth = nil
+
 Citizen.CreateThread(function()
     local blips = {}
     
@@ -42,12 +45,30 @@ Citizen.CreateThread(function()
                     0, 191, 255, 100,
                     false, false, true, 2, false, nil, nil, false
                 )
-
-                if distance <= 5.0 and isPlayerInVehicle and IsControlJustReleased(0, 38) then
-                    local vehicle = GetVehiclePedIsIn(playerPed, false)
-                    if DoesEntityExist(vehicle) then
-                        SetVehicleFixed(vehicle)
-                        SetVehicleDirtLevel(vehicle, 0.0)
+                
+                if distance <= 5.0 and isPlayerInVehicle then
+                    if menuDisplay == false then
+                        menuDisplay = true
+                        local vehicle = GetVehiclePedIsIn(playerPed, false)
+                        vehHealth = GetEntityHealth(vehicle)
+                        local repairCost = ((1000 - vehHealth) * 2)
+                        TriggerEvent("side-menu:addOptions", {
+                            {id = "autoshop_repair_cost", label = "Repair Cost", quantity = "$"..repairCost},
+                            {id = "autoshop_repair", label = "Repair", cb = function()
+                                TriggerEvent("bank:changeBank", -repairCost, function(removed)
+                                    if removed == true then
+                                        if DoesEntityExist(vehicle) then
+                                            SetVehicleFixed(vehicle)
+                                            SetVehicleDirtLevel(vehicle, 0.0)
+                                        end
+                                    end
+                                end)
+                        end}})
+                    end
+                else
+                    if menuDisplay == true then
+                        menuDisplay = false
+                        TriggerEvent("side-menu:removeOptions", {{id = "autoshop_repair_cost"}, {id = "autoshop_repair"}})
                     end
                 end
             end
