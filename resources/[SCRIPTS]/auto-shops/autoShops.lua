@@ -8,6 +8,7 @@ local repairLocations = {
 
 local menuDisplay = false
 local vehHealth = nil
+local lastVehHealth = nil
 
 Citizen.CreateThread(function()
     local blips = {}
@@ -47,28 +48,37 @@ Citizen.CreateThread(function()
                 )
                 
                 if distance <= 5.0 and isPlayerInVehicle then
+                    local vehicle = GetVehiclePedIsIn(playerPed, false)
+                    vehHealth = GetEntityHealth(vehicle)
+                    if vehHealth ~= lastVehHealth then
+                        lastVehHealth = vehHealth
+                        local repairCost = ((1000 - vehHealth) * 2)
+                        TriggerEvent("side-menu:updateOptions", {{id = "autoshop_repair_cost", label = "Repair Cost", quantity = "$"..repairCost}})
+                    end
                     if menuDisplay == false then
                         menuDisplay = true
-                        local vehicle = GetVehiclePedIsIn(playerPed, false)
-                        vehHealth = GetEntityHealth(vehicle)
                         local repairCost = ((1000 - vehHealth) * 2)
-                        TriggerEvent("side-menu:addOptions", {
-                            {id = "autoshop_repair_cost", label = "Repair Cost", quantity = "$"..repairCost},
-                            {id = "autoshop_repair", label = "Repair", cb = function()
-                                TriggerEvent("bank:changeBank", -repairCost, function(removed)
-                                    if removed == true then
-                                        if DoesEntityExist(vehicle) then
-                                            SetVehicleFixed(vehicle)
-                                            SetVehicleDirtLevel(vehicle, 0.0)
+                        if repairCost ~= 0 then
+                            TriggerEvent("side-menu:addOptions", {
+                                {id = "autoshop_repair_cost", label = "Repair Cost", quantity = "$"..repairCost},
+                                {id = "autoshop_repair", label = "Repair", cb = function()
+                                    TriggerEvent("bank:changeBank", -repairCost, function(removed)
+                                        if removed == true then
+                                            if DoesEntityExist(vehicle) then
+                                                SetVehicleFixed(vehicle)
+                                                SetVehicleDirtLevel(vehicle, 0.0)
+                                            end
                                         end
-                                    end
-                                end)
-                        end}})
+                                    end)
+                            end}})
+                        else
+                            TriggerEvent("side-menu:addOptions", {{id = "autoshop_no_repair", label = "No Repairs Needed"}})
+                        end
                     end
                 else
                     if menuDisplay == true then
                         menuDisplay = false
-                        TriggerEvent("side-menu:removeOptions", {{id = "autoshop_repair_cost"}, {id = "autoshop_repair"}})
+                        TriggerEvent("side-menu:removeOptions", {{id = "autoshop_repair_cost"}, {id = "autoshop_repair"}, {id = "autoshop_no_repair"}})
                     end
                 end
             end
