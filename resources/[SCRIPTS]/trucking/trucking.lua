@@ -1,4 +1,4 @@
-local truckDepos = {
+local truckDepots = {
     {coords = vector3(1208.5696, -3115.0537, 5.5403)},
     {coords = vector3(-320.4866, -1389.6117, 36.5002)}
 }
