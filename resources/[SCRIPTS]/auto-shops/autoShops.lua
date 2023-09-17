@@ -16,7 +16,7 @@ Citizen.CreateThread(function()
     for _, location in ipairs(repairLocations) do
         local blip = AddBlipForCoord(location.coords.x, location.coords.y, location.coords.z)
         SetBlipSprite(blip, 779)
-        SetBlipScale(blip, 1.0)
+        SetBlipScale(blip, 0.8)
         SetBlipColour(blip, 39)
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("STRING")
