@@ -1,38 +1,48 @@
-local charactersPath = Config.charactersPath
+RegisterNetEvent("save-load:loadData")
 
-local playersLicenses = {}
-
-function LoadData(path, file)
-	local loadFile= LoadResourceFile(GetCurrentResourceName(), path..file)
+function LoadData(path, source)
+	local loadFile = LoadResourceFile(GetCurrentResourceName(), path)
 	extract = json.decode(loadFile)
 
-	return extract
+	TriggerClientEvent("save-load:loadDataResult", source, extract, path)
 end
 
-function SaveData(path, file, data)
-	SaveResourceFile(GetCurrentResourceName(), path..file, json.encode(data), -1)
+AddEventHandler("save-load:loadData", LoadData)
+
+----------------------||
+
+RegisterNetEvent("save-load:saveData")
+
+function SaveData(path, data)
+	SaveResourceFile(GetCurrentResourceName(), path, json.encode(data), -1)
 end
 
-function NewDefaultPlayer()
-	local data = {}
+AddEventHandler("save-load:saveData", SaveData)
 
-	for _, stat in pairs(Config.playerData) do 
-		data[stat.name] = stat.default
+----------------------||
+
+RegisterNetEvent("save-load:getLicense")
+
+
+function GetPlayerLicense(source)
+	local license = nil
+	for k, v in pairs(GetPlayerIdentifiers(source)) do
+		if string.sub(v, 1, string.len("license:")) == "license:" then
+			license = string.sub(v, string.len("license:") + 1, string.len(v))
+		end
 	end
-
-	return data
+	
+	return license
 end
 
-
-RegisterNetEvent("save-load:saveCharacterServer")
-AddEventHandler("save-load:saveCharacterServer", function(source, data)
-	local license = GetPlayerLicense(source)
-
-	playersLicenses[source] = license
-	SaveData(charactersPath, playersLicenses[source]..".json", data)
+AddEventHandler('save-load:getLicense', function(source)
+	TriggerClientEvent("save-load:sendLicense", source, GetPlayerLicense(source))
 end)
 
-RegisterNetEvent("save-load:playerSpawned")
+----------------------||
+
+
+--[[ RegisterNetEvent("save-load:playerSpawned")
 AddEventHandler('save-load:playerSpawned', function(source)
 	local license = GetPlayerLicense(source)
 
@@ -49,19 +59,4 @@ AddEventHandler('save-load:playerSpawned', function(source)
 	else
 		TriggerClientEvent("save-load:loadPlayer", source, characterData)
 	end
-end)
-
-function GetPlayerLicense(source)
-	local license = nil
-	for k, v in pairs(GetPlayerIdentifiers(source)) do
-		if string.sub(v, 1, string.len("license:")) == "license:" then
-			license = string.sub(v, string.len("license:") + 1, string.len(v))
-		end
-	end
-
-	return license
-end
-
-
-
-
+end) ]]
