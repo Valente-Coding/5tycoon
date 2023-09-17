@@ -36,10 +36,10 @@ Citizen.CreateThread(function()
 
             if distance <= 50.0 then
                 DrawMarker(
-                    1,
+                    27,
                     location.coords.x,
                     location.coords.y,
-                    location.coords.z - 1.0,
+                    location.coords.z - 0.9,
                     0.0, 0.0, 0.0,
                     0, 0, 0,
                     5.0, 5.0, 1.0,
@@ -67,6 +67,8 @@ Citizen.CreateThread(function()
                                             if DoesEntityExist(vehicle) then
                                                 SetVehicleFixed(vehicle)
                                                 SetVehicleDirtLevel(vehicle, 0.0)
+                                                TriggerEvent("side-menu:removeOptions", {{id = "autoshop_repair_cost"}, {id = "autoshop_repair"}, {id = "autoshop_no_repair"}})
+                                                TriggerEvent("side-menu:addOptions", {{id = "autoshop_no_repair", label = "No Repairs Needed"}})
                                             end
                                         end
                                     end)
