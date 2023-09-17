@@ -117,6 +117,8 @@ Citizen.CreateThread(function()
 end)
 
 function MulticharSelector()
+    charSelected = nil
+    charLoaded = false
     SetEntityAlpha(GetPlayerPed(-1), 0, false)
     --SetEntityCollision(GetPlayerPed(-1), false, false)
     SpawnFreeroamPeds(chars)
