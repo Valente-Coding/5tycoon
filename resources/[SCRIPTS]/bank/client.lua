@@ -294,7 +294,7 @@ end
 function UpdateMoney(bank, cash) 
     TriggerEvent("side-menu:updateOptions", {{id = "bank_balance", label = "Balance:", quantity = bank}, {id = "CASH_BALANCE", label = "Cash:", quantity = cash}}) 
     
-    TriggerEvent("save-load:updateData", {{name = "BANK_BALANCE", type = "int", value = bank}, {name = "CASH_BALANCE", type = "int", value = cash}}) 
+    TriggerEvent("save-load:setGlobalVariables", {{name = "BANK_BALANCE", type = "int", value = bank}, {name = "CASH_BALANCE", type = "int", value = cash}}) 
 end
 
 AddEventHandler("bank:deposit", DepositMoney)

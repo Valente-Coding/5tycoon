@@ -237,7 +237,7 @@ Citizen.CreateThread(function()
                         end
                     end
 
-                    TriggerEvent("save-load:updateData", {{name = "TRUCK_DATA", type = "string", value = json.encode(truckData)}})
+                    TriggerEvent("save-load:setGlobalVariables", {{name = "TRUCK_DATA", type = "string", value = json.encode(truckData)}})
                     TriggerEvent("bank:changeBank", payment)
                 end
             end
