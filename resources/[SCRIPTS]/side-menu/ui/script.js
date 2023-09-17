@@ -15,6 +15,13 @@ window.onload = (e) => {
 
         document.getElementsByClassName("selected")[0].classList.remove("selected")
         _currentOptions[_currentSelected].classList.add("selected")
+        if (_currentSelected >= 4) {
+            var topPos =  _currentOptions[_currentSelected - 4].offsetTop;
+            _menu.scrollTop = topPos;
+        } else {
+            var topPos =  _currentOptions[0].offsetTop;
+            _menu.scrollTop = topPos;
+        }
     }
 
     function SelectDown() {
@@ -25,6 +32,14 @@ window.onload = (e) => {
 
         document.getElementsByClassName("selected")[0].classList.remove("selected")
         _currentOptions[_currentSelected].classList.add("selected")
+
+        if (_currentSelected >= 4) {
+            var topPos =  _currentOptions[_currentSelected - 4].offsetTop;
+            _menu.scrollTop = topPos;
+        } else {
+            var topPos =  _currentOptions[0].offsetTop;
+            _menu.scrollTop = topPos;
+        }
     }
 
     function Select() {

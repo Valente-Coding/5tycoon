@@ -9,7 +9,7 @@ font-family: 'Rajdhani', sans-serif;
 @keyframes menuclose {
     0%   {
         width: 12vw;
-        max-height: 25vh;
+        max-height: 18vh;
         opacity: 100%;
     }
     70%  {
@@ -47,7 +47,7 @@ font-family: 'Rajdhani', sans-serif;
     }
     100% {
         width: 12vw;
-        max-height: 25vh;
+        max-height: 18vh;
         opacity: 100%;
     }
 }
@@ -114,20 +114,25 @@ body {
     position: absolute;
     width: 12vw;
     height: fit-content;
-    max-height: 25vh;
+    max-height: 18vh;
     transform: translate(0, -50%);
     top: 50%;
     left: 2%;
     background-color: white;
     border: 2px solid white;
     border-radius: 5px;
-    overflow: hidden;
+    overflow: scroll;
     animation-name: menuopen;
     animation-duration: 1s;
     animation-fill-mode: forwards;
     animation-direction: normal;
     animation-timing-function: linear;
     opacity: 0%;
+}
+
+.menu-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .closed {
