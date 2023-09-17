@@ -216,6 +216,8 @@ Citizen.CreateThread(function()
                                 destination = getRandomDeliveryPoints(depot.deliveryPoints)
                                 NewWaypoint(destination[1], "Delivery Point")
                                 GetRandomPedToDeliver(destination[1])
+                                TaskSetBlockingOfNonTemporaryEvents(pedModel, true)
+                                FreezeEntityPosition(pedModel, true)
                                 currentDepot = depot
                                 TriggerEvent("side-menu:removeOptions", {{id = "food_start_job"}})
                             end}})
@@ -241,6 +243,9 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 2
                         NewWaypoint(destination[2], "Delivery Point")
+                        GetRandomPedToDeliver(destination[2])
+                        TaskSetBlockingOfNonTemporaryEvents(pedModel, true)
+                        FreezeEntityPosition(pedModel, true)
                     end                 
                 end
             end
@@ -252,6 +257,10 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 3
                         NewWaypoint(destination[3], "Delivery Point")
+                        DeletePed(pedModel)
+                        GetRandomPedToDeliver(destination[3])
+                        TaskSetBlockingOfNonTemporaryEvents(pedModel, true)
+                        FreezeEntityPosition(pedModel, true)
                     end                 
                 end
             end
@@ -263,6 +272,10 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 4
                         NewWaypoint(destination[4], "Delivery Point")
+                        DeletePed(pedModel)
+                        GetRandomPedToDeliver(destination[4])
+                        TaskSetBlockingOfNonTemporaryEvents(pedModel, true)
+                        FreezeEntityPosition(pedModel, true)
                     end                 
                 end
             end
@@ -274,6 +287,10 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 5
                         NewWaypoint(destination[5], "Delivery Point")
+                        DeletePed(pedModel)
+                        GetRandomPedToDeliver(destination[5])
+                        TaskSetBlockingOfNonTemporaryEvents(pedModel, true)
+                        FreezeEntityPosition(pedModel, true)
                     end                 
                 end
             end
@@ -298,6 +315,7 @@ Citizen.CreateThread(function()
             if deliveryMissionState == 6 and distance < 50 then
                 DrawMarker(25, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
                 if distance < 5 then
+                    DeletePed(pedModel)
                     RemoveBlip(deliveryBlip)
                     deliveryBlip = nil
                     deliveryMissionState = 0
