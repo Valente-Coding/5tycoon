@@ -22,6 +22,8 @@ window.onload = (e) => {
             var topPos =  _currentOptions[0].offsetTop;
             _menu.scrollTop = topPos;
         }
+
+        SelectOption()
     }
 
     function SelectDown() {
@@ -40,9 +42,23 @@ window.onload = (e) => {
             var topPos =  _currentOptions[0].offsetTop;
             _menu.scrollTop = topPos;
         }
+
+        SelectOption()
     }
 
-    function Select() {
+    function RunSelected() {
+        fetch(`https://${GetParentResourceName()}/runoption`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify({
+                id: _currentOptions[_currentSelected].id
+            })
+        })//.then(resp => resp.json()).then(resp => console.log(resp));
+    }
+
+    function SelectOption() {
         fetch(`https://${GetParentResourceName()}/selectoption`, {
             method: 'POST',
             headers: {
@@ -75,8 +91,13 @@ window.onload = (e) => {
         _menu.innerHTML = innerHTML
 
         _currentOptions = _menu.getElementsByClassName("menu-option-container")
-        _currentOptions[0].classList.add("selected")
-        _currentSelected = 0
+        if (_currentOptions.length - 1 >= _currentSelected){
+            _currentOptions[_currentSelected].classList.add("selected")
+        }
+        else {
+            _currentSelected = 0
+            _currentOptions[_currentSelected].classList.add("selected")
+        }
 
         ShowMenu()
     }
@@ -132,7 +153,7 @@ window.onload = (e) => {
             SelectDown()
 
         if (message.type == "select")
-            Select()
+            RunSelected()
 
         if (message.type == "openinput")
             Showinput(message.inputData)

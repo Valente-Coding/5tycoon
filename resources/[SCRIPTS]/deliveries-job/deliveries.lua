@@ -194,7 +194,6 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 2
                         NewWaypoint(destination[2], "Delivery Point", 478)
-                        
                     end
                 end
             end
@@ -206,7 +205,6 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 3
                         NewWaypoint(destination[3], "Delivery Point", 478)
-                        
                     end
                 end
             end
@@ -219,7 +217,7 @@ Citizen.CreateThread(function()
                         deliveryMissionState = 4
                         local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
                         if deliveryData.level < 2 then
-                            NewWaypoint(currentDepot.spawnCoords, "Delivery Point", 1)
+                            NewWaypoint(currentDepot.spawnCoords, "Return", 1)
                         else
                             SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
                         end
@@ -237,11 +235,11 @@ Citizen.CreateThread(function()
                     DeleteEntity(missionVeh)
                     local payment = math.random(1500, 3000)
                     local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
-                    payment = math.floor(payment + (payment * (deliveryData.level / 10)))
+                    payment = math.floor(payment + (payment * (deliveryData.level / 5)))
                     deliveryData.jobs = deliveryData.jobs + 1
-                    if deliveryData.level < 10 then
-                        deliveryData.level = math.floor(deliveryData.jobs / 10)
-                        if deliveryData.level == 10 then
+                    if deliveryData.level < 5 then
+                        deliveryData.level = math.floor(deliveryData.jobs / 5)
+                        if deliveryData.level == 5 then
                             deliveryData.canBuy = true
                         end
                     end
