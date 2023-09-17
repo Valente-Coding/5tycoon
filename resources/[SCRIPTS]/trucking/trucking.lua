@@ -2,6 +2,8 @@ local truckDepots = {
     {
         coords = vector3(1208.5696, -3115.0537, 5.5403),
         spawnCoords = vector4(1207.7811, -3091.3716, 5.5371, 90.6691),
+        ped = nil,
+        pedHeading = 100.0,
         deliveryPoints = {
             vector3(857.8163, -2346.6355, 30.3312),
             vector3(864.7427, -2119.1694, 30.4448),
@@ -19,8 +21,10 @@ local truckDepots = {
         },
     },
     {
-        coords = vector3(-320.4866, -1389.6117, 36.5002)
+        coords = vector3(-320.4866, -1389.6117, 36.5002),
         spawnCoords = vector4(-340.8572, -1400.7527, 30.6168, 149.6355),
+        ped = nil,
+        pedHeading = 145.0,
         deliveryPoints = {
             vector3(857.8163, -2346.6355, 30.3312),
             vector3(864.7427, -2119.1694, 30.4448),
@@ -52,7 +56,14 @@ Citizen.CreateThread(function()
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString("Trucking Depot")
         EndTextCommandSetBlipName(blip)
-
+        local pedModel = "a_m_m_eastsa_01"
+        RequestModel(pedModel)
+        while not HasModelLoaded(pedModel) do
+            Citizen.Wait(1)
+        end
+        local pedSpawn = CreatePed(26, GetHashKey(pedModel), location.coords.x, location.coords.y, location.coords.z - 1, location.pedHeading, false, true)
+        SetEntityInvincible(pedSpawn, true)
+        location.ped = pedSpawn
     end
 end)
 
@@ -67,16 +78,16 @@ function GetRandomDeliveryPoint(deliveryPoints)
 end
 
 
-function SpawnVehicle(modelHash)
+function SpawnVehicle(modelHash, coords)
     local isModelValid = IsModelValid(modelHash)
 
     if isModelValid then
         RequestModel(modelHash) -- Request the model to be loaded
         while not HasModelLoaded(modelHash) do
-            Citizen.Wait(0)
+            Citizen.Wait(1)
         end
 
-        local vehicle = CreateVehicle(modelHash, truckSpawnCoords1.x, truckSpawnCoords1.y, truckSpawnCoords1.z, truckSpawnCoords1.w, true, false)
+        local vehicle = CreateVehicle(modelHash, coords.x, coords.y, coords.z, coords.w, true, false)
 
         -- Set the vehicle as the player's ped vehicle (optional)
         local playerPed = PlayerPedId()
@@ -89,41 +100,42 @@ function SpawnVehicle(modelHash)
     end
 end
 
-function SelectVehicle()
+function SelectVehicle(coords)
     local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
     local modelHash = nil
     local trailerHash = nil
-
-    if truckData.level < 9 then
-        if truckData.level == 0 or truckData.level == 1 then
-            modelHash = GetHashKey("sadler")
-        elseif truckData.level == 2 or truckData.level == 3 then
-            modelHash = GetHashKey("burrito3")
-        elseif truckData.level == 4 or truckData.level == 5 then
-            modelHash = GetHashKey("mule")
-        elseif truckData.level == 6 or truckData.level == 7 then
-            modelHash = GetHashKey("benson")
-        elseif truckData.level == 8 then
-            modelHash = GetHashKey("pounder")
-        end
-        return SpawnVehicle(modelHash)
+    local spawnedVeh = nil
+    
+    if truckData.level == 0 or truckData.level == 1 then
+        modelHash = GetHashKey("sadler")
+    elseif truckData.level == 2 or truckData.level == 3 then
+        modelHash = GetHashKey("burrito3")
+    elseif truckData.level == 4 or truckData.level == 5 then
+        modelHash = GetHashKey("mule")
+    elseif truckData.level == 6 or truckData.level == 7 then
+        modelHash = GetHashKey("benson")
+    elseif truckData.level == 8 then
+        modelHash = GetHashKey("pounder")    
     elseif truckData.level == 9 or truckData.level == 10 then
         modelHash = GetHashKey("phantom")
         trailerHash = GetHashKey("trailers")
-        local truck = SpawnVehicle(modelHash)
+        spawnedVeh = SpawnVehicle(modelHash, coords)
 
         if trailerHash then
-            local trailer = SpawnVehicle(trailerHash)
+            local trailer = SpawnVehicle(trailerHash, coords)
             if trailer then
-                AttachVehicleToTrailer(truck, trailer, 10.0)
+                AttachVehicleToTrailer(spawnedVeh, trailer, 10.0)
             end
         end
 
-        return truck
+        return spawnedVeh
     end
+
+    return SpawnVehicle(modelHash, coords)
 end
 
-
+local menuDisplay = false
+local truckingBlip = nil
 
 Citizen.CreateThread(function()
     local missionVeh = nil
@@ -135,15 +147,38 @@ Citizen.CreateThread(function()
         local playerPed = GetPlayerPed(-1)
         local coords = GetEntityCoords(playerPed)
 
-        for _, depot in pairs (truckDepots) do 
-            if #(coords - depot.coords) < 2.0 then
-                if truckMissionState == 0 then
-                    if IsControlJustReleased(0, 38) then
-                        truckMissionState = 1
-                        missionVeh = SelectVehicle()
-                        destination = GetRandomDeliveryPoint(depot.deliveryPoints)
-                        SetNewWaypoint(destination.x, destination.y)
-                        currentDepot = depot
+        for _, depot in pairs (truckDepots) do
+            TaskSetBlockingOfNonTemporaryEvents(depot.ped, true)
+            FreezeEntityPosition(depot.ped, true)
+            if #(coords - depot.coords) < 20.0 then
+                if #(coords - depot.coords) < 2.0 then
+                    if menuDisplay == false then
+                        menuDisplay = true
+                        if truckMissionState == 0 then
+                            TriggerEvent("side-menu:addOptions", {{id = "trucking_start_job", label = "Start Job", cb = function()
+                                truckMissionState = 1
+                                missionVeh = SelectVehicle(depot.spawnCoords)
+                                destination = GetRandomDeliveryPoint(depot.deliveryPoints)
+                                truckingBlip = AddBlipForCoord(destination.x, destination.y, destination.z)
+                                SetBlipRoute(truckingBlip, true)
+                                SetBlipRouteColour(truckingBlip, 5)
+                                SetBlipSprite(truckingBlip, 478)
+                                SetBlipDisplay(truckingBlip, 2)
+                                SetBlipScale(truckingBlip, 0.8)
+                                SetBlipColour(truckingBlip, 5)
+                                SetBlipAsShortRange(truckingBlip, true)
+                                BeginTextCommandSetBlipName("STRING")
+                                AddTextComponentString("Delivery Point")
+                                EndTextCommandSetBlipName(truckingBlip)
+                                currentDepot = depot
+                                TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}})
+                            end}})
+                        end
+                    end
+                else
+                    if menuDisplay == true then
+                        menuDisplay = false
+                        TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}})
                     end
                 end
             end
@@ -163,7 +198,18 @@ Citizen.CreateThread(function()
                         truckMissionState = 2
                         if truckData.level < 2 then
                             TriggerEvent('chatMessage', 'Go back to the depot to receive your paycheck.', {255, 0, 0})
-                            SetNewWaypoint(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y)
+                            RemoveBlip(truckingBlip)
+                            truckingBlip = AddBlipForCoord(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z)
+                            SetBlipRoute(truckingBlip, true)
+                            SetBlipRouteColour(truckingBlip, 5)
+                            SetBlipSprite(truckingBlip, 1)
+                            SetBlipDisplay(truckingBlip, 2)
+                            SetBlipScale(truckingBlip, 0.8)
+                            SetBlipColour(truckingBlip, 5)
+                            SetBlipAsShortRange(truckingBlip, true)
+                            BeginTextCommandSetBlipName("STRING")
+                            AddTextComponentString("Return")
+                            EndTextCommandSetBlipName(truckingBlip)
                         else
                             SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
                         end
@@ -175,6 +221,7 @@ Citizen.CreateThread(function()
             if truckMissionState == 2 and distance < 50 then
                 DrawMarker(25, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
                 if distance < 5 then
+                    RemoveBlip(truckingBlip)
                     truckMissionState = 0
                     TriggerEvent('chatMessage', 'You got paid.', {255, 0, 0})
                     DeleteEntity(missionVeh)
