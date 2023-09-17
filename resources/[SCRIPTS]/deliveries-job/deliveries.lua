@@ -110,17 +110,143 @@ function SelectVehicle(coords)
     local modelHash = nil
     local spawnedVeh = nil
     
-    if truckData.level == 0 or truckData.level == 1 then
+    if deliveryData.level == 0 then
         modelHash = GetHashKey("premier")
-    elseif truckData.level == 2 or truckData.level == 3 then
+    elseif deliveryData.level == 1 then
         modelHash = GetHashKey("speedo")
-    elseif truckData.level == 4 or truckData.level == 5 then
+    elseif deliveryData.level == 2 then
         modelHash = GetHashKey("mule")
-    elseif truckData.level == 6 or truckData.level == 7 then
+    elseif deliveryData.level == 3 then
         modelHash = GetHashKey("benson")
-    elseif truckData.level == 8 then
+    elseif deliveryData.level == 4 then
         modelHash = GetHashKey("pounder")    
     end
 
     return SpawnVehicle(modelHash, coords)
 end
+
+function NewWaypoint(numb)
+    RemoveBlip(deliveryBlip)
+    deliveryBlip = AddBlipForCoord(destination[numb].x, destination[numb].y, destination[numb].z)
+    SetBlipRoute(deliveryBlip, true)
+    SetBlipRouteColour(deliveryBlip, 5)
+    SetBlipSprite(deliveryBlip, 478)
+    SetBlipDisplay(deliveryBlip, 2)
+    SetBlipScale(deliveryBlip, 0.7)
+    SetBlipColour(deliveryBlip, 5)
+    SetBlipAsShortRange(deliveryBlip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString("Delivery Point")
+    EndTextCommandSetBlipName(deliveryBlip)
+end
+
+local menuDisplay = false
+local deliveryBlip = nil
+
+Citizen.CreateThread(function()
+    local missionVeh = nil
+    local destination = nil
+    local vehPed = nil
+    local currentDepot = nil
+    while true do
+        Citizen.Wait(1)
+        local playerPed = GetPlayerPed(-1)
+        local coords = GetEntityCoords(playerPed)
+
+        for _, depot in pairs (deliveryDepots) do
+            TaskSetBlockingOfNonTemporaryEvents(depot.ped, true)
+            FreezeEntityPosition(depot.ped, true)
+            if #(coords - vector3(depot.coords.x, depot.coords.y, depot.coords.z)) < 20.0 then
+                if #(coords - vector3(depot.coords.x, depot.coords.y, depot.coords.z)) < 2.0 then
+                    if menuDisplay == false then
+                        menuDisplay = true
+                        if deliveryMissionState == 0 then
+                            TriggerEvent("side-menu:addOptions", {{id = "delivery_start_job", label = "Start Job", cb = function()
+                                deliveryMissionState = 1
+                                missionVeh = SelectVehicle(depot.spawnCoords)
+                                destination = getRandomDeliveryPoints(depot.deliveryPoints)
+                                NewWaypoint(1)
+                                currentDepot = depot
+                                TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}})
+                            end}})
+                        end
+                    end
+                else
+                    if menuDisplay == true then
+                        menuDisplay = false
+                        TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}})
+                    end
+                end
+            end
+        end
+
+
+        vehPed = GetVehiclePedIsIn(playerPed, false)
+        if missionVeh ~= nil and missionVeh == vehPed then
+            vehCoords = GetEntityCoords(missionVeh)
+            if destination[1] then
+                distance = #(vehCoords - destination[1])
+                if distance < 50 then
+                    DrawMarker(25, destination[1].x, destination[1].y, destination[1].z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
+                    if distance < 5 and deliveryMissionState == 1 then
+                        distance = nil
+                        deliveryMissionState = 2
+                        NewWaypoint(2)
+                        distance = #(vehCoords - destination[2])
+                        if distance < 5 and deliveryMissionState == 2 then
+                            distance = nil
+                            deliveryMissionState = 3
+                            NewWaypoint(3)
+                            distance = #(vehCoords - destination[3])
+                            if distance < 5 and deliveryMissionState == 3 then
+                                distance = nil
+                                destination = nil
+                                local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
+                                deliveryMissionState = 4
+                                if deliveryData.level < 2 then
+                                    RemoveBlip(deliveryBlip)
+                                    truckingBlip = AddBlipForCoord(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z)
+                                    SetBlipRoute(deliveryBlip, true)
+                                    SetBlipRouteColour(deliveryBlip, 5)
+                                    SetBlipSprite(deliveryBlip, 1)
+                                    SetBlipDisplay(deliveryBlip, 2)
+                                    SetBlipScale(deliveryBlip, 0.8)
+                                    SetBlipColour(deliveryBlip, 5)
+                                    SetBlipAsShortRange(deliveryBlip, true)
+                                    BeginTextCommandSetBlipName("STRING")
+                                    AddTextComponentString("Return")
+                                    EndTextCommandSetBlipName(deliveryBlip)
+                                else
+                                    SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            distance = #(vehCoords - vector3(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z))
+            if deliveryMissionState == 4 and distance < 50 then
+                DrawMarker(25, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
+                if distance < 5 then
+                    RemoveBlip(deliveryBlip)
+                    deliveryMissionState = 0
+                    DeleteEntity(missionVeh)
+                    local payment = math.random(1500, 3000)
+                    local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
+                    payment = math.floor(payment + (payment * (deliveryData.level / 10)))
+                    deliveryData.jobs = deliveryData.jobs + 1
+                    if deliveryData.level < 10 then
+                        deliveryData.level = math.floor(deliveryData.jobs / 10)
+                        if deliveryData.level == 10 then
+                            deliveryData.canBuy = true
+                        end
+                    end
+
+                    TriggerEvent("save-load:updateData", {{name = "DELIVERY_DATA", type = "string", value = json.encode(deliveryData)}})
+                    TriggerEvent("bank:changeBank", payment)
+                end
+            end
+        end
+    end
+end)
