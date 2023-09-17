@@ -121,7 +121,6 @@ function GetRandomPedToDeliver(coords)
         "a_m_y_yoga_01"
     }
     local model = availablePeds[math.random(1, #availablePeds)]
-    print(model)
     RequestModel(model)
     while not HasModelLoaded(model) do
         Citizen.Wait(1)
