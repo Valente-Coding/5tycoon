@@ -52,7 +52,7 @@ Citizen.CreateThread(function()
         SetBlipColour(blip, 66)
         SetBlipAsShortRange(blip, false)
         BeginTextCommandSetBlipName("STRING")
-        AddTextComponentString("Deliveris Depot")
+        AddTextComponentString("Deliveries Depot")
         EndTextCommandSetBlipName(blip)
         local pedModel = "a_m_m_farmer_01"
         RequestModel(pedModel)
