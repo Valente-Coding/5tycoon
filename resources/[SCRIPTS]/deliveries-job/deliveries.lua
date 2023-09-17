@@ -84,3 +84,43 @@ function getRandomDeliveryPoints(deliveryDepots)
     return selectedPoints[1], selectedPoints[2], selectedPoints[3]
 end
 
+function SpawnVehicle(modelHash, coords)
+    local isModelValid = IsModelValid(modelHash)
+
+    if isModelValid then
+        RequestModel(modelHash)
+        while not HasModelLoaded(modelHash) do
+            Citizen.Wait(1)
+        end
+
+        local vehicle = CreateVehicle(modelHash, coords.x, coords.y, coords.z, coords.w, true, false)
+
+        local playerPed = PlayerPedId()
+        TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+
+        return vehicle
+    else
+        print("Invalid model.")
+        return nil
+    end
+end
+
+function SelectVehicle(coords)
+    local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
+    local modelHash = nil
+    local spawnedVeh = nil
+    
+    if truckData.level == 0 or truckData.level == 1 then
+        modelHash = GetHashKey("premier")
+    elseif truckData.level == 2 or truckData.level == 3 then
+        modelHash = GetHashKey("speedo")
+    elseif truckData.level == 4 or truckData.level == 5 then
+        modelHash = GetHashKey("mule")
+    elseif truckData.level == 6 or truckData.level == 7 then
+        modelHash = GetHashKey("benson")
+    elseif truckData.level == 8 then
+        modelHash = GetHashKey("pounder")    
+    end
+
+    return SpawnVehicle(modelHash, coords)
+end
