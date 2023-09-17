@@ -63,6 +63,16 @@ function RunOptionCB(id)
     end
 end
 
+function SelectOptionCB(id)
+    for _, option in pairs(_currentOptions) do 
+        if option.id == id then 
+            if option.selectCB then
+                option.selectCB()
+            end
+        end
+    end
+end
+
 local inside = false
 Citizen.CreateThread(function()
     while true do 
@@ -83,8 +93,14 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNUICallback('selectoption', function(data, cb)
+RegisterNUICallback('runoption', function(data, cb)
     RunOptionCB(data.id)
+
+    cb('ok')
+end)
+
+RegisterNUICallback('selectoption', function(data, cb)
+    SelectOptionCB(data.id)
 
     cb('ok')
 end)
