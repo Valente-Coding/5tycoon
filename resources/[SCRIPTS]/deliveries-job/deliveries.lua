@@ -67,11 +67,11 @@ end)
 
 local deliveryMissionState = 0
 
-function getRandomDeliveryPoints(deliveryDepots)
+function getRandomDeliveryPoints(deliveryPoints)
     local availablePoints = {}
     local selectedPoints = {}
 
-    for _, point in ipairs(deliveryDepots.deliveryPoints) do
+    for _, point in pairs(deliveryPoints) do
         table.insert(availablePoints, point)
     end
 
@@ -81,7 +81,7 @@ function getRandomDeliveryPoints(deliveryDepots)
         table.insert(selectedPoints, selectedPoint)
     end
 
-    return selectedPoints[1], selectedPoints[2], selectedPoints[3]
+    return {selectedPoints[1], selectedPoints[2], selectedPoints[3]}
 end
 
 function SpawnVehicle(modelHash, coords)
@@ -125,23 +125,25 @@ function SelectVehicle(coords)
     return SpawnVehicle(modelHash, coords)
 end
 
-function NewWaypoint(numb)
+local deliveryBlip = nil
+
+function NewWaypoint(coords, name, blipType)
     RemoveBlip(deliveryBlip)
-    deliveryBlip = AddBlipForCoord(destination[numb].x, destination[numb].y, destination[numb].z)
+    deliveryBlip = AddBlipForCoord(coords.x, coords.y, coords.z)
     SetBlipRoute(deliveryBlip, true)
     SetBlipRouteColour(deliveryBlip, 5)
-    SetBlipSprite(deliveryBlip, 478)
+    SetBlipSprite(deliveryBlip, blipType)
     SetBlipDisplay(deliveryBlip, 2)
     SetBlipScale(deliveryBlip, 0.7)
     SetBlipColour(deliveryBlip, 5)
     SetBlipAsShortRange(deliveryBlip, true)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString("Delivery Point")
+    AddTextComponentString(name)
     EndTextCommandSetBlipName(deliveryBlip)
 end
 
 local menuDisplay = false
-local deliveryBlip = nil
+
 
 Citizen.CreateThread(function()
     local missionVeh = nil
@@ -165,7 +167,7 @@ Citizen.CreateThread(function()
                                 deliveryMissionState = 1
                                 missionVeh = SelectVehicle(depot.spawnCoords)
                                 destination = getRandomDeliveryPoints(depot.deliveryPoints)
-                                NewWaypoint(1)
+                                NewWaypoint(destination[1], "Delivery Point", 478)
                                 currentDepot = depot
                                 TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}})
                             end}})
@@ -184,42 +186,42 @@ Citizen.CreateThread(function()
         vehPed = GetVehiclePedIsIn(playerPed, false)
         if missionVeh ~= nil and missionVeh == vehPed then
             vehCoords = GetEntityCoords(missionVeh)
-            if destination[1] then
+            if destination[1] and deliveryMissionState == 1 then
                 distance = #(vehCoords - destination[1])
                 if distance < 50 then
                     DrawMarker(25, destination[1].x, destination[1].y, destination[1].z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
-                    if distance < 5 and deliveryMissionState == 1 then
+                    if distance < 5 then
                         distance = nil
                         deliveryMissionState = 2
-                        NewWaypoint(2)
-                        distance = #(vehCoords - destination[2])
-                        if distance < 5 and deliveryMissionState == 2 then
-                            distance = nil
-                            deliveryMissionState = 3
-                            NewWaypoint(3)
-                            distance = #(vehCoords - destination[3])
-                            if distance < 5 and deliveryMissionState == 3 then
-                                distance = nil
-                                destination = nil
-                                local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
-                                deliveryMissionState = 4
-                                if deliveryData.level < 2 then
-                                    RemoveBlip(deliveryBlip)
-                                    truckingBlip = AddBlipForCoord(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z)
-                                    SetBlipRoute(deliveryBlip, true)
-                                    SetBlipRouteColour(deliveryBlip, 5)
-                                    SetBlipSprite(deliveryBlip, 1)
-                                    SetBlipDisplay(deliveryBlip, 2)
-                                    SetBlipScale(deliveryBlip, 0.8)
-                                    SetBlipColour(deliveryBlip, 5)
-                                    SetBlipAsShortRange(deliveryBlip, true)
-                                    BeginTextCommandSetBlipName("STRING")
-                                    AddTextComponentString("Return")
-                                    EndTextCommandSetBlipName(deliveryBlip)
-                                else
-                                    SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
-                                end
-                            end
+                        NewWaypoint(destination[2], "Delivery Point", 478)
+                        
+                    end
+                end
+            end
+            if destination[2] and deliveryMissionState == 2 then
+                distance = #(vehCoords - destination[2])
+                if distance < 50 then
+                    DrawMarker(25, destination[2].x, destination[2].y, destination[2].z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
+                    if distance < 5 then
+                        distance = nil
+                        deliveryMissionState = 3
+                        NewWaypoint(destination[3], "Delivery Point", 478)
+                        
+                    end
+                end
+            end
+            if destination[3] and deliveryMissionState == 3 then
+                distance = #(vehCoords - destination[3])
+                if distance < 50 then
+                    DrawMarker(25, destination[3].x, destination[3].y, destination[3].z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
+                    if distance < 5 then
+                        distance = nil
+                        deliveryMissionState = 4
+                        local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
+                        if deliveryData.level < 2 then
+                            NewWaypoint(currentDepot.spawnCoords, "Delivery Point", 1)
+                        else
+                            SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
                         end
                     end
                 end
@@ -230,6 +232,7 @@ Citizen.CreateThread(function()
                 DrawMarker(25, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
                 if distance < 5 then
                     RemoveBlip(deliveryBlip)
+                    deliveryBlip = nil
                     deliveryMissionState = 0
                     DeleteEntity(missionVeh)
                     local payment = math.random(1500, 3000)
