@@ -2,6 +2,7 @@ local maxChars = 3
 local charsPath = ""
 local charSelected = nil
 local charLoaded = false
+local makingchar = false
 local chars = {}
 
 function CharacterData()
@@ -37,6 +38,7 @@ function CharacterData()
 
         charLoaded = true
     else
+        makingchar = true
         TriggerEvent("save-load:createDefaultVariables")
 
         local config = {
@@ -59,6 +61,7 @@ function CharacterData()
 
                     TriggerServerEvent("save-load:saveData", charsPath, chars)
                     charLoaded = true
+                    makingchar = false
                 end)
             end
         end, config)
@@ -72,8 +75,14 @@ end
 RegisterNetEvent("save-load:loadDataResult")
 AddEventHandler("save-load:loadDataResult", function(data, path)
     if path == charsPath then 
-        chars = data
-        MulticharSelector()
+        if data then  
+            chars = data
+            MulticharSelector()
+        else
+            chars = json.decode("[]")
+            TriggerServerEvent("save-load:saveData", charsPath, chars)
+            MulticharSelector()
+        end
     end
 end)
 
@@ -110,7 +119,7 @@ Citizen.CreateThread(function()
         if freeRoamPeds[charSelected] and not charLoaded then
             local pedCoords = GetEntityCoords(freeRoamPeds[charSelected]) 
             SetEntityCoords(GetPlayerPed(-1), pedCoords.x, pedCoords.y, pedCoords.z - 1, 0.0, 0.0, 0.0, false)
-        elseif not charLoaded then 
+        elseif not makingchar and not charLoaded then 
             SetEntityCoords(GetPlayerPed(-1), -29.3665, -1701.6086, 2493.6851, 0.0, 0.0, 0.0, false)
         end
     end
