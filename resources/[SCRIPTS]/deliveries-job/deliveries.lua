@@ -44,22 +44,22 @@ local deliveryDepots = {
 Citizen.CreateThread(function()
     local blips = {}
 
-    for _, location in pairs(truckDepots) do
+    for _, location in pairs(deliveryDepots) do
         local blip = AddBlipForCoord(location.coords.x, location.coords.y, location.coords.z)
         SetBlipSprite(blip, 800)
         SetBlipDisplay(blip, 4)
         SetBlipScale(blip, 0.8)
-        SetBlipColour(blip, 25)
+        SetBlipColour(blip, 66)
         SetBlipAsShortRange(blip, false)
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString("Deliveris Depot")
         EndTextCommandSetBlipName(blip)
-        local pedModel = "a_m_y_golfer_01"
+        local pedModel = "a_m_m_farmer_01"
         RequestModel(pedModel)
         while not HasModelLoaded(pedModel) do
             Citizen.Wait(1)
         end
-        local pedSpawn = CreatePed(26, GetHashKey(pedModel), location.coords.x, location.coords.y, location.coords.z - 1, location.pedHeading, false, true)
+        local pedSpawn = CreatePed(26, GetHashKey(pedModel), location.coords.x, location.coords.y, location.coords.z - 1, location.coords.w, false, true)
         SetEntityInvincible(pedSpawn, true)
         location.ped = pedSpawn
     end
