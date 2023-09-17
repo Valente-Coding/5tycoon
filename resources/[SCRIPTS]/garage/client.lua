@@ -119,10 +119,11 @@ AddEventHandler("garage:addVehicleToChar", AddVehicleToChar)
 
 function SpawnVehicle(data)
     local veh = CreateVehicle(data["model"], data["lastpos"].x, data["lastpos"].y, data["lastpos"].z, data["lastheading"], true, true)
-    SetVehData(veh, data)
-
-    table.insert(spawnedVehs, veh)
-    TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
+	if veh then 
+    	SetVehData(veh, data)
+		table.insert(spawnedVehs, veh)
+    	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
+	end
 end
 
 function SaveVehicle(veh)
@@ -153,7 +154,8 @@ Citizen.CreateThread(function()
     end
 end)
 
-AddEventHandler("playerSpawned", function(spawn)
+RegisterNetEvent("garage:spawnvehicles")
+AddEventHandler("garage:spawnvehicles", function()
     local charVehs = json.decode(GetExternalKvpString("save-load", "CHAR_VEHICLES"))
 
     for _, vehData in pairs(charVehs) do 

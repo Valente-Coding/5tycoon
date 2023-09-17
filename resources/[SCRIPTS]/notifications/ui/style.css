@@ -1,0 +1,128 @@
+/* 
+font-family: 'Comfortaa', cursive;
+font-family: 'Heebo', sans-serif;
+font-family: 'Kanit', sans-serif;
+font-family: 'Noto Sans JP', sans-serif;
+font-family: 'Rajdhani', sans-serif; 
+*/
+
+@keyframes centerclose {
+    0%   {
+        max-width: 25vw;
+        max-height: 25vh;
+        opacity: 100%;
+    }
+    70%  {
+        max-width: 25vw;
+        max-height: 0px;
+        opacity: 100%;
+    }
+    99%  {
+        max-width: 0px;
+        max-height: 0px;
+        opacity: 100%;
+    }
+    100% {
+        max-width: 0px;
+        max-height: 0px;
+        opacity: 0%;
+    }
+}
+
+@keyframes centeropen {
+    0%   {
+        max-width: 0px;
+        max-height: 0px;
+        opacity: 0%;
+    }
+    1%  {
+        max-width: 0px;
+        max-height: 0px;
+        opacity: 100%;
+    }
+    30%  {
+        max-width: 25vw;
+        max-height: 0px;
+        opacity: 100%;
+    }
+    100% {
+        max-width: 25vw;
+        max-height: 25vh;
+        opacity: 100%;
+    }
+}
+
+
+* {
+    font-family: 'Kanit', sans-serif;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+
+.center-notification {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    max-width: 25vw;
+    max-height: 25vh;
+    transform: translateX(-50%);
+    top: 1%;
+    left: 50%;
+    background-color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    overflow: hidden;
+    animation-name: centeropen;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+    animation-timing-function: linear;
+    opacity: 0%;
+    display: grid;
+    place-items: center;
+    font-size: 1.9vh;
+    padding-left: 0.1vw;
+    padding-right: 0.1vw;
+}
+
+
+
+.side-notification {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    max-width: 25vw;
+    max-height: 25vh;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 1%;
+    background-color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    overflow: hidden;
+    animation-name: centeropen;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+    animation-timing-function: linear;
+    opacity: 0%;
+    display: grid;
+    place-items: center;
+    font-size: 1.6vh;
+    padding-left: 0.1vw;
+    padding-right: 0.1vw;
+}
+
+.centerclosed {
+    animation-name: centerclose;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+    animation-timing-function: linear;
+}
