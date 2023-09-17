@@ -64,3 +64,23 @@ Citizen.CreateThread(function()
         location.ped = pedSpawn
     end
 end)
+
+local deliveryMissionState = 0
+
+function getRandomDeliveryPoints(deliveryDepots)
+    local availablePoints = {}
+    local selectedPoints = {}
+
+    for _, point in ipairs(deliveryDepots.deliveryPoints) do
+        table.insert(availablePoints, point)
+    end
+
+    for _ = 1, 3 do
+        local index = math.random(1, #availablePoints)
+        local selectedPoint = table.remove(availablePoints, index)
+        table.insert(selectedPoints, selectedPoint)
+    end
+
+    return selectedPoints[1], selectedPoints[2], selectedPoints[3]
+end
+
