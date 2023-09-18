@@ -154,6 +154,11 @@ Citizen.CreateThread(function()
                 if #(coords - depot.coords) < 2.0 then
                     if menuDisplay == false then
                         menuDisplay = true
+
+                        local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
+
+                        TriggerEvent("side-menu:addOptions", {{id = "trucking_show_level", label = "Job Level", quantity = tostring(truckData.level)}, {id = "trucking_show_jobs", label = "Number of Jobs", quantity = tostring(truckData.jobs)}})
+
                         if truckMissionState == 0 then
                             TriggerEvent("side-menu:addOptions", {{id = "trucking_start_job", label = "Start Job", cb = function()
                                 truckMissionState = 1
@@ -171,14 +176,15 @@ Citizen.CreateThread(function()
                                 AddTextComponentString("Delivery Point")
                                 EndTextCommandSetBlipName(truckingBlip)
                                 currentDepot = depot
-                                TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}})
+                                TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}, {id = "trucking_show_level"}, {id = "trucking_show_jobs"}})
+                                TriggerEvent('notification:center', {time = 5000, text = "Deliver the load."})
                             end}})
                         end
                     end
                 else
                     if menuDisplay == true then
                         menuDisplay = false
-                        TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}})
+                        TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}, {id = "trucking_show_level"}, {id = "trucking_show_jobs"}})
                     end
                 end
             end
@@ -197,7 +203,7 @@ Citizen.CreateThread(function()
                         local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
                         truckMissionState = 2
                         if truckData.level < 2 then
-                            TriggerEvent('chatMessage', 'Go back to the depot to receive your paycheck.', {255, 0, 0})
+                            TriggerEvent('notification:center', {time = 5000, text = "Go back to the depot to receive your paycheck."})
                             RemoveBlip(truckingBlip)
                             truckingBlip = AddBlipForCoord(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z)
                             SetBlipRoute(truckingBlip, true)
@@ -223,16 +229,16 @@ Citizen.CreateThread(function()
                 if distance < 5 then
                     RemoveBlip(truckingBlip)
                     truckMissionState = 0
-                    TriggerEvent('chatMessage', 'You got paid.', {255, 0, 0})
                     DeleteEntity(missionVeh)
                     local payment = math.random(1000, 2000)
                     local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
                     payment = math.floor(payment + (payment * (truckData.level / 10)))
+                    TriggerEvent('notification:center', {time = 5000, text = "You got paid $"..payment})
                     truckData.jobs = truckData.jobs + 1
-                    if truckData.level < 10 then
+                    if truckData.level < 10 and truckData.jobs <= 100 then
                         truckData.level = math.floor(truckData.jobs / 10)
-                        if truckData.level == 10 then
-                            TriggerEvent('chatMessage', 'You reached max level.', {255, 0, 0})
+                        if truckData.jobs == 100 then
+                            TriggerEvent('notification:center', {time = 5000, text = "You reached max level."})
                             truckData.canBuy = true
                         end
                     end

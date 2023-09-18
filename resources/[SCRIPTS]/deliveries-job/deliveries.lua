@@ -162,21 +162,27 @@ Citizen.CreateThread(function()
                 if #(coords - vector3(depot.coords.x, depot.coords.y, depot.coords.z)) < 2.0 then
                     if menuDisplay == false then
                         menuDisplay = true
+
+                        local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
+
+                        TriggerEvent("side-menu:addOptions", {{id = "delivery_show_level", label = "Job Level", quantity = tostring(deliveryData.level)}, {id = "delivery_show_jobs", label = "Number of Jobs", quantity = tostring(deliveryData.jobs)}})
+
                         if deliveryMissionState == 0 then
                             TriggerEvent("side-menu:addOptions", {{id = "delivery_start_job", label = "Start Job", cb = function()
                                 deliveryMissionState = 1
                                 missionVeh = SelectVehicle(depot.spawnCoords)
                                 destination = getRandomDeliveryPoints(depot.deliveryPoints)
                                 NewWaypoint(destination[1], "Delivery Point", 478)
+                                TriggerEvent("notification:center", {time = 5000, text = "Deliver the load"})
                                 currentDepot = depot
-                                TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}})
+                                TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}, {id = "delivery_show_level"}, {id = "delivery_show_jobs"}})
                             end}})
                         end
                     end
                 else
                     if menuDisplay == true then
                         menuDisplay = false
-                        TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}})
+                        TriggerEvent("side-menu:removeOptions", {{id = "delivery_start_job"}, {id = "delivery_show_level"}, {id = "delivery_show_jobs"}})
                     end
                 end
             end
@@ -194,6 +200,7 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 2
                         NewWaypoint(destination[2], "Delivery Point", 478)
+                        TriggerEvent("notification:center", {time = 5000, text = "Reach the new destination."})
                     end
                 end
             end
@@ -205,6 +212,7 @@ Citizen.CreateThread(function()
                         distance = nil
                         deliveryMissionState = 3
                         NewWaypoint(destination[3], "Delivery Point", 478)
+                        TriggerEvent("notification:center", {time = 5000, text = "Reach the new destination."})
                     end
                 end
             end
@@ -218,6 +226,7 @@ Citizen.CreateThread(function()
                         local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
                         if deliveryData.level < 2 then
                             NewWaypoint(currentDepot.spawnCoords, "Return", 1)
+                            TriggerEvent("notification:center", {time = 5000, text = "Get back to the HQ."})
                         else
                             SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
                         end
@@ -236,6 +245,7 @@ Citizen.CreateThread(function()
                     local payment = math.random(1500, 3000)
                     local deliveryData = json.decode(GetExternalKvpString("save-load", "DELIVERY_DATA"))
                     payment = math.floor(payment + (payment * (deliveryData.level / 5)))
+                    TriggerEvent("notification:center", {time = 5000, text = "You've been paid $"..payment})
                     deliveryData.jobs = deliveryData.jobs + 1
                     if deliveryData.level < 5 then
                         deliveryData.level = math.floor(deliveryData.jobs / 5)
