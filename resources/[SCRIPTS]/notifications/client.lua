@@ -1,13 +1,6 @@
 function SendNotification(data)
-    SendNUIMessage(json.encode({type = "side", data = data}))
+    SendNUIMessage(json.encode({type = "notification", data = data}))
 end
 
-function SendCenterNotification(data)
-    SendNUIMessage(json.encode({type = "center", data = data}))
-end
-
-RegisterNetEvent("notification:center")
-AddEventHandler("notification:center", SendCenterNotification)
-
-RegisterNetEvent("notification:side")
-AddEventHandler("notification:side", SendNotification)
+RegisterNetEvent("notification:send")
+AddEventHandler("notification:send", SendNotification)

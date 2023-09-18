@@ -62,55 +62,25 @@ body {
     height: 100vh;
     padding: 0;
     margin: 0;
+    background-color: black;
 }
-
-.center-notification-list {
-    position: absolute;
-    transform: translateX(-50%);
-    top: 1%;
-    left: 50%;
-}
-
-.center-notification {
-    width: fit-content;
-    height: fit-content;
-    max-width: 25vw;
-    max-height: 25vh;
-    background-color: white;
-    border: 2px solid white;
-    border-radius: 5px;
-    overflow: hidden;
-    animation-name: centeropen;
-    animation-duration: 1s;
-    animation-fill-mode: forwards;
-    animation-direction: normal;
-    animation-timing-function: linear;
-    opacity: 0%;
-    display: grid;
-    place-items: center;
-    font-size: 1.9vh;
-    padding-left: 0.1vw;
-    padding-right: 0.1vw;
-    margin-top: 0.5vh;
-}
-
 
 
 .side-notification-list {
     position: absolute;
     transform: translateY(-50%, -50%);
-    top: 50%;
+    top: 1%;
     right: 1%;
 }
 
 .side-notification {
+    min-width: 15vw;
+    min-height: 5vh;
     width: fit-content;
     height: fit-content;
     max-width: 25vw;
     max-height: 25vh;
     background-color: white;
-    border: 2px solid white;
-    border-radius: 5px;
     overflow: hidden;
     animation-name: centeropen;
     animation-duration: 1s;
@@ -124,6 +94,12 @@ body {
     padding-left: 0.1vw;
     padding-right: 0.1vw;
     margin-top: 0.5vh;
+}
+
+.side-notification span {
+    padding: 1vh;
+    width: 92%;
+    text-align: left;
 }
 
 .centerclosed {
