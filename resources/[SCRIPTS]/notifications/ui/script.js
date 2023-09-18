@@ -21,7 +21,7 @@ window.onload = (e) => {
             notificationTest.innerHTML = message.data.text
             newNotification.append(notificationTest)
 
-            newNotification.style.borderLeft = `border-left: ${colors[message.data.color]} solid 0.25vw;`
+            newNotification.style.borderLeft = `${colors[message.data.color]} solid 0.25vw`
             newNotification.classList.add("side-notification")
 
             setTimeout(() => {
