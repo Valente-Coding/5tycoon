@@ -238,6 +238,11 @@ Citizen.CreateThread(function()
                 if #(playerCoords - vector3(depot.coords.x, depot.coords.y, depot.coords.z)) < 2.0 then
                     if menuDisplay == false and deliveryMissionState == 0 then
                         menuDisplay = true
+
+                        local foodData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
+
+                        TriggerEvent("side-menu:addOptions", {{id = "food_show_level", label = "Job Level", quantity = tostring(foodData.level)}, {id = "food_show_jobs", label = "Number of Jobs", quantity = tostring(foodData.jobs)}})
+
                         TriggerEvent("side-menu:addOptions", {{id = "food_start_job", label = "Start Job", cb = function()
                             deliveryMissionState = 1
                             missionVeh = SelectVehicle(depot.spawnCoords)
@@ -247,14 +252,15 @@ Citizen.CreateThread(function()
                                 GetRandomPedToDeliver(destination[1])
                             end
                             NewWaypoint(destination[1], "Delivery Point")
+                            TriggerEvent("notification:center", {time = 5000, text = "Start delivering pizzas."})
                             currentDepot = depot
-                            TriggerEvent("side-menu:removeOptions", {{id = "food_start_job"}})
+                            TriggerEvent("side-menu:removeOptions", {{id = "food_start_job"}, {id = "food_show_level"}, {id = "food_show_jobs"}})
                         end}})
                     end
                 else
                     if menuDisplay == true then
                         menuDisplay = false
-                        TriggerEvent("side-menu:removeOptions", {{id = "food_start_job"}})
+                        TriggerEvent("side-menu:removeOptions", {{id = "food_start_job"}, {id = "food_show_level"}, {id = "food_show_jobs"}})
                     end
                 end
             end
@@ -352,6 +358,7 @@ Citizen.CreateThread(function()
                 deliveryMissionState = 6
                 RemoveBlip(deliveryBlip)
                 NewWaypoint(currentDepot.spawnCoords, "Return")
+                TriggerEvent("notification:center", {time = 5000, text = "Return to the HQ."})
                 local foodData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
                 if foodData.level >= 2 then
                     SetEntityCoords(missionVeh, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z, 0, 0, 0, false)
@@ -378,6 +385,7 @@ Citizen.CreateThread(function()
                     local payment = math.random(1500, 3000)
                     local foodData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
                     payment = math.floor(payment + (payment * (foodData.level / 5)))
+                    TriggerEvent("notification:center", {time = 5000, text = "You got paid $"..payment})
                     foodData.jobs = foodData.jobs + 1
                     if foodData.level < 5 then
                         foodData.level = math.floor(foodData.jobs / 5)
