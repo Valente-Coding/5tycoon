@@ -157,7 +157,7 @@ Citizen.CreateThread(function()
 
                         local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
 
-                        TriggerEvent("side-menu:addOptions", {{id = "trucking_show_level", label = "Job Level", quantity = truckData.level}, {id = "trucking_show_jobs", label = "Number of Jobs", quantity = truckData.jobs}})
+                        TriggerEvent("side-menu:addOptions", {{id = "trucking_show_level", label = "Job Level", quantity = tostring(truckData.level)}, {id = "trucking_show_jobs", label = "Number of Jobs", quantity = tostring(truckData.jobs)}})
 
                         if truckMissionState == 0 then
                             TriggerEvent("side-menu:addOptions", {{id = "trucking_start_job", label = "Start Job", cb = function()
@@ -183,7 +183,7 @@ Citizen.CreateThread(function()
                 else
                     if menuDisplay == true then
                         menuDisplay = false
-                        TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}})
+                        TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}, {id = "trucking_show_level"}, {id = "trucking_show_jobs"}})
                     end
                 end
             end
