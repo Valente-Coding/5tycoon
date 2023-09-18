@@ -68,6 +68,7 @@ function CharacterData()
     end
 
     TriggerEvent("side-menu:removeOptions", {{id = "BANK_BALANCE"}, {id = "CASH_BALANCE"}, {id = "CHAR_1"}, {id = "CHAR_2"}, {id = "CHAR_3"}, {id = "NEW_CHAR"}})
+    TriggerEvent("garage:spawnvehicles")
     DeleteFreeroamPeds()
 end
 
