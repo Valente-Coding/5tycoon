@@ -69,7 +69,7 @@ Citizen.CreateThread(function()
                                                 SetVehicleDirtLevel(vehicle, 0.0)
                                                 TriggerEvent("side-menu:removeOptions", {{id = "autoshop_repair_cost"}, {id = "autoshop_repair"}, {id = "autoshop_no_repair"}})
                                                 TriggerEvent("side-menu:addOptions", {{id = "autoshop_no_repair", label = "No Repairs Needed"}})
-                                                TriggerEvent("notification:center", {time = 5000, text = "You repaired your car"})
+                                                TriggerEvent("notification:side", {time = 5000, text = "You repaired your car"})
                                             end
                                         end
                                     end)
