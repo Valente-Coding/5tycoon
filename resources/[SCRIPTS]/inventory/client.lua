@@ -68,7 +68,7 @@ function AddItemsToInventory(itemsData)
         end
     end
 
-    TriggerEvent("save-load:updateData", {{name = "INV_ITEMS", type = "string", value = json.encode(items)}})
+    TriggerEvent("save-load:setGlobalVariables", {{name = "INV_ITEMS", type = "string", value = json.encode(items)}})
     TriggerEvent("side-menu:updateOptions", GetInventoryOptions())
 end
 
@@ -88,7 +88,7 @@ function RemoveItemsFromInventory(itemsData)
         end
     end
 
-    TriggerEvent("save-load:updateData", {{name = "INV_ITEMS", type = "string", value = json.encode(items)}})
+    TriggerEvent("save-load:setGlobalVariables", {{name = "INV_ITEMS", type = "string", value = json.encode(items)}})
     TriggerEvent("side-menu:updateOptions", GetInventoryOptions())
 end
 

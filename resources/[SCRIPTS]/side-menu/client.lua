@@ -63,6 +63,16 @@ function RunOptionCB(id)
     end
 end
 
+function SelectOptionCB(id)
+    for _, option in pairs(_currentOptions) do 
+        if option.id == id then 
+            if option.selectCB then
+                option.selectCB()
+            end
+        end
+    end
+end
+
 local inside = false
 Citizen.CreateThread(function()
     while true do 
@@ -80,23 +90,17 @@ Citizen.CreateThread(function()
                 SendNUIMessage(json.encode({type = "select"}))
             end
         end
-
-        --[[ if #(GetEntityCoords(GetPlayerPed(-1)) - vector3(-2587.7734, 1910.9391, 167.4989)) < 1.0 then
-            if not inside then
-                AddOptions({{id = "sellweedtitle", label = "Weed", quantity = 10}, {id = "sellweed", label = "Sell Weed", cb = function() RemoveOptions({{id = "sellweedtitle"}}) end}})
-                inside = true
-            end
-        else
-            if inside then 
-                RemoveOptions({{id = "sellweed"}, {id = "sellweedtitle"}}) 
-                inside = false
-            end
-        end ]]
     end
 end)
 
-RegisterNUICallback('selectoption', function(data, cb)
+RegisterNUICallback('runoption', function(data, cb)
     RunOptionCB(data.id)
+
+    cb('ok')
+end)
+
+RegisterNUICallback('selectoption', function(data, cb)
+    SelectOptionCB(data.id)
 
     cb('ok')
 end)
@@ -124,3 +128,24 @@ AddEventHandler("side-menu:addOptions", AddOptions)
 AddEventHandler("side-menu:removeOptions", RemoveOptions)
 AddEventHandler("side-menu:updateOptions", UpdateOptions)
 AddEventHandler("side-menu:openInputBox", OpenInputBox)
+
+--[[ RegisterCommand("additems", function(source, args, rawCommand) 
+    AddOptions({
+        {id = "a", label = "a", quantity = 1},
+        {id = "b", label = "b", quantity = 1},
+        {id = "c", label = "c", quantity = 1},
+        {id = "d", label = "d", quantity = 1},
+        {id = "e", label = "e", quantity = 1},
+        {id = "f", label = "f", quantity = 1},
+        {id = "g", label = "g", quantity = 1},
+        {id = "h", label = "h", quantity = 1},
+        {id = "i", label = "i", quantity = 1},
+        {id = "j", label = "j", quantity = 1},
+        {id = "k", label = "k", quantity = 1},
+        {id = "l", label = "l", quantity = 1},
+        {id = "m", label = "m", quantity = 1},
+        {id = "n", label = "n", quantity = 1},
+        {id = "o", label = "o", quantity = 1},
+        {id = "p", label = "p", quantity = 1},
+    })
+end, false) ]]
