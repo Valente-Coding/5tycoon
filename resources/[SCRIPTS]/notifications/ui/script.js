@@ -8,7 +8,7 @@ window.onload = (e) => {
         if (!message) return;
 
         if (message.type == "side") {
-            var newNotification = _sideNotifications.createElement("div")
+            var newNotification = document.createElement("div")
             if (_sideNotifications.children[0]) {
                 _sideNotifications.insertBefore(newNotification, _sideNotifications.children[0])
             } else {
@@ -23,7 +23,7 @@ window.onload = (e) => {
         }
 
         if (message.type == "center") {
-            var newNotification = _centerNotifications.createElement("div")
+            var newNotification = document.createElement("div")
             if (_centerNotifications.children[0]) {
                 _centerNotifications.insertBefore(newNotification, _centerNotifications.children[0])
             } else {
