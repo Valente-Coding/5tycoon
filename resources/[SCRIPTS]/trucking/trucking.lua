@@ -177,6 +177,7 @@ Citizen.CreateThread(function()
                                 EndTextCommandSetBlipName(truckingBlip)
                                 currentDepot = depot
                                 TriggerEvent("side-menu:removeOptions", {{id = "trucking_start_job"}, {id = "trucking_show_level"}, {id = "trucking_show_jobs"}})
+                                TriggerEvent('notification:center', {time = 5000, text = "Deliver the load."})
                             end}})
                         end
                     end
