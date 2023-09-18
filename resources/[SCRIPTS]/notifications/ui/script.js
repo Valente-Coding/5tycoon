@@ -1,6 +1,6 @@
 window.onload = (e) => {
-    var _centerNotification = document.getElementsByClassName("center-notification")[0] 
-    var _sideNotification = document.getElementsByClassName("side-notification")[0] 
+    var _centerNotifications = document.getElementsByClassName("center-notification-list")[0] 
+    var _sideNotifications = document.getElementsByClassName("side-notification-list")[0] 
 
     window.addEventListener('message', (event) => {
         var message = JSON.parse(event.data);
@@ -8,18 +8,32 @@ window.onload = (e) => {
         if (!message) return;
 
         if (message.type == "side") {
-            _sideNotification.innerHTML = message.data.text
-            _sideNotification.classList.remove("centerclosed")
+            var newNotification = _sideNotifications.createElement("div")
+            if (_sideNotifications.children[0]) {
+                _sideNotifications.insertBefore(newNotification, _sideNotifications.children[0])
+            } else {
+                _sideNotifications.append(newNotification)
+            }
+            newNotification.innerHTML = message.data.text
+            newNotification.classList.add("side-notification")
+
             setTimeout(() => {
-                _sideNotification.classList.add("centerclosed")
+                newNotification.classList.add("centerclosed")
             }, message.data.time);
         }
 
         if (message.type == "center") {
-            _centerNotification.innerHTML = message.data.text
-            _centerNotification.classList.remove("centerclosed")
+            var newNotification = _centerNotifications.createElement("div")
+            if (_centerNotifications.children[0]) {
+                _centerNotifications.insertBefore(newNotification, _centerNotifications.children[0])
+            } else {
+                _centerNotifications.append(newNotification)
+            }
+            newNotification.innerHTML = message.data.text
+            newNotification.classList.add("center-notification")
+
             setTimeout(() => {
-                _centerNotification.classList.add("centerclosed")
+                newNotification.classList.add("centerclosed")
             }, message.data.time);
         }
     })

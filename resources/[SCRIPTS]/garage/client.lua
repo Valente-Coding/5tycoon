@@ -533,5 +533,3 @@ function GetVehicleProperties(vehicle)
 		modLivery         = GetVehicleLivery(vehicle)
 	}
 end
-
-
