@@ -229,7 +229,7 @@ Citizen.CreateThread(function()
                                     cb = 
                                         function(result) 
                                             TriggerEvent("bank:deposit", result)
-                                            TriggerEvent("notification:center", {time = 5000, text = "You've deposited $"..result})
+                                            TriggerEvent("notification:send", {time = 5000, text = "You've deposited $"..result, color = "blue"})
                                         end
                                 }) 
                             end
@@ -241,7 +241,7 @@ Citizen.CreateThread(function()
                                     cb = 
                                         function(result) 
                                             TriggerEvent("bank:withdraw", result) 
-                                            TriggerEvent("notification:center", {time = 5000, text = "You've withdrawn $"..result})
+                                            TriggerEvent("notification:send", {time = 5000, text = "You've withdrawn $"..result, color = "blue"})
                                         end
                                 }) 
                             end
