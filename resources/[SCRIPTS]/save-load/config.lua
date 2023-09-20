@@ -12,7 +12,7 @@ Config.DefaultVariables = {
     {name = "WAREHOUSE_DATA", type = "string", default = "{\"level\": 0, \"jobs\": 0, \"canBuy\": false}"},
     {name = "CHAR_APPEREANCE", type = "string", default = "{}"},
     {name = "LAST_LOCATION", type = "string", default = "{\"x\": 0.0, \"y\": 0.0, \"z\": 0.0,}"},
-    {name = "CHAR_VEHICLES", type = "string", default = "{}"},
+    {name = "CHAR_VEHICLES", type = "string", default = "[]"},
 }
 
 Config.charactersPath = "./characters/" 
