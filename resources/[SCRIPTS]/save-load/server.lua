@@ -20,7 +20,8 @@ RegisterNetEvent("save-load:saveData")
 function SaveData(path, data, updateToEveryone)
 	SaveResourceFile(GetCurrentResourceName(), path, json.encode(data), -1)
 
-	if updateEveryone then 
+	if updateToEveryone then 
+		print("Send To Everyone")
 		TriggerClientEvent("save-load:loadDataResult", -1, data, path)
 	end
 end
