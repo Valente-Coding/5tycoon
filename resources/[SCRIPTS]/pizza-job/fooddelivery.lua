@@ -149,7 +149,7 @@ function getRandomDeliveryPoints(deliveryPoints)
         table.insert(selectedPoints, selectedPoint)
     end
 
-    return {selectedPoints[1], selectedPoints[2], selectedPoints[3], selectedPoints[4], selectedPoints[5]}
+    return selectedPoints
 end
 
 
@@ -247,6 +247,7 @@ Citizen.CreateThread(function()
                             deliveryMissionState = 1
                             missionVeh = SelectVehicle(depot.spawnCoords)
                             destination = getRandomDeliveryPoints(depot.deliveryPoints)
+                            print(destination)
                             if deliveryPedState == 0 then
                                 deliveryPedState = 1
                                 GetRandomPedToDeliver(destination[1])
@@ -271,7 +272,6 @@ Citizen.CreateThread(function()
 
 
         if deliveryMissionState == 1 then
-            playerCoords = GetEntityCoords(playerPed)
             distance = #(playerCoords - vector3(destination[1].x, destination[1].y, destination[1].z))
             if distance < 2.0 then
                 if deliveryPedState == 1 then
@@ -372,7 +372,7 @@ Citizen.CreateThread(function()
             distance = #(vehPlayerCoords - vector3(currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z))
             if deliveryMissionState == 6 and distance < 50 then
                 DrawMarker(25, currentDepot.spawnCoords.x, currentDepot.spawnCoords.y, currentDepot.spawnCoords.z - 0.3, 0, 0, 0, 0, 0, 0, 5.0, 5.0, 1.0, 255, 0, 0, 1.0, false, true, false, false, false, false, false)
-                if distance < 5 and deliveryPedState == 5 then
+                if distance < 5 then
                     deliveryPedState = 0
                     RemoveBlip(deliveryBlip)
                     pedModelDelivery = nil
@@ -385,16 +385,17 @@ Citizen.CreateThread(function()
                     local payment = math.random(1500, 3000)
                     local foodData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
                     payment = math.floor(payment + (payment * (foodData.level / 5)))
-                    TriggerEvent("notification:center", {time = 5000, text = "You got paid $"..payment})
+                    TriggerEvent("notification:send", {color = "blue", time = 5000, text = "You got paid $"..payment})
                     foodData.jobs = foodData.jobs + 1
                     if foodData.level < 5 then
                         foodData.level = math.floor(foodData.jobs / 5)
                         if foodData.level == 5 then
                             foodData.canBuy = true
+                            TriggerEvent("notification:send", {color = "blue", time = 7000, text = "You are level 5 on this job. You can now buy this business."})
                         end
                     end
 
-                    TriggerEvent("save-load:updateData", {{name = "FOODDELIVERY_DATA", type = "string", value = json.encode(deliveryData)}})
+                    TriggerEvent("save-load:setGlobalVariables", {{name = "FOODDELIVERY_DATA", type = "string", value = json.encode(foodData)}})
                     TriggerEvent("bank:changeBank", payment)
                 end
             end
