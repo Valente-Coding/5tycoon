@@ -150,6 +150,7 @@ Citizen.CreateThread(function()
                             if removed == true then
                                 local newVeh = CreateVehicle(GetEntityModel(closestVeh), closestVehSpawn.x, closestVehSpawn.y, closestVehSpawn.z, closestVehSpawn.w, true, true)
                                 TaskWarpPedIntoVehicle(playerPed, newVeh, -1)
+                                TriggerEvent("garage:addVehicleToChar", newVeh)
                             end
                         end)
                     end}})    
