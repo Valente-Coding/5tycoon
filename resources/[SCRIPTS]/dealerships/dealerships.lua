@@ -146,11 +146,14 @@ Citizen.CreateThread(function()
                 TriggerEvent("side-menu:addOptions", {
                     {id = "dealership_price", label = "Price:", quantity = "$"..closestVehPrice},
                     {id = "dealership_buy", label = "Buy", cb = function()
-                        TriggerEvent("bank:changeBank", -closestVehPrice, function(removed)
+                        TriggerEvent("bank:changeBank", -closestVehPrice, function(removed, need)
                             if removed == true then
                                 local newVeh = CreateVehicle(GetEntityModel(closestVeh), closestVehSpawn.x, closestVehSpawn.y, closestVehSpawn.z, closestVehSpawn.w, true, true)
                                 TaskWarpPedIntoVehicle(playerPed, newVeh, -1)
                                 TriggerEvent("garage:addVehicleToChar", newVeh)
+                                TriggerEvent("notification:send", {color = "green", time = 4000, text = "You purchase the vehicle."})
+                            else
+                                TriggerEvent("notification:send", {color = "red", time = 7000, text = "You need at least $"..need.." more to purchase this vehicle."})
                             end
                         end)
                     end}})    

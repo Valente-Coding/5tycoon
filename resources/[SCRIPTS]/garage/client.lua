@@ -120,6 +120,15 @@ AddEventHandler("garage:addVehicleToChar", AddVehicleToChar)
 function SpawnVehicle(data)
     local veh = CreateVehicle(data["model"], data["lastpos"].x, data["lastpos"].y, data["lastpos"].z, data["lastheading"], true, true)
 	if veh then 
+		blip = AddBlipForEntity(veh)
+		SetBlipSprite(blip, 225)
+        SetBlipScale(blip, 0.7)
+        SetBlipColour(blip, 0)
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString("Owned Vehicle")
+        EndTextCommandSetBlipName(blip)
+
     	SetVehData(veh, data)
 		table.insert(spawnedVehs, veh)
     	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
@@ -142,14 +151,11 @@ local wasInVehicle = false
 local lastVehicle = false
 Citizen.CreateThread(function()
     while true do 
-        Citizen.Wait(1)
+        Citizen.Wait(2000)
         local ped = GetPlayerPed(-1)
-        if not wasInVehicle and IsPedInAnyVehicle(ped) then 
-            wasInVehicle = true
-            lastVehicle = GetVehiclePedIsIn(ped)
-        elseif wasInVehicle and not IsPedInAnyVehicle(ped) then
-            wasInVehicle = false
-            SaveVehicle(lastVehicle)
+        if IsPedInAnyVehicle(ped) then 
+			local veh = GetVehiclePedIsIn(ped)
+            SaveVehicle(veh)
         end
     end
 end)

@@ -120,6 +120,6 @@ Citizen.CreateThread(function()
 		local ped = GetPlayerPed(-1)
 		local coords = GetEntityCoords(ped)
 		SetKpvs({{name = "LAST_LOCATION", type = "string", value = json.encode({x = coords.x, y = coords.y, z = coords.z})}})
-		Citizen.Wait(15000)
+		Citizen.Wait(1500)
 	end
 end)

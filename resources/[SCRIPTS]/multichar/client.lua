@@ -150,8 +150,8 @@ function MulticharSelector()
             Citizen.Wait(150)
             charSelected = i
             TriggerEvent("side-menu:updateOptions", {
-                {id = "BANK_BALANCE", label = "Bank:", quantity = char["BANK_BALANCE"]},
-                {id = "CASH_BALANCE", label = "Cash:", quantity = char["CASH_BALANCE"]},
+                {id = "BANK_BALANCE", label = "Bank:", quantity = "$"..char["BANK_BALANCE"]},
+                {id = "CASH_BALANCE", label = "Cash:", quantity = "$"..char["CASH_BALANCE"]},
             })
 
             Citizen.Wait(5000)
@@ -181,8 +181,13 @@ RegisterCommand("testchar", function()
 end, false)
 
 AddEventHandler("playerSpawned", function(spawn)
-    charsPath = "./characters/"..GetExternalKvpString("save-load", "PLAYER_LICENSE")..".json"
+    if charSelected then 
+        table.remove(chars, charSelected)
+        TriggerServerEvent("save-load:saveData", charsPath, chars)
+        charSelected = nil
+    end
 
+    charsPath = "./characters/"..GetExternalKvpString("save-load", "PLAYER_LICENSE")..".json"
     TriggerServerEvent("save-load:loadData", charsPath, GetPlayerServerId(PlayerId()))
 end)
 
@@ -199,7 +204,7 @@ Citizen.CreateThread(function()
             TriggerServerEvent("save-load:saveData", charsPath, chars)
         end
 		
-		Citizen.Wait(30000)
+		Citizen.Wait(3000)
 	end
 end)
 
