@@ -40,7 +40,202 @@ local houseSaleBlips = {
     {coords = vector3(-1467.4543, 35.1820, 54.5448), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}}
 }
 
+local clientModels = {
+    "a_f_m_bevhills_02",
+    "a_f_m_bevhills_01",
+    "a_f_m_bodybuild_01",
+    "a_f_m_business_02",
+    "a_f_m_downtown_01",
+    "a_f_m_eastsa_01",
+    "a_f_m_eastsa_02",
+    "a_f_m_fatbla_01",
+    "a_f_m_fatcult_01",
+    "a_f_m_fatwhite_01",
+    "a_f_m_ktown_01",
+    "a_f_m_ktown_02",
+    "a_f_m_prolhost_01",
+    "a_f_m_salton_01",
+    "a_f_m_skidrow_01",
+    "a_f_m_soucent_01",
+    "a_f_m_soucent_02",
+    "a_f_m_soucentmc_01",
+    "a_f_m_tourist_01",
+    "a_f_m_tramp_01",
+    "a_f_m_trampbeac_01",
+    "a_f_o_genstreet_01",
+    "a_f_o_indian_01",
+    "a_f_o_ktown_01",
+    "a_f_o_salton_01",
+    "a_f_o_soucent_01",
+    "a_f_o_soucent_02",
+    "a_f_y_beach_01",
+    "a_f_y_bevhills_01",
+    "a_f_y_bevhills_02",
+    "a_f_y_bevhills_03",
+    "a_f_y_bevhills_04",
+    "a_f_y_business_01",
+    "a_f_y_business_02",
+    "a_f_y_business_03",
+    "a_f_y_business_04",
+    "a_f_y_eastsa_01",
+    "a_f_y_eastsa_02",
+    "a_f_y_eastsa_03",
+    "a_f_y_epsilon_01",
+    "a_f_y_fitness_01",
+    "a_f_y_fitness_02",
+    "a_f_y_genhot_01",
+    "a_f_y_golfer_01",
+    "a_f_y_hiker_01",
+    "a_f_y_hippie_01",
+    "a_f_y_hipster_01",
+    "a_f_y_hipster_02",
+    "a_f_y_hipster_03",
+    "a_f_y_hipster_04",
+    "a_f_y_indian_01",
+    "a_f_y_juggalo_01",
+    "a_f_y_runner_01",
+    "a_f_y_rurmeth_01",
+    "a_f_y_scdressy_01",
+    "a_f_y_skater_01",
+    "a_f_y_soucent_01",
+    "a_f_y_soucent_02",
+    "a_f_y_soucent_03",
+    "a_f_y_tennis_01",
+    "a_f_y_topless_01",
+    "a_f_y_tourist_01",
+    "a_f_y_tourist_02",
+    "a_f_y_vinewood_01",
+    "a_f_y_vinewood_02",
+    "a_f_y_vinewood_03",
+    "a_f_y_vinewood_04",
+    "a_f_y_yoga_01",
+    "a_m_m_acult_01",
+    "a_m_m_afriamer_01",
+    "a_m_m_beach_01",
+    "a_m_m_beach_02",
+    "a_m_m_bevhills_01",
+    "a_m_m_bevhills_02",
+    "a_m_m_business_01",
+    "a_m_m_eastsa_01",
+    "a_m_m_eastsa_02",
+    "a_m_m_farmer_01",
+    "a_m_m_fatlatin_01",
+    "a_m_m_genfat_01",
+    "a_m_m_genfat_02",
+    "a_m_m_golfer_01",
+    "a_m_m_hasjew_01",
+    "a_m_m_hillbilly_01",
+    "a_m_m_hillbilly_02",
+    "a_m_m_indian_01",
+    "a_m_m_ktown_01",
+    "a_m_m_malibu_01",
+    "a_m_m_mexcntry_01",
+    "a_m_m_mexlabor_01",
+    "a_m_m_og_boss_01",
+    "a_m_m_paparazzi_01",
+    "a_m_m_polynesian_01",
+    "a_m_m_prolhost_01",
+    "a_m_m_rurmeth_01",
+    "a_m_m_salton_01",
+    "a_m_m_salton_02",
+    "a_m_m_salton_03",
+    "a_m_m_salton_04",
+    "a_m_m_skater_01",
+    "a_m_m_skidrow_01",
+    "a_m_m_socenlat_01",
+    "a_m_m_soucent_01",
+    "a_m_m_soucent_02",
+    "a_m_m_soucent_03",
+    "a_m_m_soucent_04",
+    "a_m_m_stlat_02",
+    "a_m_m_tennis_01",
+    "a_m_m_tourist_01",
+    "a_m_m_tramp_01",
+    "a_m_m_trampbeac_01",
+    "a_m_m_tranvest_01",
+    "a_m_m_tranvest_02",
+    "a_m_o_acult_01",
+    "a_m_o_acult_02",
+    "a_m_o_beach_01",
+    "a_m_o_genstreet_01",
+    "a_m_o_ktown_01",
+    "a_m_o_salton_01",
+    "a_m_o_soucent_01",
+    "a_m_o_soucent_02",
+    "a_m_o_soucent_03",
+    "a_m_o_tramp_01",
+    "a_m_y_acult_01",
+    "a_m_y_acult_02",
+    "a_m_y_beach_01",
+    "a_m_y_beach_02",
+    "a_m_y_beach_03",
+    "a_m_y_beachvesp_01",
+    "a_m_y_beachvesp_02",
+    "a_m_y_bevhills_01",
+    "a_m_y_bevhills_02",
+    "a_m_y_breakdance_01",
+    "a_m_y_busicas_01",
+    "a_m_y_business_01",
+    "a_m_y_business_02",
+    "a_m_y_business_03",
+    "a_m_y_cyclist_01",
+    "a_m_y_dhill_01",
+    "a_m_y_downtown_01",
+    "a_m_y_eastsa_01",
+    "a_m_y_eastsa_02",
+    "a_m_y_epsilon_01",
+    "a_m_y_epsilon_02",
+    "a_m_y_gay_01",
+    "a_m_y_gay_02",
+    "a_m_y_genstreet_01",
+    "a_m_y_genstreet_02",
+    "a_m_y_golfer_01",
+    "a_m_y_hasjew_01",
+    "a_m_y_hiker_01",
+    "a_m_y_hippy_01",
+    "a_m_y_hipster_01",
+    "a_m_y_hipster_02",
+    "a_m_y_hipster_03",
+    "a_m_y_indian_01",
+    "a_m_y_jetski_01",
+    "a_m_y_juggalo_01",
+    "a_m_y_ktown_01",
+    "a_m_y_ktown_02",
+    "a_m_y_latino_01",
+    "a_m_y_methhead_01",
+    "a_m_y_mexthug_01",
+    "a_m_y_motox_01",
+    "a_m_y_motox_02",
+    "a_m_y_musclbeac_01",
+    "a_m_y_musclbeac_02",
+    "a_m_y_polynesian_01",
+    "a_m_y_roadcyc_01",
+    "a_m_y_runner_01",
+    "a_m_y_runner_02",
+    "a_m_y_salton_01",
+    "a_m_y_skater_01",
+    "a_m_y_skater_02",
+    "a_m_y_soucent_01",
+    "a_m_y_soucent_02",
+    "a_m_y_soucent_03",
+    "a_m_y_soucent_04",
+    "a_m_y_stbla_01",
+    "a_m_y_stbla_02",
+    "a_m_y_stlat_01",
+    "a_m_y_stwhi_01",
+    "a_m_y_stwhi_02",
+    "a_m_y_sunbathe_01",
+    "a_m_y_surfer_01",
+    "a_m_y_vindouche_01",
+    "a_m_y_vinewood_01",
+    "a_m_y_vinewood_02",
+    "a_m_y_vinewood_03",
+    "a_m_y_vinewood_04",
+    "a_m_y_yoga_01",
+}
+
 Citizen.CreateThread(function()
+    --TriggerServerEvent("save-load:saveData", "./housing/houses.json", houseSaleBlips)
     TriggerServerEvent("save-load:loadData", "./housing/houses.json", GetPlayerServerId(PlayerId()))
 end)
 
@@ -102,15 +297,22 @@ end
 
 local menuOpen = false
 local isSellingAHouse = false
+local housesOwnTemp = 0
+local housesOwn = 0
+local closestHouse = nil
 Citizen.CreateThread(function()
     local ped = nil 
     local coords = nil
-    local closestHouse = nil
     while true do
         Citizen.Wait(1)
 
         ped = GetPlayerPed(-1)
         coords = GetEntityCoords(ped)
+
+        if housesOwn ~= housesOwnTemp then 
+            housesOwn = housesOwnTemp
+        end
+        housesOwnTemp = 0
         
         for houseID, house in pairs(houses) do
             if house.selling then 
@@ -121,6 +323,7 @@ Citizen.CreateThread(function()
                 closestHouse = house
                 if house.bought then 
                     if house.owner and house.owner == playerLicense then 
+                        housesOwnTemp = housesOwnTemp + 1
                         if house.selling then 
                             if offeredPrice then 
                                 if menuOpen == false then
@@ -166,7 +369,9 @@ Citizen.CreateThread(function()
                             if menuOpen == false then
                                 menuOpen = true
                                 TriggerEvent("side-menu:addOptions", {
-                                    {id = "HOUSING_INV", label = "Inventory"}, 
+                                    {id = "HOUSING_INV", label = "Inventory", cb = function()
+                                        LoadItems(house.inventory)
+                                    end}, 
                                     {id = "HOUSING_RENT", label = "Rent", cb = function()
                                         RentHouse(houseID)
                                     end},
@@ -248,10 +453,15 @@ function StopSelling(houseID)
 end
 
 function RentHouse(houseID)
-    houses[houseID].renting = true
+    if housesOwn > 1 then 
+        houses[houseID].renting = true
 
-    SaveHousingData()
-    CloseAllMenus()
+        SaveHousingData()
+        CloseAllMenus()
+    else 
+        TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "You need at least 2 houses to rent one."})
+    end
+    
 end
 
 function StopRenting(houseID)
@@ -288,41 +498,80 @@ function RespondOffer(houseID, accept)
 end
 
 
-function LoadItems()
+function LoadItems(items)
+    CloseAllMenus(1, true)
+
+    local options = {
+        {id="HOUSE_INV_BACK", label = "Back", cb = function() CloseAllMenus() end},  
+        --{id = "BLANK", label = "---------------//---------------"},
+        {id="HOUSE_INV_TITLE", label = "---[House Inv]"},  
+    }
+
+    for _, item in pairs(items) do 
+        table.insert(options, {id = item.id, label = item.label, quantity = item.quantity, cb = function() SendItemToPlayer(items, i) end})
+    end
+
+    --table.insert(options, {id = "BLANK", label = "---------------//---------------"})
+    table.insert(options, {id = "PLAYER_INV_TITLE", label = "---[Pockets]"})
+    local pItems = json.decode(GetExternalKvpString("save-load", "INV_ITEMS"))
+    for i, item in pairs(pItems) do 
+        table.insert(options, {id = item.id, label = item.label, quantity = item.quantity, cb = function() SendItemToHouseInv(pItems, i) end})
+    end
+
+    TriggerEvent("side-menu:addOptions", options)
+    TriggerEvent("save-load:setGlobalVariables", {{name = "CAN_OPEN_POCKETS", type = "int", value = 1}, {name = "IN_HOUSE_INV", type = "int", value = 1}}) 
+end
+
+function SendItemToHouseInv(items, itemID)
+    local item = table.remove(items, itemID)
+
+    table.insert(closestHouse.inventory, item)
+
+    SaveHousingData()
+    CloseAllMenus(1, true)
+
+    TriggerEvent("save-load:setGlobalVariables", {{name = "INV_ITEMS", type = "string", value = json.encode(items)}})
+
+    LoadItems(closestHouse.inventory)
+end
+
+function SendItemToPlayer(items, itemID)
+    local item = table.remove(items, itemID)
+    closestHouse.inventory = items
     
+    SaveHousingData()
+    CloseAllMenus(1, true)
+
+    TriggerEvent("inventory:addItems", {{id = item.id, label = item.label, quantity = item.quantity}})
+
+    LoadItems(closestHouse.inventory)
 end
 
 function SaveHousingData()
     TriggerServerEvent("save-load:saveData", "./housing/houses.json", houses, true)
 end
 
-function CloseAllMenus(cooldown)
-    TriggerEvent("side-menu:removeOptions", {
-        {id = "HOUSING_BUY"},
-        {id = "HOUSING_SELL"},
-        {id = "HOUSING_PRICE"},
-        {id = "HOUSING_RENT"},
-        {id = "HOUSING_INV"},
-        {id = "HOUSING_STOP_SELLING"},
-        {id = "HOUSING_VISIT"},
-        {id = "HOUSING_OFFER_PRICE"},
-        {id = "HOUSING_OFFER_ACCEPT"},
-        {id = "HOUSING_OFFER_REJECT"},
-        {id = "HOUSING_STOP_RENTING"},
-    })
-
+function CloseAllMenus(cooldown, stay)
     Citizen.CreateThread(function()   
         if cooldown then
             Citizen.Wait(cooldown)
         end
-        menuOpen = false
+
+        if stay then
+
+        else
+            menuOpen = false
+        end
     end)
+
+    TriggerEvent("side-menu:resetOptions")
+    TriggerEvent("save-load:setGlobalVariables", {{name = "CAN_OPEN_POCKETS", type = "int", value = 0}, {name = "IN_HOUSE_INV", type = "int", value = 0}}) 
 end
 
 Citizen.CreateThread(function()
     local incomePercentage = 0.02
     while true do 
-        Citizen.Wait(10000)
+        Citizen.Wait(600000)
 
         local income = 0
         for _, house in pairs(houses) do 
@@ -345,25 +594,37 @@ end)
 function SearchForClients(houseID)
     Citizen.CreateThread(function()
         local currentSellingHouse = houses[houseID]
-        local chanceOfSpawn = 100
+        local chanceOfSpawn = 30
+        local searching = true
         clientPed = nil
-        while clientPed == nil and stopNextSpawn == false do
-            Citizen.Wait(10000)
-            if math.random(0, 100) <= chanceOfSpawn then 
+        while searching do 
+            Citizen.Wait(300000)
+
+            if stopNextSpawn then 
+                searching = false
+            end
+
+            if clientPed == nil and stopNextSpawn == false and math.random(0, 100) <= chanceOfSpawn then 
                 clientPed = GetClientPed(currentSellingHouse)
             end
-        end
 
-        if stopNextSpawn == true then 
             if clientPed then 
-                DeleteEntity(clientPed)
-            end
-        else
-            TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "Someone is interested in your house. Go meet them!"})
-        end
-        stopNextSpawn = false
+                TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "Someone is interested in your house. Go meet them!"})
 
-        
+                Citizen.Wait(300000)
+
+                if clientPed then
+                    DeleteEntity(clientPed)
+                    clientPed = nil
+                end
+
+                TriggerEvent("notification:send", {color = "red", time = 5000, text = "Buyer Left. You took too long."})
+                CloseAllMenus()
+            end
+            
+        end
+
+        stopNextSpawn = false
     end)
 end
 
@@ -381,16 +642,20 @@ Citizen.CreateThread(function()
 end)
 
 function GetClientPed(currentSellingHouse)
-    local model = "a_f_m_soucent_01"
-    RequestModel(model)
-    while not HasModelLoaded(model) do 
-        Citizen.Wait(1)
+    local model = clientModels[math.random(1, #clientModels)]
+    local ped = nil
+    
+    if IsModelInCdimage(model) and IsModelValid(model) then
+        RequestModel(model)
+        while not HasModelLoaded(model) do 
+            Citizen.Wait(1)
+        end
+        
+        ped = CreatePed(26, GetHashKey(model), currentSellingHouse.coords.x, currentSellingHouse.coords.y, currentSellingHouse.coords.z, 0.0, true, true)
+        SetEntityInvincible(ped, true)
+        CloseAllMenus()
     end
 
-    local ped = CreatePed(26, GetHashKey(model), currentSellingHouse.coords.x, currentSellingHouse.coords.y, currentSellingHouse.coords.z, 0.0, true, true)
-    SetEntityInvincible(ped, true)
-
-    CloseAllMenus()
     return ped
 end
 
@@ -417,14 +682,14 @@ function StartVisit(price)
 end
 
 function EndVisit(price)
-    local chanceToSell = 100
+    local chanceToSell = 50
     if math.random(0, 100) <= chanceToSell then
         local priceRange = math.floor(price * 0.2) 
         offeredPrice = math.random(price - priceRange, price + priceRange)
         TriggerEvent("notification:send", {color = "blue", time = 5000, text = "The buyer has offered $"..offeredPrice.." for the house."})
     else
         offeredPrice = nil
-        TriggerEvent("notification:send", {color = "red", time = 5000, text = "The buyer will think about it..."})
+        TriggerEvent("notification:send", {color = "red", time = 5000, text = "The buyer is not interested."})
     end
 end
 

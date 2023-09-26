@@ -2,6 +2,7 @@ local _currentOptions = {}
 
 RegisterNetEvent("side-menu:addOptions")
 RegisterNetEvent("side-menu:removeOptions")
+RegisterNetEvent("side-menu:resetOptions")
 RegisterNetEvent("side-menu:openInputBox")
 
 
@@ -115,6 +116,11 @@ function OpenInputBox(data)
     SendNUIMessage(json.encode({type = "openinput", inputData = data}))
 end
 
+function ResetOptions()
+    _currentOptions = {}
+    SendNUIMessage(json.encode({type = "reset-options"}))
+end
+
 RegisterNUICallback('inputresult', function(data, cb)
     SetNuiFocus(false, false)
     if _inputCB then
@@ -127,6 +133,7 @@ end)
 AddEventHandler("side-menu:addOptions", AddOptions)
 AddEventHandler("side-menu:removeOptions", RemoveOptions)
 AddEventHandler("side-menu:updateOptions", UpdateOptions)
+AddEventHandler("side-menu:resetOptions", ResetOptions)
 AddEventHandler("side-menu:openInputBox", OpenInputBox)
 
 --[[ RegisterCommand("additems", function(source, args, rawCommand) 

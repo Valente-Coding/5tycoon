@@ -184,7 +184,7 @@ Citizen.CreateThread(function()
             if currentBankState == false then 
                 if currentAtmState then 
                     TriggerEvent("side-menu:addOptions", {
-                        {id = "atm_balance", label = "Balance:", quantity = "$"..SeparateMoneyString(GetExternalKvpInt("save-load", "BANK_BALANCE"))},
+                        {id = "atm_balance", label = "Balance:", quantity = "$"..GetExternalKvpInt("save-load", "BANK_BALANCE")},
                         {id = "atm_withdraw", label = "Withdraw", cb = 
                             function() 
                                 TriggerEvent("side-menu:openInputBox", {
@@ -221,7 +221,7 @@ Citizen.CreateThread(function()
             if currentAtmState == false then 
                 if currentBankState then 
                     TriggerEvent("side-menu:addOptions", {
-                        {id = "bank_balance", label = "Balance:", quantity = "$"..SeparateMoneyString(GetExternalKvpInt("save-load", "BANK_BALANCE"))},
+                        {id = "bank_balance", label = "Balance:", quantity = "$"..GetExternalKvpInt("save-load", "BANK_BALANCE")},
                         {id = "bank_deposit", label = "Deposit", cb = 
                             function() 
                                 TriggerEvent("side-menu:openInputBox", {
@@ -368,19 +368,6 @@ Citizen.CreateThread(function()
         ChangeBank(amount)
     end
 end)
-
-function SeparateMoneyString(amount)
-    amount = tostring(amount)
-    local newString = ""
-    for i = #amount, 1, -1 do 
-        newString = string.sub(amount, i, i)..newString
-        if ((#amount + 1) - i) % 3 == 0 then
-            newString = ","..newString
-        end
-    end
-
-    return newString
-end
 
 RegisterCommand("addmoney", function(source, args, rawCommand)
     if args[1] then 
