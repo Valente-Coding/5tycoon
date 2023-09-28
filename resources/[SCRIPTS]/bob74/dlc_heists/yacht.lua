@@ -24,7 +24,7 @@ HeistYacht = {
         EnableIpl(HeistYacht.ipl, state)
     end,
     Water = {
-        modelHash = `apa_mp_apa_yacht_jacuzzi_ripple1`,
+        modelHash = 'apa_mp_apa_yacht_jacuzzi_ripple1',
 
         Enable = function(state)
             local handle = GetClosestObjectOfType(-2023.773, -1038.0, 5.40, 5.0, HeistYacht.Water.modelHash, false, false, false)

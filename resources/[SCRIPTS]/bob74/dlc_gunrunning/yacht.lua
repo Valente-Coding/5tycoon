@@ -24,7 +24,7 @@ GunrunningYacht = {
         EnableIpl(GunrunningYacht.ipl, state)
     end,
     Water = {
-        modelHash = `apa_mp_apa_yacht_jacuzzi_ripple1`,
+        modelHash = 'apa_mp_apa_yacht_jacuzzi_ripple1',
 
         Enable = function(state)
             local handle = GetClosestObjectOfType(-1369.0, 6736.0, 5.40, 5.0, GunrunningYacht.Water.modelHash, false, false, false)

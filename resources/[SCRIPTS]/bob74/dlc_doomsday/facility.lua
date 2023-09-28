@@ -170,15 +170,15 @@ DoomsdayFacility = {
         end
     },
     PrivacyGlass = {
-        controlModelHash = `xm_prop_x17_tem_control_01`,
+        controlModelHash = 'xm_prop_x17_tem_control_01',
 
         Bedroom = {
             Enable = function(state)
-                local handle = GetClosestObjectOfType(367.99, 4827.745, -59.0, 1.0, `xm_prop_x17_l_glass_03`, false, false, false)
+                local handle = GetClosestObjectOfType(367.99, 4827.745, -59.0, 1.0, 'xm_prop_x17_l_glass_03', false, false, false)
 
                 if state then
                     if handle == 0 then
-                        local model = `xm_prop_x17_l_glass_03`
+                        local model = 'xm_prop_x17_l_glass_03'
 
                         RequestModel(model)
                         while not HasModelLoaded(model) do
@@ -232,28 +232,28 @@ DoomsdayFacility = {
         Lounge = {
             Glasses = {
                 {
-                    modelHash = `xm_prop_x17_l_door_glass_01`,
-                    entityHash = `xm_prop_x17_l_door_frame_01`,
+                    modelHash = 'xm_prop_x17_l_door_glass_01',
+                    entityHash = 'xm_prop_x17_l_door_frame_01',
                     entityPos = vector3(359.22, 4846.043, -58.85)
                 },
                 {
-                    modelHash = `xm_prop_x17_l_door_glass_01`,
-                    entityHash = `xm_prop_x17_l_door_frame_01`,
+                    modelHash = 'xm_prop_x17_l_door_glass_01',
+                    entityHash = 'xm_prop_x17_l_door_frame_01',
                     entityPos = vector3(369.066, 4846.273, -58.85)
                 },
                 {
-                    modelHash = `xm_prop_x17_l_glass_01`,
-                    entityHash = `xm_prop_x17_l_frame_01`,
+                    modelHash = 'xm_prop_x17_l_glass_01',
+                    entityHash = 'xm_prop_x17_l_frame_01',
                     entityPos = vector3(358.843, 4845.103, -60.0)
                 },
                 {
-                    modelHash = `xm_prop_x17_l_glass_02`,
-                    entityHash = `xm_prop_x17_l_frame_02`,
+                    modelHash = 'xm_prop_x17_l_glass_02',
+                    entityHash = 'xm_prop_x17_l_frame_02',
                     entityPos = vector3(366.309, 4847.281, -60.0)
                 },
                 {
-                    modelHash = `xm_prop_x17_l_glass_03`,
-                    entityHash = `xm_prop_x17_l_frame_03`,
+                    modelHash = 'xm_prop_x17_l_glass_03',
+                    entityHash = 'xm_prop_x17_l_frame_03',
                     entityPos = vector3(371.194, 4841.27, -60.0)
                 }
             },
