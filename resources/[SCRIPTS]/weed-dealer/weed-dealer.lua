@@ -21,6 +21,10 @@ end
 -- Call the function to create the map blip
 CreateMapBlip()
 
+local menuDisplay = false
+local weedBaggie = 100
+local mediumPackage = 1000
+local largePackage = 10000
 
 Citizen.CreateThread(function()
     while true do
@@ -31,11 +35,33 @@ Citizen.CreateThread(function()
         distance = #(playerCoords - blipWeed)
 
         if distance < 50 then
-            local menuDisplay = false
-            if distance < 3 then
+            if distance < 2 then
                 if menuDisplay == false then
                     menuDisplay = true
-                    TriggerEvent("side-menu:addOptions", {{id = "weed_dealer_small_package", label = "Buy loose weed", quantity = "$100"}, {id = "weed_dealer_medium_package", label = "Buy a medium brick", quantity = "$1000"}, {id = "weed_dealer_big_package", label = "Buy a big brick", quantity = "$10000"}})
+                    TriggerEvent("side-menu:addOptions", {{id = "weed_dealer_small_package", label = "Buy loose weed", quantity = "$"..weedBaggie, cb = function()
+                        TriggerEvent("bank:changeBank", -weedBaggie, function(removed)
+                                if removed == true then
+                                    TriggerEvent("inventory:addItems", {{id = "weed_baggies", label = "Weed Baggie", quantity = 10}})
+                                    TriggerEvent("notification:send", {color = "blue", time = 5000, text = "You bought 10 weed baggies."})
+                                end
+                            end)
+                        end},
+                        {id = "weed_dealer_medium_package", label = "Buy a medium brick", quantity = "$"..tostring(mediumPackage), cb = function()
+                            TriggerEvent("bank:changeBank", -weedBaggie, function(removed)
+                                if removed == true then
+                                    TriggerEvent("inventory:addItems", {{id = "weed_medium_package", label = "Medium Weed Package", quantity = 1}})
+                                    TriggerEvent("notification:send", {color = "blue", time = 5000, text = "You bought 1 medium weed package."})
+                                end
+                            end)
+                        end},
+                        {id = "weed_dealer_big_package", label = "Buy a big brick", quantity = "$"..tostring(largePackage), cb = function()
+                            TriggerEvent("bank:changeBank", -weedBaggie, function(removed)
+                                if removed == true then
+                                    TriggerEvent("inventory:addItems", {{id = "weed_large_package", label = "Large Weed Package", quantity = 1}})
+                                    TriggerEvent("notification:send", {color = "blue", time = 5000, text = "You bought 1 large weed package."})
+                                end
+                            end)
+                        end}})
                 end
             else
                 if menuDisplay == true then
