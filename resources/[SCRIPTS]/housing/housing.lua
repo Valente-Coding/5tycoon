@@ -37,7 +37,8 @@ local houseSaleBlips = {
     {coords = vector3(-998.0771, 157.7113, 62.3191), price = 550000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
     {coords = vector3(-902.5498, 191.4798, 69.4461), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
     {coords = vector3(-1570.6803, 22.7236, 59.5539), price = 550000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
-    {coords = vector3(-1467.4543, 35.1820, 54.5448), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}}
+    {coords = vector3(-1467.4543, 35.1820, 54.5448), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
+    {coords = vector3(-929.8655, 18.8081, 48.1326), price = 560000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}}
 }
 
 local clientModels = {
