@@ -30,6 +30,7 @@ function CharacterData()
         end
 
         TriggerEvent("save-load:setGlobalVariables", kpvs)
+        TriggerEvent("multichar:charIdChanged")
 
         ResetEntityAlpha(GetPlayerPed(-1))
 
@@ -40,6 +41,8 @@ function CharacterData()
     else
         makingchar = true
         TriggerEvent("save-load:createDefaultVariables")
+        TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_ID", type = "int", value = math.random(10000, 99999)}})
+        TriggerEvent("multichar:charIdChanged")
 
         local config = {
             ped = true,
@@ -182,6 +185,7 @@ end, false)
 
 AddEventHandler("playerSpawned", function(spawn)
     if charSelected then 
+        TriggerEvent("multichar:charDied")
         table.remove(chars, charSelected)
         TriggerServerEvent("save-load:saveData", charsPath, chars)
         charSelected = nil

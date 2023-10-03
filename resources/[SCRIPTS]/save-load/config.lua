@@ -1,6 +1,7 @@
 Config = {}
 
 Config.DefaultVariables = {
+    {name = "CHAR_ID", type = "int", default = -1},
     {name = "BANK_BALANCE", type = "int", default = 5000},
     {name = "CASH_BALANCE", type = "int", default = 500},
     {name = "DIRTY_BALANCE", type = "int", default = 500},
