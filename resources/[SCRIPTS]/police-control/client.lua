@@ -15,7 +15,7 @@ local weaponsPresets = {
         {model = "weapon_nightstick", ammo = 1},
         {model = "weapon_stungun", ammo = 10},
         {model = "weapon_pistol", ammo = 200},
-        {model = "weapon_carbinerifle", ammo = 500},
+        {model = "weapon_pumpshotgun_mk2", ammo = 500},
     },
     {
         {model = "weapon_nightstick", ammo = 1},
@@ -29,6 +29,7 @@ local cops = {}
 
 
 Citizen.CreateThread(function()
+    SetPoliceRadarBlips(false)
     while true do 
         Citizen.Wait(1000)
         local pId = PlayerId()
@@ -38,7 +39,8 @@ Citizen.CreateThread(function()
 
         if pWantedLvl ~= 0 then 
             for ped in EnumeratePeds() do
-                if GetPedType(ped) == "PED_TYPE_COP" then 
+                local pedType = GetPedType(ped)
+                if pedType == 27 or pedType == 28 or pedType == 6 then 
                     if not IsCopInList(ped) then
                         table.insert(cops, ped)
                         RemoveAllPedWeapons(ped)
@@ -63,4 +65,32 @@ function IsCopInList(ped)
     end
 
     return found
+end
+
+function EnumerateEntities(initFunc, moveFunc, disposeFunc)
+    return coroutine.wrap(
+        function()
+            local iter, id = initFunc()
+            if not id or id == 0 then
+                disposeFunc(iter)
+                return
+            end
+
+            local enum = {handle = iter, destructor = disposeFunc}
+            setmetatable(enum, entityEnumerator)
+
+            local next = true
+            repeat
+                coroutine.yield(id)
+                next, id = moveFunc(iter)
+            until not next
+
+            enum.destructor, enum.handle = nil, nil
+            disposeFunc(iter)
+        end
+    )
+end
+
+function EnumeratePeds()
+    return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
 end
