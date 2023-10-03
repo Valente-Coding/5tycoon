@@ -113,7 +113,8 @@ function AddVehicleToChar(veh)
 	AddBlipToVeh(veh)
 
     table.insert(charVehs, vehData)
-    TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_VEHICLES", type = "string", value = json.encode(charVehs)}, {name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(charVehs)}})
+	table.insert(spawnedVehs, veh)
+    TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_VEHICLES", type = "string", value = json.encode(charVehs)}, {name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
 end
 
 AddEventHandler("garage:addVehicleToChar", AddVehicleToChar)
