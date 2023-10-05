@@ -123,7 +123,9 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         if freeRoamPeds[charSelected] and not charLoaded then
             local pedCoords = GetEntityCoords(freeRoamPeds[charSelected]) 
-            SetEntityCoords(GetPlayerPed(-1), pedCoords.x, pedCoords.y, pedCoords.z - 1, 0.0, 0.0, 0.0, false)
+            if pedCoords.x ~= 0 then 
+                SetEntityCoords(GetPlayerPed(-1), pedCoords.x, pedCoords.y, pedCoords.z - 1, 0.0, 0.0, 0.0, false)
+            end
         elseif not makingchar and not charLoaded then 
             SetEntityCoords(GetPlayerPed(-1), -29.3665, -1701.6086, 2493.6851, 0.0, 0.0, 0.0, false)
         end
@@ -189,6 +191,7 @@ AddEventHandler("playerSpawned", function(spawn)
         table.remove(chars, charSelected)
         TriggerServerEvent("save-load:saveData", charsPath, chars)
         charSelected = nil
+        charLoaded = false
     end
 
     charsPath = "./characters/"..GetExternalKvpString("save-load", "PLAYER_LICENSE")..".json"
