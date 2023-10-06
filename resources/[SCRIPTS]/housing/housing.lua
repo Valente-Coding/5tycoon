@@ -37,7 +37,8 @@ local houseSaleBlips = {
     {coords = vector3(-998.0771, 157.7113, 62.3191), price = 550000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
     {coords = vector3(-902.5498, 191.4798, 69.4461), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
     {coords = vector3(-1570.6803, 22.7236, 59.5539), price = 550000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
-    {coords = vector3(-1467.4543, 35.1820, 54.5448), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}}
+    {coords = vector3(-1467.4543, 35.1820, 54.5448), price = 750000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}},
+    {coords = vector3(-929.8655, 18.8081, 48.1326), price = 560000, bought = false, selling = false, renting = false, owner = nil, blip = nil, inventory = {}}
 }
 
 local clientModels = {
@@ -243,12 +244,11 @@ end)
 local clientPed = nil
 local offeredPrice = nil
 local houses = {}
-local playerLicense = ""
+local charID = nil
 RegisterNetEvent("save-load:loadDataResult")
 AddEventHandler("save-load:loadDataResult", function(data, path)
     if path == "./housing/houses.json" then 
         TriggerEvent("save-load:setGlobalVariables", {{name = "HOUSES_DATA", type = "string", value = json.encode(data)}}) 
-        playerLicense = GetExternalKvpString("save-load", "PLAYER_LICENSE")
         houses = data
         ShowBlips()
     end
@@ -269,7 +269,7 @@ function ShowBlips()
         BeginTextCommandSetBlipName("STRING")
 
         if house.bought then 
-            if house.owner == playerLicense then
+            if charID and house.owner == charID then
                 if house.renting then 
                     SetBlipColour(house.blip, 5)
                     AddTextComponentString("Renting House")
@@ -322,7 +322,7 @@ Citizen.CreateThread(function()
             if #(vector3(house.coords.x, house.coords.y, house.coords.z) - coords) < 1.2 then 
                 closestHouse = house
                 if house.bought then 
-                    if house.owner and house.owner == playerLicense then 
+                    if house.owner and charID and house.owner == charID then 
                         housesOwnTemp = housesOwnTemp + 1
                         if house.selling then 
                             if offeredPrice then 
@@ -415,7 +415,7 @@ function BuyHouse(houseID)
     TriggerEvent("bank:changeBank", -houses[houseID].price, function(check, needAmount)
         if check then 
             houses[houseID].bought = true
-            houses[houseID].owner = GetExternalKvpString("save-load", "PLAYER_LICENSE")
+            houses[houseID].owner = GetExternalKvpInt("save-load", "CHAR_ID")
             
             SaveHousingData()
             CloseAllMenus()
@@ -575,7 +575,7 @@ Citizen.CreateThread(function()
 
         local income = 0
         for _, house in pairs(houses) do 
-            if house.owner == playerLicense then
+            if charID and house.owner == charID then
                 if house.renting then 
                     income = income + math.floor(house.price * incomePercentage)
                 end
@@ -692,6 +692,29 @@ function EndVisit(price)
         TriggerEvent("notification:send", {color = "red", time = 5000, text = "The buyer is not interested."})
     end
 end
+
+RegisterNetEvent("multichar:charIdChanged")
+AddEventHandler("multichar:charIdChanged", function()
+    charID = GetExternalKvpInt("save-load", "CHAR_ID")
+end)
+
+RegisterNetEvent("multichar:charDied")
+
+function RemoveHousesFromChar()
+    for houseID, house in pairs(houses) do
+        if house.owner and charID and house.owner == charID then 
+            houses[houseID].owner = nil
+            houses[houseID].bought = false
+            houses[houseID].selling = false
+            houses[houseID].renting = false
+            houses[houseID].blip = nil
+        end
+    end
+
+    SaveHousingData()
+    CloseAllMenus()
+end
+AddEventHandler("multichar:charDied", RemoveHousesFromChar)
 
 
 --[[ RegisterCommand("givew", function(source, args, rawCommand)
