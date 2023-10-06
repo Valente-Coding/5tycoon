@@ -15,4 +15,4 @@ Config.DefaultVariables = {
     {name = "CHAR_VEHICLES", type = "string", default = "[]"},
 }
 
-Config.charactersPath = "./characters/" 
+Config.charactersPath = "./characters/"
