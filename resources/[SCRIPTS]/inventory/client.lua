@@ -2,11 +2,15 @@ Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(1)
         if IsControlJustPressed(0, 20) then 
-            TriggerEvent("side-menu:addOptions", GetInventoryOptions())
+            if GetExternalKvpInt("save-load", "CAN_OPEN_POCKETS") == 0 then
+                TriggerEvent("side-menu:addOptions", GetInventoryOptions())
+            end
         end
 
         if IsControlJustReleased(0, 20) then 
-            TriggerEvent("side-menu:removeOptions", GetInventoryOptions())
+            if GetExternalKvpInt("save-load", "CAN_OPEN_POCKETS") == 0 then
+                TriggerEvent("side-menu:removeOptions", GetInventoryOptions())
+            end
         end
     end
 end)
@@ -31,8 +35,9 @@ end
 function GetInventoryOptions() 
     local items = GetInventoryItems() 
 
-    local options = {}
-    table.insert(options, {id = "CASH_BALANCE", label = "Cash:", quantity = GetExternalKvpInt("save-load", "CASH_BALANCE"), cb = GetItemCB("CASH_BALANCE")})
+    local options = {
+        {id = "CASH_BALANCE", label = "Cash:", quantity = GetExternalKvpInt("save-load", "CASH_BALANCE"), cb = GetItemCB("CASH_BALANCE")},
+    }
     
     if GetExternalKvpInt("save-load", "DIRTY_DISPLAY") == 1 then 
         table.insert(options, {id = "DIRTY_BALANCE", label = "Dirty:", quantity = GetExternalKvpInt("save-load", "DIRTY_BALANCE"), cb = GetItemCB("DIRTY_BALANCE")})
@@ -94,3 +99,15 @@ end
 
 AddEventHandler("inventory:addItems", AddItemsToInventory)
 AddEventHandler("inventory:removeItems", RemoveItemsFromInventory)
+
+RegisterCommand("additem", function(source, args, rawCommand)
+    if args[1] then 
+        local qty = 1
+
+        if args[2] then 
+            qty = tonumber(args[2])
+        end
+
+        AddItemsToInventory({{id = args[1], label = args[1], quantity = qty}})
+    end
+end, false)

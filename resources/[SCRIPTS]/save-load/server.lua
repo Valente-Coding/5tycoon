@@ -1,10 +1,14 @@
 RegisterNetEvent("save-load:loadData")
 
-function LoadData(path, source)
+function LoadData(path, source, everyone)
 	local loadFile = LoadResourceFile(GetCurrentResourceName(), path)
 	extract = json.decode(loadFile)
 
-	TriggerClientEvent("save-load:loadDataResult", source, extract, path)
+	if everyone then 
+		TriggerClientEvent("save-load:loadDataResult", -1, extract, path)
+	else
+		TriggerClientEvent("save-load:loadDataResult", source, extract, path)
+	end
 end
 
 AddEventHandler("save-load:loadData", LoadData)
@@ -13,8 +17,13 @@ AddEventHandler("save-load:loadData", LoadData)
 
 RegisterNetEvent("save-load:saveData")
 
-function SaveData(path, data)
+function SaveData(path, data, updateToEveryone)
 	SaveResourceFile(GetCurrentResourceName(), path, json.encode(data), -1)
+
+	if updateToEveryone then 
+		print("Send To Everyone")
+		TriggerClientEvent("save-load:loadDataResult", -1, data, path)
+	end
 end
 
 AddEventHandler("save-load:saveData", SaveData)

@@ -74,12 +74,18 @@ window.onload = (e) => {
     function DisplayOptions(options) {
         var innerHTML = ""
         for (var i = 0; i < options.length; i++) {
-            if (options[i].quantity)
+            if (options[i].quantity) {
+                var qty = options[i].quantity.toString()
+                if (qty.includes("$"))
+                {
+                    qty = "$" + parseInt(qty.replace("$", "")).toLocaleString("en-US")
+                }
                 innerHTML += 
                     `<div class="menu-option-container" id="${options[i].id}">
                         <div class="menu-option-label">${options[i].label.toUpperCase()}</div>
-                        <div class="menu-option-quantity">${options[i].quantity.toString()}</div>
+                        <div class="menu-option-quantity">${qty}</div>
                     </div>`
+            }
             else
                 innerHTML += 
                     `<div class="menu-option-container" id="${options[i].id}">
@@ -144,6 +150,10 @@ window.onload = (e) => {
                 HideMenu()
             else
                 DisplayOptions(message.options)
+        }
+
+        if (message.type == "reset-options") {
+            HideMenu()
         }
 
         if (message.type == "selectup")

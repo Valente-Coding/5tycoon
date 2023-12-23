@@ -184,7 +184,7 @@ Citizen.CreateThread(function()
             if currentBankState == false then 
                 if currentAtmState then 
                     TriggerEvent("side-menu:addOptions", {
-                        {id = "atm_balance", label = "Balance:", quantity = GetExternalKvpInt("save-load", "BANK_BALANCE")},
+                        {id = "atm_balance", label = "Balance:", quantity = "$"..GetExternalKvpInt("save-load", "BANK_BALANCE")},
                         {id = "atm_withdraw", label = "Withdraw", cb = 
                             function() 
                                 TriggerEvent("side-menu:openInputBox", {
@@ -221,7 +221,7 @@ Citizen.CreateThread(function()
             if currentAtmState == false then 
                 if currentBankState then 
                     TriggerEvent("side-menu:addOptions", {
-                        {id = "bank_balance", label = "Balance:", quantity = GetExternalKvpInt("save-load", "BANK_BALANCE")},
+                        {id = "bank_balance", label = "Balance:", quantity = "$"..GetExternalKvpInt("save-load", "BANK_BALANCE")},
                         {id = "bank_deposit", label = "Deposit", cb = 
                             function() 
                                 TriggerEvent("side-menu:openInputBox", {
@@ -229,7 +229,7 @@ Citizen.CreateThread(function()
                                     cb = 
                                         function(result) 
                                             TriggerEvent("bank:deposit", result)
-                                            TriggerEvent("notification:center", {time = 5000, text = "You've deposited $"..result})
+                                            TriggerEvent("notification:send", {time = 5000, text = "You've deposited $"..result, color = "blue"})
                                         end
                                 }) 
                             end
@@ -241,7 +241,7 @@ Citizen.CreateThread(function()
                                     cb = 
                                         function(result) 
                                             TriggerEvent("bank:withdraw", result) 
-                                            TriggerEvent("notification:center", {time = 5000, text = "You've withdrawn $"..result})
+                                            TriggerEvent("notification:send", {time = 5000, text = "You've withdrawn $"..result, color = "blue"})
                                         end
                                 }) 
                             end
@@ -326,7 +326,7 @@ function ChangeBank(amount, cb)
         end
     else
         if cb then 
-            cb(false)
+            cb(false, (bankMoney + value) * -1)
         end
     end
 end
@@ -351,7 +351,7 @@ function ChangeCash(amount, cb)
         end
     else
         if cb then 
-            cb(false)
+            cb(false, (cashMoney + value) * -1)
         end
     end
 end
@@ -363,7 +363,17 @@ Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(600000)
         local bankMoney = GetExternalKvpInt("save-load", "BANK_BALANCE")
-
-        ChangeBank(math.floor(bankMoney * 0.02))
+        local amount = math.floor(bankMoney * 0.02)
+        TriggerEvent("notification:send", {color = "green", time = 5000, text = "Interests: $"..amount})
+        ChangeBank(amount)
     end
 end)
+
+RegisterCommand("addmoney", function(source, args, rawCommand)
+    if args[1] then 
+        local amount = tonumber(args[1])
+        if amount > 0 then 
+            ChangeBank(amount)
+        end
+    end
+end, false)

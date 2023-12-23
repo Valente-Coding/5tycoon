@@ -30,6 +30,7 @@ function CharacterData()
         end
 
         TriggerEvent("save-load:setGlobalVariables", kpvs)
+        TriggerEvent("multichar:charIdChanged")
 
         ResetEntityAlpha(GetPlayerPed(-1))
 
@@ -40,6 +41,8 @@ function CharacterData()
     else
         makingchar = true
         TriggerEvent("save-load:createDefaultVariables")
+        TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_ID", type = "int", value = math.random(10000, 99999)}})
+        TriggerEvent("multichar:charIdChanged")
 
         local config = {
             ped = true,
@@ -69,6 +72,7 @@ function CharacterData()
 
     TriggerEvent("side-menu:removeOptions", {{id = "BANK_BALANCE"}, {id = "CASH_BALANCE"}, {id = "CHAR_1"}, {id = "CHAR_2"}, {id = "CHAR_3"}, {id = "NEW_CHAR"}})
     TriggerEvent("garage:spawnvehicles")
+    TriggerEvent("multichar:charSpawned")
     DeleteFreeroamPeds()
 end
 
@@ -119,7 +123,9 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         if freeRoamPeds[charSelected] and not charLoaded then
             local pedCoords = GetEntityCoords(freeRoamPeds[charSelected]) 
-            SetEntityCoords(GetPlayerPed(-1), pedCoords.x, pedCoords.y, pedCoords.z - 1, 0.0, 0.0, 0.0, false)
+            if pedCoords.x ~= 0 then 
+                SetEntityCoords(GetPlayerPed(-1), pedCoords.x, pedCoords.y, pedCoords.z - 1, 0.0, 0.0, 0.0, false)
+            end
         elseif not makingchar and not charLoaded then 
             SetEntityCoords(GetPlayerPed(-1), -29.3665, -1701.6086, 2493.6851, 0.0, 0.0, 0.0, false)
         end
@@ -149,8 +155,8 @@ function MulticharSelector()
             Citizen.Wait(150)
             charSelected = i
             TriggerEvent("side-menu:updateOptions", {
-                {id = "BANK_BALANCE", label = "Bank:", quantity = char["BANK_BALANCE"]},
-                {id = "CASH_BALANCE", label = "Cash:", quantity = char["CASH_BALANCE"]},
+                {id = "BANK_BALANCE", label = "Bank:", quantity = "$"..char["BANK_BALANCE"]},
+                {id = "CASH_BALANCE", label = "Cash:", quantity = "$"..char["CASH_BALANCE"]},
             })
 
             Citizen.Wait(5000)
@@ -180,8 +186,15 @@ RegisterCommand("testchar", function()
 end, false)
 
 AddEventHandler("playerSpawned", function(spawn)
-    charsPath = "./characters/"..GetExternalKvpString("save-load", "PLAYER_LICENSE")..".json"
+    if charSelected then 
+        TriggerEvent("multichar:charDied")
+        table.remove(chars, charSelected)
+        TriggerServerEvent("save-load:saveData", charsPath, chars)
+        charSelected = nil
+        charLoaded = false
+    end
 
+    charsPath = "./characters/"..GetExternalKvpString("save-load", "PLAYER_LICENSE")..".json"
     TriggerServerEvent("save-load:loadData", charsPath, GetPlayerServerId(PlayerId()))
 end)
 
@@ -198,7 +211,7 @@ Citizen.CreateThread(function()
             TriggerServerEvent("save-load:saveData", charsPath, chars)
         end
 		
-		Citizen.Wait(30000)
+		Citizen.Wait(3000)
 	end
 end)
 

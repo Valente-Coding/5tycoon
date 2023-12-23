@@ -110,19 +110,48 @@ function AddVehicleToChar(veh)
     local vehData = GetVehData(veh)
     local charVehs = json.decode(GetExternalKvpString("save-load", "CHAR_VEHICLES"))
 
+	AddBlipToVeh(veh)
+
     table.insert(charVehs, vehData)
-    TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_VEHICLES", type = "string", value = json.encode(charVehs)}})
+	table.insert(spawnedVehs, veh)
+    TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_VEHICLES", type = "string", value = json.encode(charVehs)}, {name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
 end
 
 AddEventHandler("garage:addVehicleToChar", AddVehicleToChar)
 
+RegisterNetEvent("multichar:charDied")
+
+function DeleteSpawnedVehicles()
+	local vehs = json.decode(GetExternalKvpString("save-load", "CHAR_SPAWNED_VEHICLES"))
+
+	for _, veh in pairs(vehs) do 
+		DeleteEntity(veh)
+	end
+end
+
+AddEventHandler("multichar:charDied", DeleteSpawnedVehicles)
 
 function SpawnVehicle(data)
     local veh = CreateVehicle(data["model"], data["lastpos"].x, data["lastpos"].y, data["lastpos"].z, data["lastheading"], true, true)
 	if veh then 
+		AddBlipToVeh(veh)
+
     	SetVehData(veh, data)
 		table.insert(spawnedVehs, veh)
     	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
+	end
+end
+
+function AddBlipToVeh(veh)
+	if veh then 
+		blip = AddBlipForEntity(veh)
+		SetBlipSprite(blip, 225)
+        SetBlipScale(blip, 0.7)
+        SetBlipColour(blip, 0)
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString("Owned Vehicle")
+        EndTextCommandSetBlipName(blip)
 	end
 end
 
@@ -142,14 +171,11 @@ local wasInVehicle = false
 local lastVehicle = false
 Citizen.CreateThread(function()
     while true do 
-        Citizen.Wait(1)
+        Citizen.Wait(2000)
         local ped = GetPlayerPed(-1)
-        if not wasInVehicle and IsPedInAnyVehicle(ped) then 
-            wasInVehicle = true
-            lastVehicle = GetVehiclePedIsIn(ped)
-        elseif wasInVehicle and not IsPedInAnyVehicle(ped) then
-            wasInVehicle = false
-            SaveVehicle(lastVehicle)
+        if IsPedInAnyVehicle(ped) then 
+			local veh = GetVehiclePedIsIn(ped)
+            SaveVehicle(veh)
         end
     end
 end)

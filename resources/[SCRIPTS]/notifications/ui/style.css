@@ -8,21 +8,29 @@ font-family: 'Rajdhani', sans-serif;
 
 @keyframes centerclose {
     0%   {
+        min-width: 15vw;
+        min-height: 5vh;
         max-width: 25vw;
         max-height: 25vh;
         opacity: 100%;
     }
     70%  {
+        min-width: 15vw;
+        min-height: 0px;
         max-width: 25vw;
         max-height: 0px;
         opacity: 100%;
     }
     99%  {
+        min-width: 0px;
+        min-height: 0px;
         max-width: 0px;
         max-height: 0px;
         opacity: 100%;
     }
     100% {
+        min-width: 0px;
+        min-height: 0px;
         max-width: 0px;
         max-height: 0px;
         opacity: 0%;
@@ -31,21 +39,29 @@ font-family: 'Rajdhani', sans-serif;
 
 @keyframes centeropen {
     0%   {
+        min-width: 0px;
+        min-height: 0px;
         max-width: 0px;
         max-height: 0px;
         opacity: 0%;
     }
     1%  {
+        min-width: 0px;
+        min-height: 0px;
         max-width: 0px;
         max-height: 0px;
         opacity: 100%;
     }
     30%  {
+        min-width: 15vw;
+        min-height: 0px;
         max-width: 25vw;
         max-height: 0px;
         opacity: 100%;
     }
     100% {
+        min-width: 15vw;
+        min-height: 5vh;
         max-width: 25vw;
         max-height: 25vh;
         opacity: 100%;
@@ -62,6 +78,7 @@ body {
     height: 100vh;
     padding: 0;
     margin: 0;
+    overflow: hidden;
 }
 
 

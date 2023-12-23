@@ -29,4 +29,28 @@ window.onload = (e) => {
             }, message.data.time);
         }
     })
+
+    function AddNoti(color, text, time) {
+        var newNotification = document.createElement("div")
+
+        
+
+        var notificationTest = document.createElement("span")
+        notificationTest.innerHTML = text
+        newNotification.append(notificationTest)
+        console.log(colors[color])
+        newNotification.style.borderLeft = `${colors[color]} solid 0.25vw`
+
+        if (_sideNotifications.children[0]) {
+            _sideNotifications.insertBefore(newNotification, _sideNotifications.children[0])
+        } else {
+            _sideNotifications.append(newNotification)
+        }
+
+        newNotification.classList.add("side-notification")
+
+        setTimeout(() => {
+            newNotification.classList.add("centerclosed")
+        }, time);
+    }
 }
