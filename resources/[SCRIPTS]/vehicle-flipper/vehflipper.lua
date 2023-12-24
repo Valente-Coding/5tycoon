@@ -587,6 +587,69 @@ function StartMission(difficulty)
             end
             local vehicleSpawn = CreateVehicle(GetHashKey(vehicleModel), SpawnPos.x, SpawnPos.y, SpawnPos.z, SpawnPos.w, true, true)
             SetVehicleOnGroundProperly(vehicleSpawn)
+            TriggerEvent("waypointer:add", 
+                "vehspawn", --waypointer name
+                { --waypointer options
+                    coords = SpawnPos, 
+                    sprite = 1, scale = 0.7, 
+                    short = false, 
+                    color = 5, 
+                    label = "Steal car"
+                }, 
+                {
+                    coords = SpawnPos, 
+                    color = 5, 
+                    onFoot = true, 
+                    radarThick = 16, 
+                    mapThick = 16, 
+                    range = 30,
+                    removeBlip = false
+                }
+            )
+            -- confirm if player is inside vehicle
+            while not IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) do
+                Citizen.Wait(100)
+            end
+            -- remove waypointer
+            TriggerEvent("waypointer:remove", "vehspawn")
+            -- get new waypointer to Location
+            TriggerEvent("waypointer:add", 
+                "vehflip", --waypointer name
+                { --waypointer options
+                    coords = Location[1].coords, 
+                    sprite = 1, scale = 0.7, 
+                    short = false, 
+                    color = 5, 
+                    label = "Deliver car"
+                }, 
+                {
+                    coords = Location[1].coords, 
+                    color = 5, 
+                    onFoot = true, 
+                    radarThick = 16, 
+                    mapThick = 16, 
+                    range = 30,
+                    removeBlip = false
+                }
+            )
+            -- verify if player is within 10 meters from Location and is inside the car
+            while #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 do
+                Citizen.Wait(100)
+            end
+            -- confirm if player is inside vehicle
+            if IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) then
+                TriggerEvent("waypointer:remove", "vehflip")
+                -- add a side-menu:addOptions to the player to deliver the car
+                TriggerEvent("side-menu:addOptions", {{id = "deliver_stolen_car", label = "Deliver car", cb = function()
+                    -- remove the side-menu:addOptions
+                    CloseAllMenus()
+                    -- remove the vehicle
+                    DeleteVehicle(vehicleSpawn)
+                    OnMission = false 
+                end}})
+            end
+        elseif difficulty == "hard" then
+            
         end
     end)
 end
