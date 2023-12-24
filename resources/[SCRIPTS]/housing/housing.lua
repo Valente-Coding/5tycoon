@@ -258,40 +258,57 @@ local blips = {}
 
 function ShowBlips()
     for _, blip in pairs(blips) do 
-        RemoveBlip(blip)
+        TriggerEvent("waypointer:remove", blip)
     end
 
-    for _, house in pairs(houses) do
-        house.blip = AddBlipForCoord(house.coords.x, house.coords.y, house.coords.z)
-        SetBlipSprite(house.blip, 40)
-        SetBlipScale(house.blip, 0.7)
-        SetBlipAsShortRange(house.blip, true)
-        BeginTextCommandSetBlipName("STRING")
+    for i, house in pairs(houses) do
+        local blipColor = 0
+        local blipLabel = ""
 
         if house.bought then 
             if charID and house.owner == charID then
                 if house.renting then 
-                    SetBlipColour(house.blip, 5)
-                    AddTextComponentString("Renting House")
+                    blipColor = 5
+                    blipLabel = "Renting House"
                 elseif house.selling then
-                    SetBlipColour(house.blip, 3)
-                    AddTextComponentString("Selling House")
+                    blipColor = 3
+                    blipLabel = "Selling House"
                 else
-                    SetBlipColour(house.blip, 2)
-                    AddTextComponentString("House")
+                    blipColor = 2
+                    blipLabel = "House"
                 end
             else
-                SetBlipColour(house.blip, 1)
-                AddTextComponentString("House Bought")
+                blipColor = 1
+                blipLabel = "House Bought"
             end
         else
-            SetBlipColour(house.blip, 0)
-            AddTextComponentString("House For Sale")
+            blipColor = 0
+            blipLabel = "House For Sale"
         end
-        EndTextCommandSetBlipName(house.blip)
 
-        table.insert(blips, house.blip)
+        table.insert(blips, "house-"..i)
+        TriggerEvent("waypointer:add", 
+            "house-"..i, --waypointer name
+            {
+                coords = house.coords, 
+                sprite = 40, scale = 0.7, 
+                short = true, 
+                color = blipColor, 
+                label = blipLabel
+            }, 
+            {
+                coords = house.coords, 
+                color = blipColor, 
+                onFoot = true, 
+                radarThick = 16, 
+                mapThick = 16, 
+                range = 30, 
+                removeBlip = false
+            }
+        )
     end
+
+    TriggerEvent("waypointer:setroute", "house-1")
 end
 
 
