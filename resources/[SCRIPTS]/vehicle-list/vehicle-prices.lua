@@ -7,6 +7,8 @@ local vehicles = {
     --#######Dealerships#######
     --#########################
 
+    dealerships = {
+
     {model = "comet6", price = 150000, label = "Comet S2"},
     {model = "deity", price = 200000, label = "Vapid Deity"},
     {model = "turismo2", price = 300000, label = "Turismo Classic"},
@@ -46,13 +48,17 @@ local vehicles = {
     {model = "elegy", price = 160000, label = "Annis Elegy RH8"},
     {model = "sentinel4", price = 150000, label = "Übermacht Sentinel Classic"},
 
-
+    },
 
     --#########################
     --######VirtualDealer######
     --#########################
 
     ---COMPACTS---
+
+
+    compats = {
+
     {model = "brioso3", price = 55000, label = "Grotti Brioso 300"},
     {model = "club", price = 30000, label = "Bürgerfahrzeug Club"},
     {model = "kanjo", price = 60000, label = "Dinka Kanjo"},
@@ -61,8 +67,13 @@ local vehicles = {
     {model = "issi3", price = 25000, label = "Weeny Issi"},
     {model = "rhapsody", price = 15000, label = "DeClasse Rhapsody"},
 
+    },
+
 
     ---COUPES---
+
+    coupes = {
+
     {model = "kanjosj", price = 50000, label = "Dinka Kanjo"},
     {model = "postlude", price = 40000, label = "Mammoth Postlude"},
     {model = "previon", price = 65000, label = "Ubermacht Previon"},
@@ -76,8 +87,13 @@ local vehicles = {
     {model = "cogcabrio", price = 65000, label = "Enus Cognoscenti Cabrio"},
     {model = "exemplar", price = 60000, label = "Dewbauchee Exemplar"},
 
+    },
+
 
     ---MOTORCYCLES---
+
+    motorcycles = {
+
     {model = "powersurge", price = 60000, label = "Lectro Powersurge"},
     {model = "reever", price = 65000, label = "Lectro Reefer"},
     {model = "shinobi", price = 45000, label = "Nagasaki Shinobi"},
@@ -108,9 +124,15 @@ local vehicles = {
     {model = "faggio", price = 6000, label = "Pegassi Faggio"},
     {model = "faggio2", price = 12000, label = "Pegassi Faggio Sport"},
 
+    },
+
 
 
     ---MUSCLE---
+
+
+    muscle = {
+
     {model = "buffalo5", price = 130000, label = "Bravado Buffalo S"},
     {model = "tahoma", price = 40000, label = "Declasse Tahoma"},
     {model = "weevil2", price = 75000, label = "BF Weevil"},
@@ -141,8 +163,14 @@ local vehicles = {
     {model = "picador", price = 40000, label = "Cheval Picador"},
     {model = "phoenix", price = 45000, label = "Imponte Phoenix"},
 
+    },
+
 
     ---OFF-ROAD---
+
+
+    offroad = {
+
     {model = "baller", price = 45000, label = "Gallivanter Baller"},
     {model = "bf400", price = 25000, label = "Nagasaki BF400"},
     {model = "bifta", price = 30000, label = "BF Bifta"},
@@ -172,8 +200,13 @@ local vehicles = {
     {model = "vagrant", price = 45000, label = "Dundreary Vagrant"},
     {model = "yosemite3", price = 55000, label = "Declasse Yosemite Drift"},
 
+    },
+
 
     ---SEDANS---
+
+    sedans = {
+
     {model = "asea", price = 15000, label = "DeClasse Asea"},
     {model = "asterope", price = 26000, label = "Karin Asterope"},
     {model = "cinquemila", price = 125000, label = "Karin 500"},
@@ -193,10 +226,15 @@ local vehicles = {
     {model = "warrener2", price = 35000, label = "Vulcar Warrener HKR"},
     {model = "washington", price = 20000, label = "Albany Washington"},
 
+    },
+
 
 
 
     ---SPORTS---
+
+    sports = {
+
     {model = "tenf", price = 130000, label = "Pfister 811"},
     {model = "tenf2", price = 190000, label = "Pfister 811RR"},
     {model = "r300", price = 95000, label = "Ocelot R300"},
@@ -260,9 +298,15 @@ local vehicles = {
     {model = "zr350", price = 125000, label = "Annis ZR350"},
     {model = "remus", price = 65000, label = "Annis Remus"},
 
+    },
+
 
 
     ---SPORTS CLASSIC---
+
+
+    sportsclassic = {
+
     {model = "z190", price = 95000, label = "Übermacht Zion Classic"},
     {model = "ardent", price = 130000, label = "Ocelot Ardent"},
     {model = "casco", price = 55000, label = "Lampadati Casco"},
@@ -292,9 +336,14 @@ local vehicles = {
     {model = "ztype", price = 500000, label = "Truffade Z-Type"},
     {model = "zion3", price = 45000, label = "Ubermacht Zion Classic"},
 
+    },
+
 
 
     ---SUPER---
+
+    super = {
+
     {model = "pfister811", price = 200000, label = "Pfister 811"},
     {model = "autarch", price = 350000, label = "Overflod Autarch"},
     {model = "banshee2", price = 160000, label = "Bravado Banshee 900R"},
@@ -341,9 +390,14 @@ local vehicles = {
     {model = "zentorno", price = 760000, label = "Pegassi Zentorno"},
     {model = "zorrusso", price = 720000, label = "Pegassi Zorrusso"},
 
+    },
+
 
 
     ---SUVs---
+
+    suvs = {
+
     {model = "astron2", price = 125000, label = "Albany Astron"},
     {model = "baller", price = 50000, label = "Gallivanter Baller"},
     {model = "baller2", price = 65000, label = "Gallivanter Baller Sport"},
@@ -367,6 +421,8 @@ local vehicles = {
     {model = "rebla", price = 80000, label = "Ubermacht Rebla GTS"},
     {model = "seminole2", price = 60000, label = "Canis Seminole Frontier"},
     {model = "toros", price = 130000, label = "Pegassi Toros"},
-    {model = "xls", price = 45000, label = "Benefactor XLS"}
+    {model = "xls", price = 45000, label = "Benefactor XLS"},
+
+    },
 
 }

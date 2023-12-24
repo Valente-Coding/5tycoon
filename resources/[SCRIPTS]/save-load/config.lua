@@ -15,6 +15,7 @@ Config.DefaultVariables = {
     {name = "CHAR_APPEREANCE", type = "string", default = "{}"},
     {name = "LAST_LOCATION", type = "string", default = "{\"x\": 0.0, \"y\": 0.0, \"z\": 0.0,}"},
     {name = "CHAR_VEHICLES", type = "string", default = "[]"},
+    {name = "CHAR_STOLEN_VEHICLES", type = "string", default = "[]"},
 }
 
 Config.charactersPath = "./characters/"
