@@ -17,6 +17,8 @@ function CreateBlip(x, y, z, sprite, scale, short, color, label)
 end
 
 function CreateRoute(coords, color, onFoot, radarThick, mapThick, name, range, removeBlip) 
+    RemoveRoute()
+    
     currentRoute = {name = name, range = range, coords = coords, removeBlip = removeBlip}
     ClearGpsCustomRoute()
     StartGpsMultiRoute(color, true, onFoot)

@@ -307,8 +307,6 @@ function ShowBlips()
             }
         )
     end
-
-    TriggerEvent("waypointer:setroute", "house-1")
 end
 
 
