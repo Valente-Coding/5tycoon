@@ -370,8 +370,15 @@ Citizen.CreateThread(function()
 end)
 
 RegisterCommand("addmoney", function(source, args, rawCommand)
-    if args[1] then 
-        local amount = tonumber(args[1])
+    if args[1] == "cash" then 
+        local amount = tonumber(args[2])
+        if amount > 0 then 
+            ChangeCash(amount)
+        end
+    end
+
+    if args[1] == "bank" then 
+        local amount = tonumber(args[2])
         if amount > 0 then 
             ChangeBank(amount)
         end
