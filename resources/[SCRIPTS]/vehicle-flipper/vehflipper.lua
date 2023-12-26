@@ -45,7 +45,6 @@ local HardVehicleLocations = {
 
 
 local EasyVehicles = {
-    dealerships = {
         {model = "comet6", price = 150000, label = "Comet S2"},
         {model = "deity", price = 200000, label = "Vapid Deity"},
         {model = "turismo2", price = 300000, label = "Turismo Classic"},
@@ -84,9 +83,7 @@ local EasyVehicles = {
         {model = "sultan", price = 85000, label = "Karin Sultan Classic"},
         {model = "elegy", price = 160000, label = "Annis Elegy RH8"},
         {model = "sentinel4", price = 150000, label = "Übermacht Sentinel Classic"},
-    },
 
-    compats = {
         {model = "brioso3", price = 55000, label = "Grotti Brioso 300"},
         {model = "club", price = 30000, label = "Bürgerfahrzeug Club"},
         {model = "kanjo", price = 60000, label = "Dinka Kanjo"},
@@ -94,9 +91,7 @@ local EasyVehicles = {
         {model = "blista", price = 15000, label = "Dinka Blista"},
         {model = "issi3", price = 25000, label = "Weeny Issi"},
         {model = "rhapsody", price = 15000, label = "DeClasse Rhapsody"},
-    },
-        
-    coupes = {
+    
         {model = "kanjosj", price = 50000, label = "Dinka Kanjo"},
         {model = "postlude", price = 40000, label = "Mammoth Postlude"},
         {model = "previon", price = 65000, label = "Ubermacht Previon"},
@@ -110,9 +105,6 @@ local EasyVehicles = {
         {model = "cogcabrio", price = 65000, label = "Enus Cognoscenti Cabrio"},
         {model = "exemplar", price = 60000, label = "Dewbauchee Exemplar"},
     
-    },
-
-    motorcycles = {
         {model = "powersurge", price = 60000, label = "Lectro Powersurge"},
         {model = "reever", price = 65000, label = "Lectro Reefer"},
         {model = "shinobi", price = 45000, label = "Nagasaki Shinobi"},
@@ -142,9 +134,7 @@ local EasyVehicles = {
         {model = "faggio3", price = 25000, label = "Pegassi Faggio Mod"},
         {model = "faggio", price = 6000, label = "Pegassi Faggio"},
         {model = "faggio2", price = 12000, label = "Pegassi Faggio Sport"},
-    },
 
-    muscle = {
         {model = "buffalo5", price = 130000, label = "Bravado Buffalo S"},
         {model = "tahoma", price = 40000, label = "Declasse Tahoma"},
         {model = "weevil2", price = 75000, label = "BF Weevil"},
@@ -174,9 +164,7 @@ local EasyVehicles = {
         {model = "stalion", price = 40000, label = "Chrysler (Plymouth) Stallion"},
         {model = "picador", price = 40000, label = "Cheval Picador"},
         {model = "phoenix", price = 45000, label = "Imponte Phoenix"},
-    },
 
-    offroad = {
         {model = "baller", price = 45000, label = "Gallivanter Baller"},
         {model = "bf400", price = 25000, label = "Nagasaki BF400"},
         {model = "bifta", price = 30000, label = "BF Bifta"},
@@ -205,9 +193,7 @@ local EasyVehicles = {
         {model = "blazer4", price = 45000, label = "Nagasaki Street Blazer"},
         {model = "vagrant", price = 45000, label = "Dundreary Vagrant"},
         {model = "yosemite3", price = 55000, label = "Declasse Yosemite Drift"},
-    },
 
-    sedans = {
         {model = "asea", price = 15000, label = "DeClasse Asea"},
         {model = "asterope", price = 26000, label = "Karin Asterope"},
         {model = "cinquemila", price = 125000, label = "Karin 500"},
@@ -226,9 +212,7 @@ local EasyVehicles = {
         {model = "warrener", price = 25000, label = "Vulcar Warrener"},
         {model = "warrener2", price = 35000, label = "Vulcar Warrener HKR"},
         {model = "washington", price = 20000, label = "Albany Washington"},
-    },
 
-    suvs = {
         {model = "astron2", price = 125000, label = "Albany Astron"},
         {model = "baller", price = 50000, label = "Gallivanter Baller"},
         {model = "baller2", price = 65000, label = "Gallivanter Baller Sport"},
@@ -253,9 +237,7 @@ local EasyVehicles = {
         {model = "seminole2", price = 60000, label = "Canis Seminole Frontier"},
         {model = "toros", price = 130000, label = "Pegassi Toros"},
         {model = "xls", price = 45000, label = "Benefactor XLS"},
-    },
 
-    sportsclassic = {
         {model = "z190", price = 95000, label = "Übermacht Zion Classic"},
         {model = "ardent", price = 130000, label = "Ocelot Ardent"},
         {model = "casco", price = 55000, label = "Lampadati Casco"},
@@ -284,9 +266,7 @@ local EasyVehicles = {
         {model = "viseris", price = 95000, label = "Lampadati Viseris"},
         {model = "ztype", price = 500000, label = "Truffade Z-Type"},
         {model = "zion3", price = 45000, label = "Ubermacht Zion Classic"},
-    },
 
-    sports = {
         {model = "tenf", price = 130000, label = "Pfister 811"},
         {model = "tenf2", price = 190000, label = "Pfister 811RR"},
         {model = "r300", price = 95000, label = "Ocelot R300"},
@@ -349,7 +329,6 @@ local EasyVehicles = {
         {model = "verlierer2", price = 105000, label = "Bravado Verlierer"},
         {model = "zr350", price = 125000, label = "Annis ZR350"},
         {model = "remus", price = 65000, label = "Annis Remus"},
-    },
 }
 
 local HardVehicles = {
@@ -566,11 +545,26 @@ function CloseAllMenus(cooldown, stay)
         if stay then
 
         else
-            menuDisplay = false
+            MenuDisplay = false
         end
     end)
 
     TriggerEvent("side-menu:resetOptions")
+end
+
+
+function LoadNPCS(num)
+    local npcs = {}
+
+    for i = 1, num do
+        local npcModel = NpcModels[math.random(1, #NpcModels)]
+        RequestModel(npcModel)
+        while not HasModelLoaded(npcModel) do
+            Citizen.Wait(1)
+        end
+        table.insert(npcs, npcModel)
+    end
+    return npcs
 end
 
 
@@ -606,9 +600,15 @@ function StartMission(difficulty)
                     removeBlip = false
                 }
             )
+            TriggerEvent("waypointer:setroute", "vehspawn")
             -- confirm if player is inside vehicle
             while not IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) do
                 Citizen.Wait(100)
+            end
+            -- 50% chance to get 2 cop stars
+            if math.random(1, 2) == 1 then
+                SetPlayerWantedLevel(PlayerId(), 2, false)
+                SetPlayerWantedLevelNow(PlayerId(), false)
             end
             -- remove waypointer
             TriggerEvent("waypointer:remove", "vehspawn")
@@ -632,7 +632,8 @@ function StartMission(difficulty)
                     removeBlip = false
                 }
             )
-            -- verify if player is within 10 meters from Location and is inside the car
+            TriggerEvent("waypointer:setroute", "vehflip")
+            -- verify if player is within 10 meters from Location
             while #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 do
                 Citizen.Wait(100)
             end
@@ -649,7 +650,119 @@ function StartMission(difficulty)
                 end}})
             end
         elseif difficulty == "hard" then
+            SpawnPosAll = HardVehicleLocations[math.random(1, #HardVehicleLocations)]
+            SpawnPos = SpawnPosAll.coords
+            -- Spawn a random vehicle model from the HardVehicleLocations on the SpawnPos position
+            local vehicleModel = HardVehicles.super[math.random(1, #HardVehicles.super)].model
+            RequestModel(vehicleModel)
+            while not HasModelLoaded(vehicleModel) do
+                Citizen.Wait(1)
+            end
+            local vehicleSpawn = CreateVehicle(GetHashKey(vehicleModel), SpawnPos.x, SpawnPos.y, SpawnPos.z, SpawnPos.w, true, true)
+            SetVehicleOnGroundProperly(vehicleSpawn)
             
+            -- spawn 3 random npc on SpawnPosAll.npc[1], SpawnPosAll.npc[2], SpawnPosAll.npc[3]
+            local npcs = LoadNPCS(3)
+
+            print(npcs[1], npcs[2], npcs[3])
+
+            local npcSpawn1 = CreatePed(26, GetHashKey(npcs[1]), SpawnPosAll.npcs[1].x, SpawnPosAll.npcs[1].y, SpawnPosAll.npcs[1].z, SpawnPosAll.npcs[1].w, false, true)
+            local npcSpawn2 = CreatePed(26, GetHashKey(npcs[2]), SpawnPosAll.npcs[2].x, SpawnPosAll.npcs[2].y, SpawnPosAll.npcs[2].z, SpawnPosAll.npcs[2].w, false, true)
+            local npcSpawn3 = CreatePed(26, GetHashKey(npcs[3]), SpawnPosAll.npcs[3].x, SpawnPosAll.npcs[3].y, SpawnPosAll.npcs[3].z, SpawnPosAll.npcs[3].w, false, true)
+            
+            -- get all 3 npcs pistols
+            GiveWeaponToPed(npcSpawn1, GetHashKey("WEAPON_PISTOL"), 255, true, false)
+            GiveWeaponToPed(npcSpawn2, GetHashKey("WEAPON_PISTOL"), 255, true, false)
+            GiveWeaponToPed(npcSpawn3, GetHashKey("WEAPON_PISTOL"), 255, true, false)
+            
+            
+            -- add a waypointer to the vehicle
+            TriggerEvent("waypointer:add", 
+                "vehspawnhard", --waypointer name
+                { --waypointer options
+                    coords = SpawnPos, 
+                    sprite = 1, scale = 0.7, 
+                    short = false, 
+                    color = 5, 
+                    label = "Steal car"
+                }, 
+                {
+                    coords = SpawnPos, 
+                    color = 5, 
+                    onFoot = true, 
+                    radarThick = 16, 
+                    mapThick = 16, 
+                    range = 30,
+                    removeBlip = false
+                }
+            )
+            TriggerEvent("waypointer:setroute", "vehspawnhard")
+            
+            -- check if player is within 5 meter from SpawnPos
+            while #(GetEntityCoords(PlayerPedId()) - vector3(SpawnPos.x, SpawnPos.y, SpawnPos.z)) > 5.0 do
+                Citizen.Wait(100)
+            end
+            -- make the npcs attack the player
+            TaskCombatPed(npcSpawn1, PlayerPedId(), 0, 16)
+            TaskCombatPed(npcSpawn2, PlayerPedId(), 0, 16)
+            TaskCombatPed(npcSpawn3, PlayerPedId(), 0, 16)
+
+            -- check if player is inside vehicle
+            while not IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) do
+                Citizen.Wait(100)
+            end
+            -- if player has 2 or more cop stars, do nothing, if it has less, change to 2
+            if GetPlayerWantedLevel(PlayerId()) < 2 then
+                SetPlayerWantedLevel(PlayerId(), 2, false)
+                SetPlayerWantedLevelNow(PlayerId(), false)
+            end
+            -- remove waypointer
+            TriggerEvent("waypointer:remove", "vehspawnhard")
+            -- get new waypointer to Location
+            TriggerEvent("waypointer:add", 
+                "vehfliphard", --waypointer name
+                { --waypointer options
+                    coords = Location[1].coords, 
+                    sprite = 1, scale = 0.7, 
+                    short = false, 
+                    color = 5, 
+                    label = "Deliver car"
+                }, 
+                {
+                    coords = Location[1].coords, 
+                    color = 5, 
+                    onFoot = true, 
+                    radarThick = 16, 
+                    mapThick = 16, 
+                    range = 30,
+                    removeBlip = false
+                }
+            )
+            TriggerEvent("waypointer:setroute", "vehfliphard")
+            -- verify if player is within 10 meters from Location and is inside the car
+            local alert = false
+            while #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 or GetPlayerWantedLevel(PlayerId()) > 0 do
+                if #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) < 10.0 and alert == false then
+                    alert = true
+                    TriggerEvent("notification:send", {color = "red", time = 7000, text = "You must lose the cops first!"})
+                elseif #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 and alert == true then
+                    alert = false
+                end
+                Citizen.Wait(100)
+            end
+
+                -- confirm if player is inside vehicle
+            if IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) then
+                TriggerEvent("waypointer:remove", "vehfliphard")
+                -- add a side-menu:addOptions to the player to deliver the car
+                TriggerEvent("side-menu:addOptions", {{id = "deliver_stolen_car", label = "Deliver car", cb = function()
+                    -- remove the side-menu:addOptions
+                    CloseAllMenus()
+                    -- remove the vehicle
+                    DeleteVehicle(vehicleSpawn)
+                    OnMission = false
+                end}})
+            end
         end
     end)
 end
@@ -670,12 +783,13 @@ Citizen.CreateThread(function()
                     if MenuDisplay then
                         TriggerEvent("side-menu:addOptions",
                         {{id = "easy_job_start", label = "Get an easy job", quantity = 20000, cb = function()
-                            MenuDisplay = false
-                            OnMission = true
                             TriggerEvent("bank:changeCash", -20000, function(check, needAmount)
                                 if check then
                                     StartMission("easy")
                                     CloseAllMenus()
+                                    OnMission = true
+                                else
+                                    TriggerEvent("notification:send", {text = "You need $"..needAmount.." more to do this job", color = "red", time = 7000})
                                 end
                             end)
                         end},
