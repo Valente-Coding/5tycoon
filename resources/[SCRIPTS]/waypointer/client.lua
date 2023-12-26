@@ -86,7 +86,6 @@ Citizen.CreateThread(function()
             local coords = GetEntityCoords(ped)
 
             local dist = #(coords - vector3(currentRoute.coords.x, currentRoute.coords.y, currentRoute.coords.z))
-            print(dist)
             if dist <= currentRoute.range then
                 if currentRoute.removeBlip == true then 
                     RemoveWaypointer(currentRoute.name) 
