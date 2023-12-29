@@ -531,6 +531,13 @@ Citizen.CreateThread(function()
         SetEntityInvincible(pedSpawn, true)
         FreezeEntityPosition(pedSpawn, true)
         location.ped = pedSpawn
+        -- make the ped not interested in anything
+        SetBlockingOfNonTemporaryEvents(pedSpawn, true)
+        SetPedFleeAttributes(pedSpawn, 0, 0)
+        SetPedCombatAttributes(pedSpawn, 17, 1)
+        SetPedSeeingRange(pedSpawn, 0.0)
+        SetPedHearingRange(pedSpawn, 0.0)
+        SetPedAlertness(pedSpawn, 0)
     end
 end)
 
@@ -637,7 +644,19 @@ function StartMission(difficulty)
             while #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 do
                 Citizen.Wait(100)
             end
-            -- confirm if player is inside vehicle
+            
+            local alert = false
+            while #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 or GetPlayerWantedLevel(PlayerId()) > 0 do
+                if #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) < 10.0 and alert == false then
+                    alert = true
+                    TriggerEvent("notification:send", {color = "red", time = 7000, text = "You must lose the cops first!"})
+                elseif #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 and alert == true then
+                    alert = false
+                end
+                Citizen.Wait(100)
+            end
+
+                -- confirm if player is inside vehicle
             if IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) then
                 TriggerEvent("waypointer:remove", "vehflip")
                 -- add a side-menu:addOptions to the player to deliver the car
@@ -646,9 +665,11 @@ function StartMission(difficulty)
                     CloseAllMenus()
                     -- remove the vehicle
                     DeleteVehicle(vehicleSpawn)
-                    OnMission = false 
+                    OnMission = false
+                    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
                 end}})
             end
+
         elseif difficulty == "hard" then
             SpawnPosAll = HardVehicleLocations[math.random(1, #HardVehicleLocations)]
             SpawnPos = SpawnPosAll.coords
@@ -663,8 +684,6 @@ function StartMission(difficulty)
             
             -- spawn 3 random npc on SpawnPosAll.npc[1], SpawnPosAll.npc[2], SpawnPosAll.npc[3]
             local npcs = LoadNPCS(3)
-
-            print(npcs[1], npcs[2], npcs[3])
 
             local npcSpawn1 = CreatePed(26, GetHashKey(npcs[1]), SpawnPosAll.npcs[1].x, SpawnPosAll.npcs[1].y, SpawnPosAll.npcs[1].z, SpawnPosAll.npcs[1].w, false, true)
             local npcSpawn2 = CreatePed(26, GetHashKey(npcs[2]), SpawnPosAll.npcs[2].x, SpawnPosAll.npcs[2].y, SpawnPosAll.npcs[2].z, SpawnPosAll.npcs[2].w, false, true)
@@ -702,10 +721,16 @@ function StartMission(difficulty)
             while #(GetEntityCoords(PlayerPedId()) - vector3(SpawnPos.x, SpawnPos.y, SpawnPos.z)) > 5.0 do
                 Citizen.Wait(100)
             end
-            -- make the npcs attack the player
+            -- make the npcs attack only the playerPed and not themselves
+            SetPedRelationshipGroupHash(npcSpawn1, GetHashKey("PLAYER"))
+            SetPedRelationshipGroupHash(npcSpawn2, GetHashKey("PLAYER"))
+            SetPedRelationshipGroupHash(npcSpawn3, GetHashKey("PLAYER"))
+
+            -- make the npcs attack the playerPed
             TaskCombatPed(npcSpawn1, PlayerPedId(), 0, 16)
             TaskCombatPed(npcSpawn2, PlayerPedId(), 0, 16)
             TaskCombatPed(npcSpawn3, PlayerPedId(), 0, 16)
+
 
             -- check if player is inside vehicle
             while not IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) do
@@ -761,6 +786,7 @@ function StartMission(difficulty)
                     -- remove the vehicle
                     DeleteVehicle(vehicleSpawn)
                     OnMission = false
+                    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
                 end}})
             end
         end
