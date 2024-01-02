@@ -585,11 +585,10 @@ function deliverCar(veh)
         local stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
         table.insert(stolenVehs, properties)
         TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_STOLEN_VEHICLES", type = "string", value = json.encode(stolenVehs)}})
+        DeleteVehicle(veh)
+        OnMission = false
+        TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
     end)
-
-    DeleteVehicle(veh)
-    OnMission = false
-    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
     
 end
 
