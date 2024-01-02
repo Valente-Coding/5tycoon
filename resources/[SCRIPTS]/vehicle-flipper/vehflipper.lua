@@ -1,5 +1,6 @@
 local MenuDisplay = false
 local OnMission = false
+local stolenVehs = {}
 
 local Location = {
     {coords = vector4(153.1738, -3210.4968, 5.9097, 89.5784)}
@@ -579,10 +580,10 @@ end
 
 
 
-function deliverCar(veh)
+function DeliverCar(veh)
 
     TriggerEvent("vehicle-stats:getProperties", veh, function(properties)
-        local stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
+        stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
         table.insert(stolenVehs, properties)
         TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_STOLEN_VEHICLES", type = "string", value = json.encode(stolenVehs)}})
         DeleteVehicle(veh)
@@ -590,6 +591,62 @@ function deliverCar(veh)
         TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
     end)
     
+end
+
+
+function GetVehicleName(model)
+    
+    local vehName = ""
+    for _, veh in ipairs(EasyVehicles) do
+        if GetHashKey(veh.model) == model then
+            vehName = veh.label
+            break
+        end
+    end
+
+    for _, veh in ipairs(HardVehicles) do
+        if GetHashKey(veh.model) == model then
+            vehName = veh.label
+            break
+        end
+    end
+
+    return vehName
+
+end
+
+
+function DisplayStolenVehs()
+    
+    local stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
+    local stolenVehsMenu = {}
+
+    for _, veh in ipairs(stolenVehs) do
+        print(GetVehicleName(veh.model))
+        table.insert(stolenVehsMenu, {id = veh.plate, label = GetVehicleName(veh.model), cb = function()
+            TriggerEvent("side-menu:addOptions", {{id = "sell_stolen_car", label = "Sell car", cb = function()
+                -- remove the side-menu:addOptions
+                CloseAllMenus()
+                -- remove the vehicle
+                SellVehicle(veh)
+            end},
+            {id = "legalize_veh", label = "Legalize vehicle", cb = function()
+                CloseAllMenus()
+                LegalizeCar(veh)
+            end}})
+        end})
+    end
+    TriggerEvent("side-menu:addOptions", stolenVehsMenu)
+end
+
+
+function SellVehicle(veh)
+    print("Selling vehicle " .. veh.model)
+end
+
+
+function LegalizeCar(veh)
+    print("Legalizing vehicle " .. veh.model)
 end
 
 
@@ -682,7 +739,7 @@ function StartMission(difficulty)
                     -- remove the side-menu:addOptions
                     CloseAllMenus()
                     -- remove the vehicle
-                    deliverCar(vehicleSpawn)
+                    DeliverCar(vehicleSpawn)
                 end}})
             end
 
@@ -799,7 +856,7 @@ function StartMission(difficulty)
                 TriggerEvent("side-menu:addOptions", {{id = "deliver_stolen_car", label = "Deliver car", cb = function()
                     -- remove the side-menu:addOptions
                     CloseAllMenus()
-                    deliverCar(vehicleSpawn)
+                    DeliverCar(vehicleSpawn)
                 end}})
             end
         end
@@ -837,9 +894,20 @@ Citizen.CreateThread(function()
                             OnMission = true
                             StartMission("hard")
                             CloseAllMenus()
-                        end},})
+                        end}})
                     end
                 end}})
+
+                stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
+
+                if #stolenVehs > 0 then
+                    TriggerEvent("side-menu:addOptions", {{id = "check_stolen_vehs", label = "Check stolen vehicles", cb = function()
+                        
+                        DisplayStolenVehs()
+
+                    end}})
+                end
+
             elseif distance < 1.5 and MenuDisplay == false and OnMission == true then
                 MenuDisplay = true
                 TriggerEvent("side-menu:addOptions", {{id = "cancel_mission", label = "Cancel mission", cb = function()
