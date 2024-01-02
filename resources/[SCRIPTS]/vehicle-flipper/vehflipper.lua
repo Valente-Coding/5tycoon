@@ -560,6 +560,8 @@ function CloseAllMenus(cooldown, stay)
 end
 
 
+
+
 function LoadNPCS(num)
     local npcs = {}
 
@@ -572,6 +574,23 @@ function LoadNPCS(num)
         table.insert(npcs, npcModel)
     end
     return npcs
+end
+
+
+
+
+function deliverCar(veh)
+
+    TriggerEvent("vehicle-stats:getProperties", veh, function(properties)
+        local stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
+        table.insert(stolenVehs, properties)
+        TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_STOLEN_VEHICLES", type = "string", value = json.encode(stolenVehs)}})
+    end)
+
+    DeleteVehicle(veh)
+    OnMission = false
+    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
+    
 end
 
 
@@ -664,9 +683,7 @@ function StartMission(difficulty)
                     -- remove the side-menu:addOptions
                     CloseAllMenus()
                     -- remove the vehicle
-                    DeleteVehicle(vehicleSpawn)
-                    OnMission = false
-                    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
+                    deliverCar(vehicleSpawn)
                 end}})
             end
 
@@ -783,10 +800,7 @@ function StartMission(difficulty)
                 TriggerEvent("side-menu:addOptions", {{id = "deliver_stolen_car", label = "Deliver car", cb = function()
                     -- remove the side-menu:addOptions
                     CloseAllMenus()
-                    -- remove the vehicle
-                    DeleteVehicle(vehicleSpawn)
-                    OnMission = false
-                    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle has been delivered."})
+                    deliverCar(vehicleSpawn)
                 end}})
             end
         end
