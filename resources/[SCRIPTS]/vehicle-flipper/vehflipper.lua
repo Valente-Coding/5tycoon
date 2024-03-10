@@ -622,7 +622,6 @@ function DisplayStolenVehs()
     local stolenVehsMenu = {}
 
     for _, veh in ipairs(stolenVehs) do
-        print(GetVehicleName(veh.model))
         table.insert(stolenVehsMenu, {id = veh.plate, label = GetVehicleName(veh.model), cb = function()
             TriggerEvent("side-menu:addOptions", {{id = "sell_stolen_car", label = "Sell car", cb = function()
                 -- remove the side-menu:addOptions
@@ -903,10 +902,19 @@ Citizen.CreateThread(function()
                 if #stolenVehs > 0 then
                     TriggerEvent("side-menu:addOptions", {{id = "check_stolen_vehs", label = "Check stolen vehicles", cb = function()
                         
+                        CloseAllMenus()
                         DisplayStolenVehs()
 
                     end}})
                 end
+
+            elseif distance < 1.5 and MenuDisplay == false and OnMission == true then
+                MenuDisplay = true
+                TriggerEvent("side-menu:addOptions", {{id = "cancel_mission", label = "Cancel mission", cb = function()
+                    CloseAllMenus()
+                    OnMission = false
+                    MenuDisplay = false
+                end}})
 
             elseif distance < 1.5 and MenuDisplay == false and OnMission == true then
                 MenuDisplay = true
