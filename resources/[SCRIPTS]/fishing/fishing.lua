@@ -93,7 +93,9 @@ function StartFishing()
         while isFishing do
             time = math.random(30000, 60000)
             Wait(time)
-            SearchFishing()
+            if isFishing then
+                SearchFishing()
+            end
         end
     end)
 
