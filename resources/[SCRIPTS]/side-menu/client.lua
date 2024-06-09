@@ -106,6 +106,7 @@ RegisterNUICallback('selectoption', function(data, cb)
     cb('ok')
 end)
 
+-- TriggerEvent("side-menu:openInputBox", {title = "", placeholder = "", cb = nil})
 local _inputCB = nil
 function OpenInputBox(data)
     if data.cb then 

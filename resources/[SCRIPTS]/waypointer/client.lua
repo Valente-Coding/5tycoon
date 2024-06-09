@@ -41,7 +41,7 @@ function AddWaypointer(waypointerName, blipData, routeData)
         return 
     end
 
-    local newBlip = CreateBlip(blipData.coords.x, blipData.coords.y, blipData.coords.z, blipData.sprite, blipData.scale, blipData.short, blipData.color, blipData.label) 
+    local newBlip = CreateBlip(blipData.coords.x, blipData.coords.y, blipData.coords.z, blipData.sprite, tonumber(blipData.scale), blipData.short, blipData.color, blipData.label) 
     table.insert(waypointers, {name = waypointerName, blip = newBlip, blipData = blipData, routeData = routeData})
 end
 
@@ -72,7 +72,11 @@ RegisterNetEvent("waypointer:setroute")
 function SetRoute(waypointerName) 
     for _, waypoint in pairs(waypointers) do 
         if waypoint.name == waypointerName then 
-            CreateRoute(waypoint.routeData.coords, waypoint.routeData.color, waypoint.routeData.onFoot, waypoint.routeData.radarThick, waypoint.routeData.mapThick, waypointerName, waypoint.routeData.range, waypoint.routeData.removeBlip) 
+            if waypoint.routeData then
+                CreateRoute(waypoint.routeData.coords, waypoint.routeData.color, waypoint.routeData.onFoot, waypoint.routeData.radarThick, waypoint.routeData.mapThick, waypointerName, waypoint.routeData.range, waypoint.routeData.removeBlip) 
+            else
+                SetNewWaypoint(waypoint.blipData.coords.x, waypoint.blipData.coords.y)
+            end
         end
     end
 end

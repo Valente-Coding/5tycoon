@@ -74,7 +74,7 @@ window.onload = (e) => {
     function DisplayOptions(options) {
         var innerHTML = ""
         for (var i = 0; i < options.length; i++) {
-            if (options[i].quantity) {
+            if (options[i].quantity || options[i].quantity == false) {
                 var qty = options[i].quantity.toString()
                 if (qty.includes("$"))
                 {
