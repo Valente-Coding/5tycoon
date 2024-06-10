@@ -884,11 +884,11 @@ Citizen.CreateThread(function()
                                     CloseAllMenus()
                                     OnMission = true
                                 else
-                                    TriggerEvent("notification:send", {text = "You need $"..needAmount.." more to do this job", color = "red", time = 7000})
+                                    TriggerEvent("notification:send", {text = "You need $"..needAmount.." cash more to do this job", color = "red", time = 7000})
                                 end
                             end)
                         end},
-                        {id = "hard_job_start", label = "Get an hard job", cb = function()
+                        {id = "hard_job_start", label = "Get a hard job", cb = function()
                             MenuDisplay = false
                             OnMission = true
                             StartMission("hard")
