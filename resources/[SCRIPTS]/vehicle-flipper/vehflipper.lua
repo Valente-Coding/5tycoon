@@ -519,7 +519,7 @@ Citizen.CreateThread(function()
         SetBlipSprite(blip, 643)
         SetBlipScale(blip, 0.7)
         SetBlipColour(blip, 1)
-        SetBlipAsShortRange(blip, false)
+        SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString("Vehicle Flipper")
         EndTextCommandSetBlipName(blip)
@@ -620,6 +620,8 @@ function DisplayStolenVehs()
     
     local stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
     local stolenVehsMenu = {}
+
+    -- For each stolen vehicle, add a side-menu:addOptions
 
     for _, veh in ipairs(stolenVehs) do
         table.insert(stolenVehsMenu, {id = veh.plate, label = GetVehicleName(veh.model), cb = function()
