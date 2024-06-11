@@ -49,3 +49,30 @@ Citizen.CreateThread(function()
         SetBlockingOfNonTemporaryEvents(ped, true)
     end
 end)
+
+
+-- create the lumberjack job
+
+local isLumberjack = false
+local isCarSpawned = false
+local isTreeCut = false
+local MenuDisplay = false
+
+Citizen.CreateThread(function()
+
+    while true do
+        Citizen.Wait(10)
+        local playerPed = GetPlayerPed(-1)
+        local playerCoords = GetEntityCoords(playerPed)
+        local distance = GetDistanceBetweenCoords(playerCoords, npc_blip.x, npc_blip.y, npc_blip.z, true)
+
+        if distance < 2 then
+        
+            MenuDisplay = true
+            TriggerEvent("")
+        
+        end
+
+    end
+
+end)
