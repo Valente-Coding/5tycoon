@@ -1,6 +1,12 @@
+
+
+-- MISSING TO FIX MONEY ADD CASH WHEN SELLING STOLEN VEHICLES
+
+
 local MenuDisplay = false
 local OnMission = false
 local stolenVehs = {}
+local stolenVehsSpawn = {x = 144.3575, y = -3210.1628, z = 5.1971, h = 270.3898}
 
 local Location = {
     {coords = vector4(153.1738, -3210.4968, 5.9097, 89.5784)}
@@ -334,7 +340,6 @@ local EasyVehicles = {
 
 local HardVehicles = {
 
-    super = {
         {model = "pfister811", price = 200000, label = "Pfister 811"},
         {model = "autarch", price = 350000, label = "Overflod Autarch"},
         {model = "banshee2", price = 160000, label = "Bravado Banshee 900R"},
@@ -380,7 +385,21 @@ local HardVehicles = {
         {model = "zeno", price = 660000, label = "Pegassi Zentorno"},
         {model = "zentorno", price = 760000, label = "Pegassi Zentorno"},
         {model = "zorrusso", price = 720000, label = "Pegassi Zorrusso"},
-    },
+}
+
+
+local buyersListCoords = {
+
+    {x = 788.7515, y = -790.6373, z = 26.3884, h = 90.8662},
+    {x = 44.0986, y = -104.6463, z = 55.9843, h = 340.0691},
+    {x = -724.7953, y = -1061.0719, z = 12.3737, h = 67.4136},
+    {x = -1087.4849, y = -322.4897, z = 37.6737, h = 15.8140},
+    {x = 248.5375, y = -1993.3687, z = 20.2515, h = 14.5749},
+    {x = 980.0082, y = -1829.6621, z = 31.3490, h = 350.8308},
+    {x = -626.4448, y = -2200.2981, z = 5.9975, h = 194.2748},
+    {x = -279.0907, y = -611.6411, z = 33.4631, h = 184.0482},
+    {x = -428.9567, y = -328.8341, z = 33.5241, h = 252.6558}
+
 }
 
 
@@ -528,19 +547,25 @@ Citizen.CreateThread(function()
         while not HasModelLoaded(pedModel) do
             Citizen.Wait(1)
         end
-        local pedSpawn = CreatePed(26, GetHashKey(pedModel), location.coords.x, location.coords.y, location.coords.z - 1, location.coords.w, false, true)
-        SetEntityInvincible(pedSpawn, true)
-        FreezeEntityPosition(pedSpawn, true)
+        
+        local pedSpawn = CreateBrainlessNpc(pedModel, location.coords.x, location.coords.y, location.coords.z - 1, location.coords.w, false) 
         location.ped = pedSpawn
-        -- make the ped not interested in anything
-        SetBlockingOfNonTemporaryEvents(pedSpawn, true)
-        SetPedFleeAttributes(pedSpawn, 0, 0)
-        SetPedCombatAttributes(pedSpawn, 17, 1)
-        SetPedSeeingRange(pedSpawn, 0.0)
-        SetPedHearingRange(pedSpawn, 0.0)
-        SetPedAlertness(pedSpawn, 0)
     end
 end)
+
+function CreateBrainlessNpc(pedModel, x , y, z, h, network) 
+    local ped = CreatePed(26, GetHashKey(pedModel), x , y, z, h, network, true)
+    SetEntityInvincible(ped, true)
+    FreezeEntityPosition(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    SetPedFleeAttributes(ped, 0, 0)
+    SetPedCombatAttributes(ped, 17, 1)
+    SetPedSeeingRange(ped, 0.0)
+    SetPedHearingRange(ped, 0.0)
+    SetPedAlertness(ped, 0)
+
+    return ped
+end
 
 
 
@@ -593,25 +618,35 @@ function DeliverCar(veh)
     
 end
 
-
-function GetVehicleName(model)
+function RemoveCar(veh)
+    local found = false
+    stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
     
-    local vehName = ""
-    for _, veh in ipairs(EasyVehicles) do
-        if GetHashKey(veh.model) == model then
-            vehName = veh.label
+    for i, stolenVeh in pairs(stolenVehs) do
+        if stolenVeh.plate == veh.plate then 
+            table.remove(stolenVehs, i)
+            found = true
             break
         end
     end
 
-    for _, veh in ipairs(HardVehicles) do
-        if GetHashKey(veh.model) == model then
-            vehName = veh.label
-            break
-        end
+    if found then
+        TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_STOLEN_VEHICLES", type = "string", value = json.encode(stolenVehs)}})
     end
 
-    return vehName
+    return found
+end
+
+
+function StolenVehicleOptions(StolenVehicle)
+    local price = GetVehicleModelPrice(StolenVehicle.model)
+    local ops = {
+        {id = "sell", label = "Sell Vehicle", quantity = "$" .. price * 0.1, cb = function() SellVehicle(StolenVehicle) end},
+        {id = "legalize", label = "Legalize Vehicle", quantity = "-$" .. price * 0.2, cb = function() LegalizeCar(StolenVehicle) end},
+        {id = "cancel", label = "Cancel", quantity = "", cb = function() CloseAllMenus() end}
+    }
+
+    TriggerEvent("side-menu:addOptions", ops)
 
 end
 
@@ -619,30 +654,148 @@ end
 function DisplayStolenVehs()
     
     local stolenVehs = json.decode(GetExternalKvpString("save-load", "CHAR_STOLEN_VEHICLES"))
-    local stolenVehsMenu = {}
+    local ops = {}
 
-    -- For each stolen vehicle, add a side-menu:addOptions
-
-    for _, veh in ipairs(stolenVehs) do
-        table.insert(stolenVehsMenu, {id = veh.plate, label = GetVehicleName(veh.model), cb = function()
-            TriggerEvent("side-menu:addOptions", {{id = "sell_stolen_car", label = "Sell car", cb = function()
-                -- remove the side-menu:addOptions
-                CloseAllMenus()
-                -- remove the vehicle
-                SellVehicle(veh)
-            end},
-            {id = "legalize_veh", label = "Legalize vehicle", cb = function()
-                CloseAllMenus()
-                LegalizeCar(veh)
-            end}})
-        end})
+    for _, stolenVeh in pairs(stolenVehs) do 
+        local vehName = GetVehicleModelName(stolenVeh.model)
+        table.insert(ops, {id = "stolen_veh_"..stolenVeh.plate, label = vehName, quantity = "", cb = function() CloseAllMenus(0, true) StolenVehicleOptions(stolenVeh) end})
     end
-    TriggerEvent("side-menu:addOptions", stolenVehsMenu)
+
+    TriggerEvent("side-menu:addOptions", ops)
+end
+
+
+function GetVehicleModelPrice(model)
+    local vehModelName = GetDisplayNameFromVehicleModel(model)
+    vehModelName = string.lower(vehModelName)
+    
+    for _, easyVeh in pairs(EasyVehicles) do
+        if easyVeh.model == vehModelName then 
+            return easyVeh.price
+        end
+    end
+
+    for _, hardVeh in pairs(HardVehicles) do
+        if hardVeh.model == vehModelName then 
+            return hardVeh.price
+        end
+    end
+
+    return "NOT FOUND"
+end
+
+
+function GetVehicleModelName(model)
+    local vehModelName = GetDisplayNameFromVehicleModel(model)
+    vehModelName = string.lower(vehModelName)
+    
+    for _, easyVeh in pairs(EasyVehicles) do
+        if easyVeh.model == vehModelName then 
+            return easyVeh.label
+        end
+    end
+
+    for _, hardVeh in pairs(HardVehicles) do
+        if hardVeh.model == vehModelName then 
+            return hardVeh.label
+        end
+    end
+
+    return "NOT FOUND"
+end
+
+
+function SpawnVehicle(data, x, y, z, h)
+    RequestModel(data["model"])
+    while not HasModelLoaded(data["model"]) do
+        Citizen.Wait(1)
+    end
+
+    local veh = CreateVehicle(data["model"], x, y, z, h, true, true)
+	if veh then 
+    	TriggerEvent("vehicle-stats:loadProperies", veh, data)
+        TaskWarpPedIntoVehicle(GetPlayerPed(-1), veh, -1)
+
+        return veh
+	end
 end
 
 
 function SellVehicle(veh)
-    print("Selling vehicle " .. veh.model)
+    
+    CloseAllMenus()
+
+    local spawnedVeh = SpawnVehicle(veh.properties, stolenVehsSpawn.x, stolenVehsSpawn.y, stolenVehsSpawn.z, stolenVehsSpawn.h)
+
+    TriggerEvent("notification:send", {color = "green", time = 7000, text = "Deliver the vehicle to the buyer."})
+    
+    StolenVehBuyer = buyersListCoords[math.random(1, #buyersListCoords)]
+    StolenVehBuyerCoords = vector3(StolenVehBuyer.x, StolenVehBuyer.y, StolenVehBuyer.z)
+    
+    local buyerNPC = CreateBrainlessNpc(LoadNPCS(1)[1], StolenVehBuyerCoords.x, StolenVehBuyerCoords.y, StolenVehBuyerCoords.z - 1, StolenVehBuyer.h, true)
+
+    TriggerEvent("waypointer:add", 
+            "buyerForStolenVeh", --waypointer name
+            {
+                coords = StolenVehBuyerCoords, 
+                sprite = 47, scale = 0.7, 
+                short = true, 
+                color = 46, 
+                label = "Buyer"
+            }, 
+            {
+                coords = StolenVehBuyerCoords, 
+                color = 46, 
+                onFoot = false, 
+                radarThick = 16, 
+                mapThick = 16, 
+                range = 10, 
+                removeBlip = true
+            }
+        )
+
+    TriggerEvent("waypointer:setroute", "buyerForStolenVeh")
+
+    while #(GetEntityCoords(PlayerPedId()) - StolenVehBuyerCoords) > 10.0 do
+        Citizen.Wait(100)
+    end
+
+    local price = GetVehicleModelPrice(veh.model) * 0.1
+    print(price)
+
+    TriggerEvent("bank:changeCash", tonumber(price))
+
+    SetVehicleBrake(spawnedVeh, true)
+
+    -- make player get out of the vehicle and make vehicle not enterable by player
+
+    SetVehicleDoorsLockedForAllPlayers(spawnedVeh, true)
+    TaskLeaveVehicle(PlayerPedId(), spawnedVeh, 0)
+    Citizen.Wait(1000)
+    
+    FreezeEntityPosition(buyerNPC, false)
+    TaskEnterVehicle(buyerNPC, spawnedVeh, -1, -1, 1.0, 1, 0)
+
+    SetVehicleBrake(spawnedVeh, false)
+
+    if RemoveCar(veh) then 
+        TriggerEvent("notification:send", {color = "green", time = 7000, text = "Vehicle sold for $" .. price})
+    end
+    
+    Citizen.Wait(1000)
+    SetDriverAbility(ped, 1.0)
+    SetDriverAggressiveness(ped, 0.0)
+    TaskVehicleDriveWander(buyerNPC, spawnedVeh, 20.0, 447)
+    
+    -- if npc and vehicle are over 200 meters away from player, remove NPC and vehicle
+
+    while #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(buyerNPC)) < 200.0 do
+        Citizen.Wait(100)
+    end
+
+    DeleteEntity(buyerNPC)
+    DeleteVehicle(spawnedVeh)
+
 end
 
 
@@ -748,7 +901,7 @@ function StartMission(difficulty)
             SpawnPosAll = HardVehicleLocations[math.random(1, #HardVehicleLocations)]
             SpawnPos = SpawnPosAll.coords
             -- Spawn a random vehicle model from the HardVehicleLocations on the SpawnPos position
-            local vehicleModel = HardVehicles.super[math.random(1, #HardVehicles.super)].model
+            local vehicleModel = HardVehicles[math.random(1, #HardVehicles)].model
             RequestModel(vehicleModel)
             while not HasModelLoaded(vehicleModel) do
                 Citizen.Wait(1)
@@ -904,7 +1057,7 @@ Citizen.CreateThread(function()
                 if #stolenVehs > 0 then
                     TriggerEvent("side-menu:addOptions", {{id = "check_stolen_vehs", label = "Check stolen vehicles", cb = function()
                         
-                        CloseAllMenus()
+                        CloseAllMenus(0, true)
                         DisplayStolenVehs()
 
                     end}})
