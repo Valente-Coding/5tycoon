@@ -218,6 +218,8 @@ function DeliverCar()
             removeBlip = true
         }
     )
+
+    TriggerEvent("waypointer:setroute", "deliver-lumber-vehicle")
     
     while true do
         Citizen.Wait(10)
