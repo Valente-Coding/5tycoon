@@ -197,17 +197,35 @@ function DeliverCar()
     local playerPed = GetPlayerPed(-1)
 
     TriggerEvent("notification:send", {time = 5000, color = "blue", text = "Deliver the vehicle to the boss."})
-    
-    local blipDeliverVehicle = AddBlipForCoord(deliverCar[1].x, deliverCar[1].y, deliverCar[1].z)
-    SetBlipColour(blipDeliverVehicle, 46)
-    SetBlipRoute(blipDeliverVehicle, true)
+
+    TriggerEvent("waypointer:add", 
+        "deliver-lumber-vehicle", --waypointer name
+        {
+            coords = deliverCar[1], 
+            entity = nil, -- No need to set coords when using entities
+            sprite = 1, scale = 0.5, 
+            short = true, 
+            color = 46, 
+            label = "Destination"
+        }, 
+        {
+            coords = deliverCar[1], -- No need to set coords when using entities
+            color = 46, 
+            onFoot = false, 
+            radarThick = 16, 
+            mapThick = 16, 
+            range = 30, 
+            removeBlip = true
+        }
+    )
+
+    TriggerEvent("waypointer:setroute", "deliver-lumber-vehicle")
     
     while true do
         Citizen.Wait(10)
         local playerCoords = GetEntityCoords(playerPed)
         local distance = #(playerCoords - vector3(deliverCar[1].x, deliverCar[1].y, deliverCar[1].z))
         if distance < 5.0 then
-            RemoveBlip(blipDeliverVehicle)
             isLumberjack = false
             numTreesCut = 0
             SetVehicleBrake(currentVehicle, true)
