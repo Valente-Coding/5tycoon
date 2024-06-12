@@ -64,7 +64,6 @@ function SpawnTaxi(ped)
         Wait(0)
     end
 
-    -- Create the ped inside the car
     currentTaxiNpc = CreatePedInsideVehicle(currentTaxiVeh, 26, npcModel, -1, true, false)
     SetModelAsNoLongerNeeded(currentTaxiVeh)
 
@@ -157,7 +156,7 @@ function WaitForConfirmation(ped)
     TriggerEvent("side-menu:addOptions", {
         {id = "TAXI_TELEPORT_WAY", label = "Teleport", quantity = nil, cb = function() CloseMenu() TeleportToDestination() end},
     })
-    
+
     DriveToDestination()
 end
 
