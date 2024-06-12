@@ -93,7 +93,7 @@ function SetRoute(waypointerName)
                 coords = GetEntityCoords(waypoint.blipData.entity)
             end
 
-            CreateRoute(waypoint.routeData.coords, waypoint.routeData.color, waypoint.routeData.onFoot, waypoint.routeData.radarThick, waypoint.routeData.mapThick, waypointerName, waypoint.routeData.range, waypoint.routeData.removeBlip) 
+            CreateRoute(coords, waypoint.routeData.color, waypoint.routeData.onFoot, waypoint.routeData.radarThick, waypoint.routeData.mapThick, waypointerName, waypoint.routeData.range, waypoint.routeData.removeBlip) 
         end
     end
 end
