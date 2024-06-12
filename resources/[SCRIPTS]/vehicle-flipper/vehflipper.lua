@@ -737,14 +737,15 @@ function SellVehicle(veh)
     TriggerEvent("waypointer:add", 
             "buyerForStolenVeh", --waypointer name
             {
-                coords = StolenVehBuyerCoords, 
+                coords = nil,
+                entity = buyerNPC,
                 sprite = 47, scale = 0.7, 
                 short = true, 
                 color = 46, 
                 label = "Buyer"
             }, 
             {
-                coords = StolenVehBuyerCoords, 
+                coords = nil, 
                 color = 46, 
                 onFoot = false, 
                 radarThick = 16, 
@@ -819,20 +820,21 @@ function StartMission(difficulty)
             TriggerEvent("waypointer:add", 
                 "vehspawn", --waypointer name
                 { --waypointer options
-                    coords = SpawnPos, 
+                    coords = nil,
+                    entity = vehicleSpawn,
                     sprite = 1, scale = 0.7, 
                     short = false, 
                     color = 5, 
                     label = "Steal car"
                 }, 
                 {
-                    coords = SpawnPos, 
+                    coords = nil, 
                     color = 5, 
                     onFoot = true, 
                     radarThick = 16, 
                     mapThick = 16, 
                     range = 30,
-                    removeBlip = false
+                    removeBlip = true
                 }
             )
             TriggerEvent("waypointer:setroute", "vehspawn")
@@ -845,13 +847,13 @@ function StartMission(difficulty)
                 SetPlayerWantedLevel(PlayerId(), 2, false)
                 SetPlayerWantedLevelNow(PlayerId(), false)
             end
-            -- remove waypointer
-            TriggerEvent("waypointer:remove", "vehspawn")
+
             -- get new waypointer to Location
             TriggerEvent("waypointer:add", 
                 "vehflip", --waypointer name
                 { --waypointer options
-                    coords = Location[1].coords, 
+                    coords = Location[1].coords,
+                    entity = nil,
                     sprite = 1, scale = 0.7, 
                     short = false, 
                     color = 5, 
@@ -864,7 +866,7 @@ function StartMission(difficulty)
                     radarThick = 16, 
                     mapThick = 16, 
                     range = 30,
-                    removeBlip = false
+                    removeBlip = true
                 }
             )
             TriggerEvent("waypointer:setroute", "vehflip")
@@ -886,7 +888,6 @@ function StartMission(difficulty)
 
                 -- confirm if player is inside vehicle
             if IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) then
-                TriggerEvent("waypointer:remove", "vehflip")
                 -- add a side-menu:addOptions to the player to deliver the car
                 TriggerEvent("side-menu:addOptions", {{id = "deliver_stolen_car", label = "Deliver car", cb = function()
                     -- remove the side-menu:addOptions
@@ -925,20 +926,21 @@ function StartMission(difficulty)
             TriggerEvent("waypointer:add", 
                 "vehspawnhard", --waypointer name
                 { --waypointer options
-                    coords = SpawnPos, 
+                    coords = nil,
+                    entity = vehicleSpawn,
                     sprite = 1, scale = 0.7, 
                     short = false, 
-                    color = 5, 
+                    color = 46, 
                     label = "Steal car"
                 }, 
                 {
-                    coords = SpawnPos, 
+                    coords = nil, 
                     color = 5, 
                     onFoot = true, 
                     radarThick = 16, 
                     mapThick = 16, 
                     range = 30,
-                    removeBlip = false
+                    removeBlip = true
                 }
             )
             TriggerEvent("waypointer:setroute", "vehspawnhard")
@@ -967,28 +969,29 @@ function StartMission(difficulty)
                 SetPlayerWantedLevel(PlayerId(), 2, false)
                 SetPlayerWantedLevelNow(PlayerId(), false)
             end
-            -- remove waypointer
-            TriggerEvent("waypointer:remove", "vehspawnhard")
+
             -- get new waypointer to Location
             TriggerEvent("waypointer:add", 
-                "vehfliphard", --waypointer name
-                { --waypointer options
-                    coords = Location[1].coords, 
-                    sprite = 1, scale = 0.7, 
-                    short = false, 
-                    color = 5, 
-                    label = "Deliver car"
-                }, 
+                "deliver-stolen-vehicle-warehouse", --waypointer name
                 {
                     coords = Location[1].coords, 
-                    color = 5, 
+                    entity = nil, -- No need to set coords when using entities
+                    sprite = 1, scale = 0.5, 
+                    short = true, 
+                    color = 46, 
+                    label = "Destination"
+                }, 
+                {
+                    coords = Location[1].coords, -- No need to set coords when using entities
+                    color = 46, 
                     onFoot = true, 
                     radarThick = 16, 
                     mapThick = 16, 
-                    range = 30,
-                    removeBlip = false
+                    range = 30, 
+                    removeBlip = true
                 }
             )
+            
             TriggerEvent("waypointer:setroute", "vehfliphard")
             -- verify if player is within 10 meters from Location and is inside the car
             local alert = false
@@ -1004,7 +1007,6 @@ function StartMission(difficulty)
 
                 -- confirm if player is inside vehicle
             if IsPedInVehicle(PlayerPedId(), vehicleSpawn, false) then
-                TriggerEvent("waypointer:remove", "vehfliphard")
                 -- add a side-menu:addOptions to the player to deliver the car
                 TriggerEvent("side-menu:addOptions", {{id = "deliver_stolen_car", label = "Deliver car", cb = function()
                     -- remove the side-menu:addOptions
