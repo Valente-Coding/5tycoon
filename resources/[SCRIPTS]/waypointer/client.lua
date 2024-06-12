@@ -1,8 +1,13 @@
 local waypointers = {}
 local currentRoute = nil
 
-function CreateBlip(x, y, z, sprite, scale, short, color, label) 
-    local blip = AddBlipForCoord(x, y, z)
+function CreateBlip(x, y, z, sprite, scale, short, color, label, entity)
+    local blip = nil
+    if entity then
+        blip = AddBlipForEntity(entity)
+    else
+        blip = AddBlipForCoord(x, y, z)
+    end
 
     SetBlipSprite(blip, sprite)
     SetBlipScale(blip, scale)
@@ -41,7 +46,15 @@ function AddWaypointer(waypointerName, blipData, routeData)
         return 
     end
 
-    local newBlip = CreateBlip(blipData.coords.x, blipData.coords.y, blipData.coords.z, blipData.sprite, blipData.scale, blipData.short, blipData.color, blipData.label) 
+    if blipData.coords == nil then 
+        blipData.coords = vector3(0,0,0)
+    end
+
+    if routeData.coords == nil then 
+        routeData.coords = vector3(0,0,0)
+    end
+
+    local newBlip = CreateBlip(blipData.coords.x, blipData.coords.y, blipData.coords.z, blipData.sprite, blipData.scale, blipData.short, blipData.color, blipData.label, blipData.entity) 
     table.insert(waypointers, {name = waypointerName, blip = newBlip, blipData = blipData, routeData = routeData})
 end
 
@@ -53,12 +66,14 @@ AddEventHandler("waypointer:add", AddWaypointer)
 RegisterNetEvent("waypointer:remove")
 
 function RemoveWaypointer(waypointerName) 
-    for _, waypoint in pairs(waypointers) do 
+    for i, waypoint in pairs(waypointers) do 
         if waypoint.name == waypointerName then 
             RemoveBlip(waypoint.blip)
             if currentRoute == waypointerName then 
                 RemoveRoute()
             end
+            table.remove(waypointers, i)
+            break
         end
     end
 end
@@ -72,7 +87,13 @@ RegisterNetEvent("waypointer:setroute")
 function SetRoute(waypointerName) 
     for _, waypoint in pairs(waypointers) do 
         if waypoint.name == waypointerName then 
-            CreateRoute(waypoint.routeData.coords, waypoint.routeData.color, waypoint.routeData.onFoot, waypoint.routeData.radarThick, waypoint.routeData.mapThick, waypointerName, waypoint.routeData.range, waypoint.routeData.removeBlip) 
+            local coords = waypoint.routeData.coords
+
+            if waypoint.blipData.entity then 
+                coords = GetEntityCoords(waypoint.blipData.entity)
+            end
+
+            CreateRoute(coords, waypoint.routeData.color, waypoint.routeData.onFoot, waypoint.routeData.radarThick, waypoint.routeData.mapThick, waypointerName, waypoint.routeData.range, waypoint.routeData.removeBlip) 
         end
     end
 end

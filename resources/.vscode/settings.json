@@ -1,5 +1,9 @@
 {
+    "Lua.diagnostics.globals": [
+        "DeleteVehicle"
+    ],
     "Lua.diagnostics.disable": [
-        "undefined-global"
+        "undefined-global",
+        "lowercase-global"
     ]
 }

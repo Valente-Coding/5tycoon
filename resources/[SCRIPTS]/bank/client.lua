@@ -294,6 +294,9 @@ function WithdrawMoney(amount)
 end
 
 function UpdateMoney(bank, cash) 
+    bank = math.floor(bank)
+    cash = math.floor(cash)
+
     TriggerEvent("side-menu:updateOptions", {{id = "bank_balance", label = "Balance:", quantity = bank}, {id = "CASH_BALANCE", label = "Cash:", quantity = cash}}) 
     
     TriggerEvent("save-load:setGlobalVariables", {{name = "BANK_BALANCE", type = "int", value = bank}, {name = "CASH_BALANCE", type = "int", value = cash}}) 
@@ -326,7 +329,7 @@ function ChangeBank(amount, cb)
         end
     else
         if cb then 
-            cb(false, (bankMoney + value) * -1)
+            cb(false, math.floor((bankMoney + value) * -1))
         end
     end
 end
@@ -351,7 +354,7 @@ function ChangeCash(amount, cb)
         end
     else
         if cb then 
-            cb(false, (cashMoney + value) * -1)
+            cb(false, math.floor((cashMoney + value) * -1))
         end
     end
 end
@@ -381,6 +384,24 @@ RegisterCommand("addmoney", function(source, args, rawCommand)
         local amount = tonumber(args[2])
         if amount > 0 then 
             ChangeBank(amount)
+        end
+    end
+end, false)
+
+RegisterCommand("setmoney", function(source, args, rawCommand)
+    if args[1] == "cash" then 
+        local amount = tonumber(args[2])
+        
+        if amount > 0 then 
+            UpdateMoney(GetExternalKvpInt("save-load", "BANK_BALANCE"), amount)
+        end
+    end
+
+    if args[1] == "bank" then 
+        local amount = tonumber(args[2])
+        
+        if amount > 0 then 
+            UpdateMoney(amount, GetExternalKvpInt("save-load", "CASH_BALANCE"))
         end
     end
 end, false)

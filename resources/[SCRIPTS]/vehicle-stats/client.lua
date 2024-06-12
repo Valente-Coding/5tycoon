@@ -114,13 +114,13 @@ end
 AddEventHandler("vehicle-stats:getProperties", GetProperties)
 
 
-RegisterNetEvent("vehicle-stats:loadProperties")
+RegisterNetEvent("vehicle-stats:setProperties")
 
 function SetProperties(veh, properties)
     SetVehData(veh, data)
 end
 
-AddEventHandler("vehicle-stats:loadProperties", SetProperties)
+AddEventHandler("vehicle-stats:setProperties", SetProperties)
 
 
 

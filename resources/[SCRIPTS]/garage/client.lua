@@ -33,7 +33,7 @@ function SpawnVehicle(data)
 	if veh then 
 		AddBlipToVeh(veh)
 
-    	TriggerEvent("vehicle-stats:loadProperies", veh, data)
+    	TriggerEvent("vehicle-stats:setProperies", veh, data)
 		table.insert(spawnedVehs, veh)
     	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
 	end
