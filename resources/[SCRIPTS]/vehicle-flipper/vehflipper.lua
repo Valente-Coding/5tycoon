@@ -761,7 +761,6 @@ function SellVehicle(veh)
     end
 
     local price = GetVehicleModelPrice(veh.model) * 0.1
-    print(price)
 
     TriggerEvent("bank:changeCash", tonumber(price))
 
