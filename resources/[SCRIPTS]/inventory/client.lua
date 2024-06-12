@@ -1,14 +1,14 @@
 Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(1)
-        print("HELLO!!?")
-        if IsControlJustPressed(0, 20) then 
+        DisableControlAction(0, 37, true)
+        if IsDisabledControlJustPressed(0, 37) then 
             if GetExternalKvpInt("save-load", "CAN_OPEN_POCKETS") == 0 then
                 TriggerEvent("side-menu:addOptions", GetInventoryOptions())
             end
         end
 
-        if IsControlJustReleased(0, 20) then 
+        if IsDisabledControlJustReleased(0, 37) then 
             if GetExternalKvpInt("save-load", "CAN_OPEN_POCKETS") == 0 then
                 TriggerEvent("side-menu:removeOptions", GetInventoryOptions())
             end

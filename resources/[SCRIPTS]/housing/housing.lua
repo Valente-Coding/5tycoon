@@ -291,6 +291,7 @@ function ShowBlips()
             "house-"..i, --waypointer name
             {
                 coords = house.coords, 
+                entity = nil, -- No need to set coords when using entities
                 sprite = 40, scale = 0.7, 
                 short = true, 
                 color = blipColor, 
