@@ -1,6 +1,7 @@
 Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(1)
+        print("HELLO!!?")
         if IsControlJustPressed(0, 20) then 
             if GetExternalKvpInt("save-load", "CAN_OPEN_POCKETS") == 0 then
                 TriggerEvent("side-menu:addOptions", GetInventoryOptions())
@@ -37,6 +38,7 @@ function GetInventoryOptions()
 
     local options = {
         {id = "CASH_BALANCE", label = "Cash:", quantity = GetExternalKvpInt("save-load", "CASH_BALANCE"), cb = GetItemCB("CASH_BALANCE")},
+        {id = "CALL_TAXI", label = "Call Taxi", quantity = "", cb = function() TriggerEvent("taxi:callTaxi") end},
     }
     
     if GetExternalKvpInt("save-load", "DIRTY_DISPLAY") == 1 then 

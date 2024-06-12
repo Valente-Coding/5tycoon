@@ -53,12 +53,14 @@ AddEventHandler("waypointer:add", AddWaypointer)
 RegisterNetEvent("waypointer:remove")
 
 function RemoveWaypointer(waypointerName) 
-    for _, waypoint in pairs(waypointers) do 
+    for i, waypoint in pairs(waypointers) do 
         if waypoint.name == waypointerName then 
             RemoveBlip(waypoint.blip)
             if currentRoute == waypointerName then 
                 RemoveRoute()
             end
+            table.remove(waypointers, i)
+            break
         end
     end
 end
