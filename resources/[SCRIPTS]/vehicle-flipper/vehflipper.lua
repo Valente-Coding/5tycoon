@@ -804,6 +804,15 @@ function LegalizeCar(veh)
 end
 
 
+function RemoveAllWaypoints()
+    TriggerEvent("waypointer:remove", "vehspawn")
+    TriggerEvent("waypointer:remove", "vehflip")
+    TriggerEvent("waypointer:remove", "buyerForStolenVeh")
+    TriggerEvent("waypointer:remove", "vehspawnhard")
+    TriggerEvent("waypointer:remove", "deliver-stolen-vehicle-warehouse")
+end
+
+
 function StartMission(difficulty)
     Citizen.CreateThread(function()
         local SpawnPos = nil
@@ -922,6 +931,8 @@ function StartMission(difficulty)
             GiveWeaponToPed(npcSpawn3, GetHashKey("WEAPON_PISTOL"), 255, true, false)
             
             
+            print("Hard Blip Spawn")
+
             -- add a waypointer to the vehicle
             TriggerEvent("waypointer:add", 
                 "vehspawnhard", --waypointer name
@@ -992,7 +1003,7 @@ function StartMission(difficulty)
                 }
             )
             
-            TriggerEvent("waypointer:setroute", "vehfliphard")
+            TriggerEvent("waypointer:setroute", "deliver-stolen-vehicle-warehouse")
             -- verify if player is within 10 meters from Location and is inside the car
             local alert = false
             while #(GetEntityCoords(PlayerPedId()) - vector3(Location[1].coords.x, Location[1].coords.y, Location[1].coords.z)) > 10.0 or GetPlayerWantedLevel(PlayerId()) > 0 do
@@ -1033,23 +1044,27 @@ Citizen.CreateThread(function()
                     CloseAllMenus(1, true)
                     if MenuDisplay then
                         TriggerEvent("side-menu:addOptions",
-                        {{id = "easy_job_start", label = "Get an easy job", quantity = 20000, cb = function()
-                            TriggerEvent("bank:changeCash", -20000, function(check, needAmount)
-                                if check then
-                                    StartMission("easy")
-                                    CloseAllMenus()
-                                    OnMission = true
-                                else
-                                    TriggerEvent("notification:send", {text = "You need $"..needAmount.." cash more to do this job", color = "red", time = 7000})
-                                end
-                            end)
-                        end},
-                        {id = "hard_job_start", label = "Get a hard job", cb = function()
-                            MenuDisplay = false
-                            OnMission = true
-                            StartMission("hard")
-                            CloseAllMenus()
-                        end}})
+                            {{id = "easy_job_start", label = "Get an easy job", quantity = 20000, cb = function()
+                                TriggerEvent("bank:changeCash", -20000, function(check, needAmount)
+                                    if check then
+                                        StartMission("easy")
+                                        CloseAllMenus(0, true)
+                                        OnMission = true
+                                    else
+                                        TriggerEvent("notification:send", {text = "You need $"..needAmount.." cash more to do this job", color = "red", time = 7000})
+                                    end
+                                end)
+                            end},
+                            {id = "hard_job_start", label = "Get a hard job", cb = function()
+                                MenuDisplay = false
+                                OnMission = true
+                                StartMission("hard")
+                                CloseAllMenus(0, true)
+                            end},
+                            {id = "back_to_main_menu", label = "Back", cb = function()
+                                CloseAllMenus(0, false)
+                            end}
+                        })
                     end
                 end}})
 
@@ -1060,25 +1075,21 @@ Citizen.CreateThread(function()
                         
                         CloseAllMenus(0, true)
                         DisplayStolenVehs()
-
+                        TriggerEvent("side-menu:addOptions", {{id = "back_to_main_menu", label = "Back", cb = function()
+                            CloseAllMenus(0, false)
+                        end}})
                     end}})
                 end
 
             elseif distance < 1.5 and MenuDisplay == false and OnMission == true then
                 MenuDisplay = true
                 TriggerEvent("side-menu:addOptions", {{id = "cancel_mission", label = "Cancel mission", cb = function()
-                    CloseAllMenus()
+                    CloseAllMenus(0, true)
+                    RemoveAllWaypoints()
                     OnMission = false
                     MenuDisplay = false
                 end}})
 
-            elseif distance < 1.5 and MenuDisplay == false and OnMission == true then
-                MenuDisplay = true
-                TriggerEvent("side-menu:addOptions", {{id = "cancel_mission", label = "Cancel mission", cb = function()
-                    CloseAllMenus()
-                    OnMission = false
-                    MenuDisplay = false
-                end}})
             elseif distance > 2.0 and distance <= 3.0 and MenuDisplay == true then
                 CloseAllMenus()
             end
