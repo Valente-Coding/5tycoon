@@ -64,7 +64,6 @@ function SpawnTaxi(ped)
         Wait(0)
     end
 
-    -- Create the ped inside the car
     currentTaxiNpc = CreatePedInsideVehicle(currentTaxiVeh, 26, npcModel, -1, true, false)
     SetModelAsNoLongerNeeded(currentTaxiVeh)
 
@@ -137,7 +136,7 @@ function WaitForConfirmation(ped)
     while not IsPedInVehicle(ped, currentTaxiVeh, false) and currentWaitingTime <= waitTime do 
         Citizen.Wait(1)
         currentWaitingTime = currentWaitingTime + 1
-        if #(GetEntityCoords(ped) - GetEntityCoords(currentTaxiVeh)) < 5 then 
+        if #(GetEntityCoords(ped) - GetEntityCoords(currentTaxiVeh)) < 10 then 
             DisableControlAction(0, 75, true)
             if IsDisabledControlJustReleased(0, 75) then 
                 TaskEnterVehicle(ped, currentTaxiVeh, -1, 1, 1.0, 1, 0)
@@ -155,9 +154,10 @@ function WaitForConfirmation(ped)
 
     CloseMenu()
     TriggerEvent("side-menu:addOptions", {
-        {id = "TAXI_NORMAL_WAY", label = "Normal Way", quantity = nil, cb = function() CloseMenu() DriveToDestination() end},
         {id = "TAXI_TELEPORT_WAY", label = "Teleport", quantity = nil, cb = function() CloseMenu() TeleportToDestination() end},
     })
+
+    DriveToDestination()
 end
 
 function CloseMenu()
@@ -174,7 +174,7 @@ function DriveToDestination()
     AddDestinationBlip(taxiDestinationCoords)
 
     while #(vector3(taxiDestinationCoords.x, taxiDestinationCoords.y, taxiDestinationCoords.z) - GetEntityCoords(ped)) >= 3.0 do
-        Citizen.Wait(100)
+        Citizen.Wait(1)
         if IsControlJustReleased(0, 75) then 
             TriggerEvent("notification:send", {color = "red", time = 10000, text = "You left the taxi early. The taxi will leave you behind."})
             break
