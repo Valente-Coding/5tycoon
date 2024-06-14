@@ -638,12 +638,13 @@ function SearchForClients(houseID)
 
                 for i = 1, clientWaitingMinutes, 1 do
                     Citizen.Wait(60000)
-                    if not hasAttendClient then 
-                        TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "You have a buyer waiting at the house you are selling. You have "..(clientWaitingMinutes - i).." minutes before they leave!"})
-                    end
 
                     if clientPed == nil then 
                         return
+                    end
+
+                    if not hasAttendClient then 
+                        TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "You have a buyer waiting at the house you are selling. You have "..(clientWaitingMinutes - i).." minutes before they leave!"})
                     end
                 end
 
