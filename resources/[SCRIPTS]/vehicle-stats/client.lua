@@ -93,7 +93,7 @@ function SetVehicleBodyDamage(veh, vehicleBodyDamage)
     end
 end
 
-function SetVehData(veh, data) 
+function SetVehData(veh, data)
     exports["VehicleDeformation"]:SetVehicleDeformation(veh, data["bodydeformation"])
     SetVehicleEngineHealth(veh, data["enginehealth"])
     SetVehicleFuelLevel(veh, data["fuelLevel"])
@@ -117,7 +117,7 @@ AddEventHandler("vehicle-stats:getProperties", GetProperties)
 RegisterNetEvent("vehicle-stats:setProperties")
 
 function SetProperties(veh, properties)
-    SetVehData(veh, data)
+    SetVehData(veh, properties)
 end
 
 AddEventHandler("vehicle-stats:setProperties", SetProperties)

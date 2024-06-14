@@ -3,7 +3,7 @@ local spawnedVehs = {}
 RegisterNetEvent("garage:addVehicleToChar")
 
 function AddVehicleToChar(veh)
-	TriggerEvent("vehicle-stats:getProperies", veh, function(properties)
+	TriggerEvent("vehicle-stats:getProperties", veh, function(properties)
 		local charVehs = json.decode(GetExternalKvpString("save-load", "CHAR_VEHICLES"))
 
 		AddBlipToVeh(veh)
@@ -33,7 +33,7 @@ function SpawnVehicle(data)
 	if veh then 
 		AddBlipToVeh(veh)
 
-    	TriggerEvent("vehicle-stats:setProperies", veh, data)
+    	TriggerEvent("vehicle-stats:setProperties", veh, data)
 		table.insert(spawnedVehs, veh)
     	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
 	end
