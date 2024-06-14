@@ -235,8 +235,10 @@ local clientModels = {
     "a_m_y_yoga_01",
 }
 
+local charID = nil
 Citizen.CreateThread(function()
     --TriggerServerEvent("save-load:saveData", "./housing/houses.json", houseSaleBlips)
+    charID = GetExternalKvpInt("save-load", "CHAR_ID")
     TriggerServerEvent("save-load:loadData", "./housing/houses.json", GetPlayerServerId(PlayerId()))
 end)
 
@@ -244,7 +246,6 @@ end)
 local clientPed = nil
 local offeredPrice = nil
 local houses = {}
-local charID = nil
 RegisterNetEvent("save-load:loadDataResult")
 AddEventHandler("save-load:loadDataResult", function(data, path)
     if path == "./housing/houses.json" then 
@@ -255,6 +256,7 @@ AddEventHandler("save-load:loadDataResult", function(data, path)
 end)
 
 local blips = {}
+local isSellingAHouse = false
 
 function ShowBlips()
     for _, blip in pairs(blips) do 
@@ -273,6 +275,10 @@ function ShowBlips()
                 elseif house.selling then
                     blipColor = 3
                     blipLabel = "Selling House"
+
+                    if not isSellingAHouse then 
+                        SearchForClients(i)
+                    end
                 else
                     blipColor = 2
                     blipLabel = "House"
@@ -312,10 +318,10 @@ end
 
 
 local menuOpen = false
-local isSellingAHouse = false
 local housesOwnTemp = 0
 local housesOwn = 0
 local closestHouse = nil
+local hasAttendClient = false
 Citizen.CreateThread(function()
     local ped = nil 
     local coords = nil
@@ -331,7 +337,7 @@ Citizen.CreateThread(function()
         housesOwnTemp = 0
         
         for houseID, house in pairs(houses) do
-            if house.selling then 
+            if house.owner and charID and house.owner == charID and house.selling then 
                 isSellingAHouse = true
             end
 
@@ -506,6 +512,7 @@ function RespondOffer(houseID, accept)
         end
 
         clientPed = nil
+        hasAttendClient = false
         offeredPrice = nil
 
         SaveHousingData()
@@ -565,6 +572,7 @@ end
 
 function SaveHousingData()
     TriggerServerEvent("save-load:saveData", "./housing/houses.json", houses, true)
+
 end
 
 function CloseAllMenus(cooldown, stay)
@@ -606,13 +614,14 @@ Citizen.CreateThread(function()
 end)
 
 
-
+local clientWaitingMinutes = 5
 function SearchForClients(houseID)
     Citizen.CreateThread(function()
         local currentSellingHouse = houses[houseID]
         local chanceOfSpawn = 30
         local searching = true
         clientPed = nil
+        hasAttendClient = false
         while searching do 
             Citizen.Wait(300000)
 
@@ -627,7 +636,16 @@ function SearchForClients(houseID)
             if clientPed then 
                 TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "Someone is interested in your house. Go meet them!"})
 
-                Citizen.Wait(300000)
+                for i = 1, clientWaitingMinutes, 1 do
+                    Citizen.Wait(60000)
+                    if not hasAttendClient then 
+                        TriggerEvent("notification:send", {color = "yellow", time = 5000, text = "You have a buyer waiting at the house you are selling. You have "..(clientWaitingMinutes - i).." minutes before they leave!"})
+                    end
+
+                    if clientPed == nil then 
+                        return
+                    end
+                end
 
                 if clientPed then
                     DeleteEntity(clientPed)
@@ -687,6 +705,7 @@ function MakeEntityFaceEntity(entity1, entity2)
 end
 
 function StartVisit(price)
+    hasAttendClient = true
     CloseAllMenus(8000)
     
     DoScreenFadeOut(1000)
@@ -712,6 +731,7 @@ end
 RegisterNetEvent("multichar:charIdChanged")
 AddEventHandler("multichar:charIdChanged", function()
     charID = GetExternalKvpInt("save-load", "CHAR_ID")
+    ShowBlips()
 end)
 
 RegisterNetEvent("multichar:charDied")

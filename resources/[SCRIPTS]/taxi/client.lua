@@ -4,6 +4,7 @@ local currentTaxiVeh = nil
 local currentTaxiNpc = nil
 local waitTime = 60000
 local currentWaitingTime = 0
+local pickupCoords = nil
 
 RegisterNetEvent("taxi:callTaxi")
 
@@ -46,7 +47,7 @@ end
 
 function SpawnTaxi(ped)
     local pCoords = GetEntityCoords(ped)
-    local streetCoords = GetClosestStreetCoords(pCoords.x - math.random(-200, 200), pCoords.y - math.random(-200, 200), pCoords.z)
+    local streetCoords = GetClosestStreetCoords(pCoords.x - math.random(-100, 100), pCoords.y - math.random(-100, 100), pCoords.z)
     local vehModel = "taxi"
     local npcModel = "a_m_y_stlat_01"
 
@@ -75,10 +76,11 @@ function SpawnTaxi(ped)
     SetEntityAsMissionEntity(currentTaxiVeh, true, true)
     SetVehicleEngineOn(currentTaxiVeh, true, true, false)
 
-    SetDriveTaskDrivingStyle(currentTaxiNpc, 1074528293)
+    SetDriverAbility(currentTaxiNpc, 1.0)
+    SetDriverAggressiveness(currentTaxiNpc, 0.0)
 
-    local closestPedStreet = GetClosestStreetCoords(pCoords.x, pCoords.y, pCoords.z)
-    TaskVehicleDriveToCoord(currentTaxiNpc, currentTaxiVeh, closestPedStreet.x, closestPedStreet.y, closestPedStreet.z, 26.0, 0, GetHashKey(vehModel), 411, 10.0)
+    pickupCoords = GetClosestRoadSideCoords(pCoords.x, pCoords.y, pCoords.z)
+    TaskVehicleDriveToCoord(currentTaxiNpc, currentTaxiVeh, pickupCoords.x, pickupCoords.y, pickupCoords.z, 26.0, 0, GetHashKey(vehModel), 411, 3.0)
     SetPedKeepTask(currentTaxiNpc, true)
 end
 
@@ -136,6 +138,11 @@ function WaitForConfirmation(ped)
     while not IsPedInVehicle(ped, currentTaxiVeh, false) and currentWaitingTime <= waitTime do 
         Citizen.Wait(1)
         currentWaitingTime = currentWaitingTime + 1
+
+        if #(GetEntityCoords(currentTaxiVeh) - pickupCoords) < 20.0 then 
+            SetVehicleMaxSpeed(currentTaxiVeh, 6.21)
+        end
+
         if #(GetEntityCoords(ped) - GetEntityCoords(currentTaxiVeh)) < 10 then 
             DisableControlAction(0, 75, true)
             if IsDisabledControlJustReleased(0, 75) then 
@@ -143,6 +150,8 @@ function WaitForConfirmation(ped)
             end
         end
     end
+
+    SetVehicleMaxSpeed(currentTaxiVeh, 26.0)
 
     TriggerEvent("waypointer:remove", "taxi-"..GetVehicleNumberPlateText(currentTaxiVeh))
 
@@ -154,7 +163,7 @@ function WaitForConfirmation(ped)
 
     CloseMenu()
     TriggerEvent("side-menu:addOptions", {
-        {id = "TAXI_TELEPORT_WAY", label = "Teleport", quantity = nil, cb = function() CloseMenu() TeleportToDestination() end},
+        {id = "TAXI_TELEPORT_WAY", label = "Sleep", quantity = nil, cb = function() CloseMenu() TeleportToDestination() end},
     })
 
     DriveToDestination()
@@ -167,19 +176,28 @@ end
 function DriveToDestination()
     local ped = GetPlayerPed(-1)
 
-    local taxiDestinationCoords = GetClosestStreetCoords(destination.x, destination.y, destination.z)
-    TaskVehicleDriveToCoord(currentTaxiNpc, currentTaxiVeh, taxiDestinationCoords.x, taxiDestinationCoords.y, taxiDestinationCoords.z, 26.0, 0, "taxi", 411, 1.0)
+    local taxiCloseDestinationCoords = GetClosestStreetCoords(destination.x, destination.y, destination.z)
+    local taxiDestinationCoords = GetClosestRoadSideCoords(taxiCloseDestinationCoords.x, taxiCloseDestinationCoords.y, taxiCloseDestinationCoords.z)
+    TaskVehicleDriveToCoord(currentTaxiNpc, currentTaxiVeh, taxiDestinationCoords.x, taxiDestinationCoords.y, taxiDestinationCoords.z, 26.0, 0, "taxi", 411, 3.0)
     SetPedKeepTask(currentTaxiNpc, true)
 
     AddDestinationBlip(taxiDestinationCoords)
 
-    while #(vector3(taxiDestinationCoords.x, taxiDestinationCoords.y, taxiDestinationCoords.z) - GetEntityCoords(ped)) >= 3.0 do
+    while #(vector3(taxiDestinationCoords.x, taxiDestinationCoords.y, taxiDestinationCoords.z) - GetEntityCoords(currentTaxiNpc)) >= 7.0 do
         Citizen.Wait(1)
+
+        if #(GetEntityCoords(currentTaxiVeh) - taxiDestinationCoords) < 10.0 then 
+            SetVehicleMaxSpeed(currentTaxiVeh, 6.21)
+        end
+
         if IsControlJustReleased(0, 75) then 
             TriggerEvent("notification:send", {color = "red", time = 10000, text = "You left the taxi early. The taxi will leave you behind."})
             break
         end
     end
+
+    CloseMenu()
+    SetVehicleMaxSpeed(currentTaxiVeh, 26.0)
 
     TriggerEvent("waypointer:remove", "taxi-destination")
         
@@ -212,14 +230,18 @@ function TeleportToDestination()
     Citizen.Wait(1500)
 
     DoScreenFadeIn(500)
-
-    DriveToDestination()
 end
 
 function GetClosestStreetCoords(x, y, z)
     local f, coords, heading = GetClosestVehicleNodeWithHeading(x, y, z, 12, 3.0, 0)
     
     return vector4(coords.x, coords.y, coords.z, heading)
+end
+
+function GetClosestRoadSideCoords(x, y, z) 
+    local retval, coords = GetPointOnRoadSide(x, y, z, 0)
+
+    return coords
 end
 
 function DeleteTaxi()
