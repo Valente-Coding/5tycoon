@@ -8,7 +8,7 @@ function AddVehicleToChar(veh)
 
 		AddBlipToVeh(veh)
 
-		table.insert(charVehs, properties)
+		table.insert(charVehs, {lastpos = GetEntityCoords(veh), lastheading = GetEntityHeading(veh), properties = properties})
 		table.insert(spawnedVehs, veh)
 		TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_VEHICLES", type = "string", value = json.encode(charVehs)}, {name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
 	end)
@@ -29,7 +29,7 @@ end
 AddEventHandler("multichar:charDied", DeleteSpawnedVehicles)
 
 function SpawnVehicle(data)
-    local veh = CreateVehicle(data["model"], data["lastpos"].x, data["lastpos"].y, data["lastpos"].z, data["lastheading"], true, true)
+    local veh = CreateVehicle(data.properties.model, data.lastpos.x, data.lastpos.y, data.lastpos.z, data.lastheading, true, true)
 	if veh then 
 		AddBlipToVeh(veh)
 
@@ -41,14 +41,26 @@ end
 
 function AddBlipToVeh(veh)
 	if veh then 
-		blip = AddBlipForEntity(veh)
-		SetBlipSprite(blip, 225)
-        SetBlipScale(blip, 0.7)
-        SetBlipColour(blip, 0)
-        SetBlipAsShortRange(blip, true)
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentString("Owned Vehicle")
-        EndTextCommandSetBlipName(blip)
+        TriggerEvent("waypointer:add", 
+            "vehicle-"..GetVehicleNumberPlateText(veh), --waypointer name
+            {
+                coords = nil, 
+                entity = veh, -- No need to set coords when using entities
+                sprite = 225, scale = 0.7, 
+                short = true, 
+                color = 26, 
+                label = "Owned Vehicle"
+            }, 
+            {
+                coords = nil, 
+                color = 26, 
+                onFoot = true, 
+                radarThick = 16, 
+                mapThick = 16, 
+                range = 30, 
+                removeBlip = true
+            }
+        )
 	end
 end
 
@@ -56,9 +68,12 @@ function SaveVehicle(veh)
     local charVehs = json.decode(GetExternalKvpString("save-load", "CHAR_VEHICLES"))
 
     for i, charVeh in pairs(charVehs) do
-        if charVeh["plate"] == GetVehicleNumberPlateText(veh) then 
+        if charVeh.properties.plate == GetVehicleNumberPlateText(veh) then 
 			TriggerEvent("vehicle-stats:getProperies", veh, function(properties)
-				charVehs[i] = properties
+				charVehs[i].properties = properties
+                charVehs[i].lastpos = GetEntityCoords(veh)
+                charVehs[i].lastheading = GetEntityHeading(veh)
+
             	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_VEHICLES", type = "string", value = json.encode(charVehs)}})
 			end)
             
@@ -73,9 +88,12 @@ Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(2000)
         local ped = GetPlayerPed(-1)
-        if IsPedInAnyVehicle(ped) then 
-			local veh = GetVehiclePedIsIn(ped)
-            SaveVehicle(veh)
+        if IsPedInAnyVehicle(ped) and not wasInVehicle then 
+            wasInVehicle = true
+            lastVehicle = GetVehiclePedIsIn(ped)
+        elseif not IsPedInAnyVehicle(ped) and wasInVehicle then
+            wasInVehicle = false
+            SaveVehicle(lastVehicle)
         end
     end
 end)
