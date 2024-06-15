@@ -33,7 +33,7 @@ function SpawnVehicle(data)
 	if veh then 
 		AddBlipToVeh(veh)
 
-    	TriggerEvent("vehicle-stats:setProperties", veh, data)
+    	TriggerEvent("vehicle-stats:setProperties", veh, data.properties)
 		table.insert(spawnedVehs, veh)
     	TriggerEvent("save-load:setGlobalVariables", {{name = "CHAR_SPAWNED_VEHICLES", type = "string", value = json.encode(spawnedVehs)}})
 	end
@@ -48,8 +48,8 @@ function AddBlipToVeh(veh)
                 entity = veh, -- No need to set coords when using entities
                 sprite = 225, scale = 0.7, 
                 short = true, 
-                color = 26, 
-                label = "Owned Vehicle"
+                color = 0, 
+                label = "Owned Vehicle: "..GetLabelText(GetDisplayNameFromVehicleModel(GetEntityModel(veh)))
             }, 
             {
                 coords = nil, 
@@ -69,7 +69,7 @@ function SaveVehicle(veh)
 
     for i, charVeh in pairs(charVehs) do
         if charVeh.properties.plate == GetVehicleNumberPlateText(veh) then 
-			TriggerEvent("vehicle-stats:getProperies", veh, function(properties)
+			TriggerEvent("vehicle-stats:getProperties", veh, function(properties)
 				charVehs[i].properties = properties
                 charVehs[i].lastpos = GetEntityCoords(veh)
                 charVehs[i].lastheading = GetEntityHeading(veh)
@@ -83,7 +83,7 @@ function SaveVehicle(veh)
 end
 
 local wasInVehicle = false
-local lastVehicle = false
+local lastVehicle = nil
 Citizen.CreateThread(function()
     while true do 
         Citizen.Wait(2000)
@@ -91,9 +91,10 @@ Citizen.CreateThread(function()
         if IsPedInAnyVehicle(ped) and not wasInVehicle then 
             wasInVehicle = true
             lastVehicle = GetVehiclePedIsIn(ped)
-        elseif not IsPedInAnyVehicle(ped) and wasInVehicle then
+        elseif not IsPedInAnyVehicle(ped) and wasInVehicle and lastVehicle ~= nil then
             wasInVehicle = false
             SaveVehicle(lastVehicle)
+            lastVehicle = nil
         end
     end
 end)
@@ -106,6 +107,20 @@ AddEventHandler("garage:spawnvehicles", function()
         SpawnVehicle(vehData)
     end
 end)
+
+--[[Citizen.CreateThread(function()
+    local charVehs = json.decode(GetExternalKvpString("save-load", "CHAR_VEHICLES"))
+
+    print(json.encode(charVehs))
+
+    if #charVehs == 0 then 
+        return
+    end
+
+    for _, vehData in pairs(charVehs) do 
+        SpawnVehicle(vehData)
+    end
+end)]]
 
 --[[ RegisterCommand("yoink", function()
     local ped = GetPlayerPed(-1)
