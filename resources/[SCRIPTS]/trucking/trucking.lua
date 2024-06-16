@@ -666,6 +666,7 @@ Citizen.CreateThread(function()
                         RemoveAllWaypoints()
                         DeleteMissionVeh(SpawnedMissionVeh)
                         OnMission = false
+                        DeliveryCompleted = false
                     end
                 }})
             end
