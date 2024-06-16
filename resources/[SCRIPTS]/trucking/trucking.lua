@@ -260,8 +260,6 @@ function PickupBox(boxPickup)
         Citizen.Wait(1)
     end
 
-    SetEntityCoords(playerPed, boxPickup.x, boxPickup.y, boxPickup.z - 1, false, false, false, false)
-    SetEntityHeading(playerPed, boxPickup.h)
     TaskPlayAnim(playerPed, 'anim@heists@box_carry@', 'idle', 8.0, -8.0, -1, 50, 0, false, false, false)
 
     box = CreateObject(boxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
@@ -271,8 +269,6 @@ end
 function DropBox(boxDropoff)
     local playerPed = GetPlayerPed(-1)
 
-    SetEntityCoords(playerPed, boxDropoff.x, boxDropoff.y, boxDropoff.z - 1, false, false, false, false)
-    SetEntityHeading(playerPed, boxDropoff.h)
     DetachEntity(box, false, false)
     DeleteEntity(box)
     ClearPedTasks(playerPed)
@@ -280,7 +276,9 @@ function DropBox(boxDropoff)
 end
 
 function DeliverBoxesByHand(playerPed, deliveryPoint)
-    rearOfVehicle = GetRearOfVehicle(deliveryPoint.coords.h, deliveryPoint.coords, 3.0)
+    local vehHeading = GetEntityHeading(SpawnedMissionVeh)
+    local vehCoords = GetEntityCoords(SpawnedMissionVeh)
+    rearOfVehicle = GetRearOfVehicle(vehHeading, vehCoords, 3.0)
     local distance = #(GetEntityCoords(playerPed) - vector3(rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z))
 
     for i = 1, NumberOfBoxes, 1 do
@@ -332,11 +330,11 @@ function Mission()
     local playerPed = GetPlayerPed(-1)
     SpawnedMissionVeh = SelectVehicle(MissionVehSpawn)
     local deliveryPoint = GetDeliveryPoint()
-    local distance = 100.0
     
     WaypointerCreate("delivery", deliveryPoint.coords, nil, 1, true, 5, "Delivery Point", false, false, true)
 
     if truckData.level < 5 then
+        local distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
         while distance > 5.0 do
             Citizen.Wait(100)
             distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
@@ -354,6 +352,7 @@ function Mission()
             TriggerEvent("notification:send", {text = "You must be in the job vehicle to do the delivery.", color = "red", duration = 4000})
         end
     else
+        local distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
         while distance > 5 do
             Citizen.Wait(100)
             distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
@@ -375,6 +374,7 @@ function Mission()
 
     WaypointerCreate("depot", MissionVehSpawn, nil, 1, true, 5, "Depot", false, true, true)
 
+    local distance = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
     while distance > 5 do
         Citizen.Wait(100)
         distance = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
