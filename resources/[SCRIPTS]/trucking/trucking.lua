@@ -666,8 +666,6 @@ Citizen.CreateThread(function()
                         RemoveAllWaypoints()
                         DeleteMissionVeh(SpawnedMissionVeh)
                         OnMission = false
-                        IsGoingBackToDepot = nil
-                        IsGoingToDelivery = nil
                     end
                 }})
             end
