@@ -6,6 +6,7 @@ local NumberOfBoxes = 3
 local rearOfVehicle = nil
 local boxModel = nil
 local box = nil
+local DeliveryCompleted = false
 
 local npcBlip = {{
     x = -320.5476,
@@ -21,48 +22,225 @@ local MissionVehSpawn = {
     h = 180.6195
 }
 
-local NearDeliveryPoints = {
-    {coords = {x = 125.1992, y = -1681.8038, z = 29.4518}, dropPoint = {x = 124.3447, y = -1675.8998, z = 29.4123}},
-    {coords = {x = 203.8805, y = -1752.3889, z = 28.9502}, dropPoint = {x = 207.8828, y = -1760.1200, z = 29.2684}},
-    {coords = {x = 333.6156, y = -1003.8737, z = 29.3410}, dropPoint = {x = 333.2864, y = -995.0946, z = 29.3098}},
-    {coords = {x = -524.7351, y = -873.9084, z = 28.1729}, dropPoint = {x = -534.2145, y = -872.5502, z = 27.1948}},
-    {coords = {x = -668.1384, y = -1212.0399, z = 10.5957}, dropPoint = {x = -664.4123, y = -1218.1064, z = 11.8129}},
-    {coords = {x = -527.0165, y = -1778.4534, z = 21.3555}, dropPoint = {x = -528.4014, y = -1784.2699, z = 21.5678}},
-    {coords = {x = 104.6263, y = -1817.7787, z = 26.5312}, dropPoint = {x = 95.3955, y = -1810.3585, z = 27.0797}},
-    {coords = {x = 332.7674, y = -1276.0029, z = 31.7686}, dropPoint = {x = 340.3990, y = -1270.7715, z = 32.0128}},
-    {coords = {x = -10.9446, y = -729.7403, z = 32.2957}, dropPoint = {x = -7.2147, y = -719.0940, z = 32.2503}}
-}
+local NearDeliveryPoints = {{
+    coords = {
+        x = 125.1992,
+        y = -1681.8038,
+        z = 29.4518
+    },
+    dropPoint = {
+        x = 124.3447,
+        y = -1675.8998,
+        z = 29.4123
+    }
+}, {
+    coords = {
+        x = 203.8805,
+        y = -1752.3889,
+        z = 28.9502
+    },
+    dropPoint = {
+        x = 207.8828,
+        y = -1760.1200,
+        z = 29.2684
+    }
+}, {
+    coords = {
+        x = 333.6156,
+        y = -1003.8737,
+        z = 29.3410
+    },
+    dropPoint = {
+        x = 333.2864,
+        y = -995.0946,
+        z = 29.3098
+    }
+}, {
+    coords = {
+        x = -524.7351,
+        y = -873.9084,
+        z = 28.1729
+    },
+    dropPoint = {
+        x = -534.2145,
+        y = -872.5502,
+        z = 27.1948
+    }
+}, {
+    coords = {
+        x = -668.1384,
+        y = -1212.0399,
+        z = 10.5957
+    },
+    dropPoint = {
+        x = -664.4123,
+        y = -1218.1064,
+        z = 11.8129
+    }
+}, {
+    coords = {
+        x = -527.0165,
+        y = -1778.4534,
+        z = 21.3555
+    },
+    dropPoint = {
+        x = -528.4014,
+        y = -1784.2699,
+        z = 21.5678
+    }
+}, {
+    coords = {
+        x = 104.6263,
+        y = -1817.7787,
+        z = 26.5312
+    },
+    dropPoint = {
+        x = 95.3955,
+        y = -1810.3585,
+        z = 27.0797
+    }
+}, {
+    coords = {
+        x = 332.7674,
+        y = -1276.0029,
+        z = 31.7686
+    },
+    dropPoint = {
+        x = 340.3990,
+        y = -1270.7715,
+        z = 32.0128
+    }
+}, {
+    coords = {
+        x = -10.9446,
+        y = -729.7403,
+        z = 32.2957
+    },
+    dropPoint = {
+        x = -7.2147,
+        y = -719.0940,
+        z = 32.2503
+    }
+}}
 
-local MediumDeliveryPoints = {
-    {coords = {x = -7.2147, y = -719.0940, z = 32.2503}},
-    {coords = {x = 1201.0251, y = -1385.7041, z = 35.2270}},
-    {coords = {x = 1042.7601, y = -2177.4915, z = 31.4436}},
-    {coords = {x = 164.5376, y = -3075.0129, z = 5.9130}},
-    {coords = {x = 119.7690, y = -2581.8323, z = 6.0047}},
-    {coords = {x = -765.9445, y = -2608.9468, z = 13.8285}},
-    {coords = {x = -1060.6147, y = -2014.8705, z = 13.1616}},
-    {coords = {x = -1622.1718, y = -810.4937, z = 10.0894}},
-    {coords = {x = 827.6365, y = -125.0640, z = 80.2620}}
-}
+local MediumDeliveryPoints = {{
+    coords = {
+        x = -7.2147,
+        y = -719.0940,
+        z = 32.2503
+    }
+}, {
+    coords = {
+        x = 1201.0251,
+        y = -1385.7041,
+        z = 35.2270
+    }
+}, {
+    coords = {
+        x = 1042.7601,
+        y = -2177.4915,
+        z = 31.4436
+    }
+}, {
+    coords = {
+        x = 164.5376,
+        y = -3075.0129,
+        z = 5.9130
+    }
+}, {
+    coords = {
+        x = 119.7690,
+        y = -2581.8323,
+        z = 6.0047
+    }
+}, {
+    coords = {
+        x = -765.9445,
+        y = -2608.9468,
+        z = 13.8285
+    }
+}, {
+    coords = {
+        x = -1060.6147,
+        y = -2014.8705,
+        z = 13.1616
+    }
+}, {
+    coords = {
+        x = -1622.1718,
+        y = -810.4937,
+        z = 10.0894
+    }
+}, {
+    coords = {
+        x = 827.6365,
+        y = -125.0640,
+        z = 80.2620
+    }
+}}
 
-local FarDeliveryPoints = {
-    {coords = {x = 646.2348, y = 597.0365, z = 128.9107}},
-    {coords = {x = 2737.0703, y = 1454.1600, z = 29.0571}},
-    {coords = {x = 1249.5817, y = -3297.1455, z = 5.8617}},
-    {coords = {x = -2977.3325, y = 431.5482, z = 15.0386}},
-    {coords = {x = 811.5959, y = 2198.4182, z = 52.1375}},
-    {coords = {x = 1562.3636, y = 3782.5852, z = 34.4291}},
-    {coords = {x = 1953.8124, y = 3767.5435, z = 32.2053}},
-    {coords = {x = 2907.5132, y = 4424.3115, z = 48.3451}},
-    {coords = {x = 44.5371, y = 6295.3125, z = 31.2412}}
-}
+local FarDeliveryPoints = {{
+    coords = {
+        x = 646.2348,
+        y = 597.0365,
+        z = 128.9107
+    }
+}, {
+    coords = {
+        x = 2737.0703,
+        y = 1454.1600,
+        z = 29.0571
+    }
+}, {
+    coords = {
+        x = 1249.5817,
+        y = -3297.1455,
+        z = 5.8617
+    }
+}, {
+    coords = {
+        x = -2977.3325,
+        y = 431.5482,
+        z = 15.0386
+    }
+}, {
+    coords = {
+        x = 811.5959,
+        y = 2198.4182,
+        z = 52.1375
+    }
+}, {
+    coords = {
+        x = 1562.3636,
+        y = 3782.5852,
+        z = 34.4291
+    }
+}, {
+    coords = {
+        x = 1953.8124,
+        y = 3767.5435,
+        z = 32.2053
+    }
+}, {
+    coords = {
+        x = 2907.5132,
+        y = 4424.3115,
+        z = 48.3451
+    }
+}, {
+    coords = {
+        x = 44.5371,
+        y = 6295.3125,
+        z = 31.2412
+    }
+}}
 
 function SelectVehicle(coords)
     local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
     local modelHash = nil
     local trailerHash = nil
     local spawnedVeh = nil
-    
+
     if truckData.level == 0 or truckData.level == 1 then
         modelHash = GetHashKey("sadler")
     elseif truckData.level == 2 or truckData.level == 3 then
@@ -72,7 +250,7 @@ function SelectVehicle(coords)
     elseif truckData.level == 6 or truckData.level == 7 then
         modelHash = GetHashKey("benson")
     elseif truckData.level == 8 then
-        modelHash = GetHashKey("pounder")    
+        modelHash = GetHashKey("pounder")
     elseif truckData.level == 9 or truckData.level == 10 then
         modelHash = GetHashKey("phantom")
         trailerHash = GetHashKey("trailers")
@@ -196,26 +374,18 @@ function CreateMarkers(id, coordsX, coordsY, coordsZ, color)
     local chosenColor = color
 
     if chosenColor == "green" then
-        chosenColor = {
-            0,
-            255,
-            0,
-            255
-        }
+        chosenColor = {0, 255, 0, 255}
     elseif chosenColor == "blue" then
-        chosenColor = {
-            0,
-            0,
-            255,
-            255
-        }
+        chosenColor = {0, 0, 255, 255}
     end
 
-    DrawMarker(id, coordsX, coordsY, coordsZ, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, chosenColor[1], chosenColor[2], chosenColor[3], chosenColor[4], false, false, 2, false, false, false, false)
+    DrawMarker(id, coordsX, coordsY, coordsZ, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, chosenColor[1],
+        chosenColor[2], chosenColor[3], chosenColor[4], false, false, 2, false, false, false, false)
 end
 
 function GetRearOfVehicle(heading, coords, distance)
-    local angle = math.rad(heading)
+    -- Adjust the heading by 180 degrees to get the rear direction
+    local angle = math.rad(heading - 90)
     local x = coords.x + distance * math.cos(angle)
     local y = coords.y + distance * math.sin(angle)
 
@@ -224,17 +394,19 @@ end
 
 function MakePlayerVehicleParked(playerPed)
     TaskLeaveVehicle(playerPed, SpawnedMissionVeh, 0)
-    SetVehicleDoorsLocked(SpawnedMissionVeh, 10)
     FreezeEntityPosition(SpawnedMissionVeh, true)
 end
 
 function MakePlayerVehicleNotParked()
     FreezeEntityPosition(SpawnedMissionVeh, false)
-    SetVehicleDoorsLocked(SpawnedMissionVeh, 0)
 end
 
 function UnloadingTruck(playerPed)
-    TriggerEvent("notification:send", {text = "You are waiting for the team to finish unloading the cargo.", color = "blue", duration = 4000})
+    TriggerEvent("notification:send", {
+        text = "You are waiting for the team to finish unloading the cargo.",
+        color = "blue",
+        time = 4000
+    })
     FreezeEntityPosition(playerPed, true)
     FreezeEntityPosition(SpawnedMissionVeh, true)
     DoScreenFadeIOut(500)
@@ -242,7 +414,11 @@ function UnloadingTruck(playerPed)
     DoScreenFadeIn(500)
     FreezeEntityPosition(playerPed, false)
     FreezeEntityPosition(SpawnedMissionVeh, false)
-    TriggerEvent("notification:send", {text = "The cargo has been unloaded. You can now go back to the depot.", color = "green", duration = 7000})
+    TriggerEvent("notification:send", {
+        text = "The cargo has been unloaded. You can now go back to the depot.",
+        color = "green",
+        time = 7000
+    })
 end
 
 function PickupBox(boxPickup)
@@ -263,7 +439,8 @@ function PickupBox(boxPickup)
     TaskPlayAnim(playerPed, 'anim@heists@box_carry@', 'idle', 8.0, -8.0, -1, 50, 0, false, false, false)
 
     box = CreateObject(boxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
-    AttachEntityToEntity(box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0, true, true, false, true, 1, true)
+    AttachEntityToEntity(box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+        true, true, false, true, 1, true)
 end
 
 function DropBox(boxDropoff)
@@ -278,49 +455,69 @@ end
 function DeliverBoxesByHand(playerPed, deliveryPoint)
     local vehHeading = GetEntityHeading(SpawnedMissionVeh)
     local vehCoords = GetEntityCoords(SpawnedMissionVeh)
-    rearOfVehicle = GetRearOfVehicle(vehHeading, vehCoords, 3.0)
-    local distance = #(GetEntityCoords(playerPed) - vector3(rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z))
+    local rearOfVehicle = GetRearOfVehicle(vehHeading, vehCoords, 4.0)
+    local dropPoint = deliveryPoint.dropPoint
 
     for i = 1, NumberOfBoxes, 1 do
-        while distance > 1.5 do
+        local distanceToRear =
+            #(GetEntityCoords(playerPed) - vector3(rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z))
+        while distanceToRear > 1.5 do
             Citizen.Wait(1)
             CreateMarkers(0, rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z, "blue")
-            distance = #(GetEntityCoords(playerPed) - vector3(rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z))
+            distanceToRear = #(GetEntityCoords(playerPed) - vector3(rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z))
         end
-        
+
         PickupBox(rearOfVehicle)
 
-        local dropPoint = deliveryPoint.dropPoint
+        Citizen.Wait(3000)
 
-        while distance > 1.5 do
+        local distanceToDrop = #(GetEntityCoords(playerPed) - vector3(dropPoint.x, dropPoint.y, dropPoint.z))
+        while distanceToDrop > 1.5 do
             Citizen.Wait(1)
             CreateMarkers(0, dropPoint.x, dropPoint.y, dropPoint.z, "green")
-            distance = #(GetEntityCoords(playerPed) - vector3(dropPoint.x, dropPoint.y, dropPoint.z))
+            distanceToDrop = #(GetEntityCoords(playerPed) - vector3(dropPoint.x, dropPoint.y, dropPoint.z))
         end
 
         DropBox(dropPoint)
     end
 
-    TriggerEvent("notification:send", {text = "All boxes have been delivered. You can now go back to the depot.", color = "green", duration = 7000})
+    TriggerEvent("notification:send", {
+        text = "All boxes have been delivered. You can now go back to the depot.",
+        color = "green",
+        time = 7000
+    })
 
     MakePlayerVehicleNotParked()
+
+    DeliveryCompleted = true
 end
 
 function GettingPaid()
     local truckData = json.decode(GetExternalKvpString("save-load", "TRUCK_DATA"))
     local payment = math.random(1000, 2000)
-    payment = math.floor(payment + (payment * (warehouseData.level / 5)))
-    TriggerEvent("notification:send", {time = 5000, color = "green", text = "You have been paid $" .. payment})
+    payment = math.floor(payment + (payment * (truckData.level / 5)))
+    TriggerEvent("notification:send", {
+        time = 5000,
+        color = "green",
+        text = "You have been paid $" .. payment
+    })
     TriggerEvent("bank:changeBank", payment)
     truckData.jobs = truckData.jobs + 1
     if truckData.level < 10 and truckData.jobs <= 100 then
         truckData.level = math.floor(truckData.jobs / 10)
         if truckData.level == 100 then
-            TriggerEvent('notification:center', {time = 5000, text = "You reached max level."})
+            TriggerEvent('notification:center', {
+                time = 5000,
+                text = "You reached max level."
+            })
             truckData.canBuy = true
         end
     end
-    TriggerEvent("save-load:setGlobalVariables", {{name = "TRUCK_DATA", type = "string", value = json.encode(truckData)}})
+    TriggerEvent("save-load:setGlobalVariables", {{
+        name = "TRUCK_DATA",
+        type = "string",
+        value = json.encode(truckData)
+    }})
 end
 
 function Mission()
@@ -330,63 +527,81 @@ function Mission()
     local playerPed = GetPlayerPed(-1)
     SpawnedMissionVeh = SelectVehicle(MissionVehSpawn)
     local deliveryPoint = GetDeliveryPoint()
-    
+
     WaypointerCreate("delivery", deliveryPoint.coords, nil, 1, true, 5, "Delivery Point", false, false, true)
 
-    if truckData.level < 5 then
-        local distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
-        while distance > 5.0 do
+    local function WaitUntilClose(coords, threshold)
+        local distance = #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z))
+        while distance > threshold do
             Citizen.Wait(100)
-            distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
+            distance = #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z))
         end
+    end
+
+    if truckData.level < 5 then
+        WaitUntilClose(deliveryPoint.coords, 5.0)
 
         if IsPedInVehicle(playerPed, SpawnedMissionVeh, false) then
-            TriggerEvent("side-menu:addOptions", {
-                {id = "trucking_job_deliver_near", label = "Deliver Boxes", cb = function()
+            TriggerEvent("side-menu:addOptions", {{
+                id = "trucking_job_deliver_near",
+                label = "Deliver Boxes",
+                cb = function()
                     CloseAllMenus()
                     MakePlayerVehicleParked(playerPed)
                     DeliverBoxesByHand(playerPed, deliveryPoint)
-                end}
-            })
+                end
+            }})
         else
-            TriggerEvent("notification:send", {text = "You must be in the job vehicle to do the delivery.", color = "red", duration = 4000})
+            TriggerEvent("notification:send", {
+                text = "You must be in the job vehicle to do the delivery.",
+                color = "red",
+                time = 4000
+            })
         end
     else
-        local distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
-        while distance > 5 do
-            Citizen.Wait(100)
-            distance = #(GetEntityCoords(playerPed) - vector3(deliveryPoint.coords.x, deliveryPoint.coords.y, deliveryPoint.coords.z))
-        end
+        WaitUntilClose(deliveryPoint.coords, 5.0)
 
         if IsPedInVehicle(playerPed, SpawnedMissionVeh, false) then
-            TriggerEvent("side-menu:addOptions", {
-                {id = "trucking_job_deliver_far", label = "Start Unloading", cb = function()
+            TriggerEvent("side-menu:addOptions", {{
+                id = "trucking_job_deliver_far",
+                label = "Start Unloading",
+                cb = function()
                     CloseAllMenus()
                     UnloadingTruck(playerPed)
-                end}
-            })
+                end
+            }})
         else
-            TriggerEvent("notification:send", {text = "You must be in the job vehicle to start unloading.", color = "red", duration = 4000})
+            TriggerEvent("notification:send", {
+                text = "You must be in the job vehicle to start unloading.",
+                color = "red",
+                time = 4000
+            })
         end
+    end
+
+    while not DeliveryCompleted do
+        Citizen.Wait(100)
     end
 
     RemoveAllWaypoints()
 
     WaypointerCreate("depot", MissionVehSpawn, nil, 1, true, 5, "Depot", false, true, true)
 
-    local distanceToDepot = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
-    while distanceToDepot > 5 do
-        Citizen.Wait(100)
-        distanceToDepot = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
-    end
+    WaitUntilClose(MissionVehSpawn, 5.0)
 
     if IsPedInVehicle(playerPed, SpawnedMissionVeh, false) then
         RemoveAllWaypoints()
         DeleteMissionVeh()
         OnMission = false
-        GettingPaid()
+        GettingPaid() -- Ensure this function is called when the player reaches the depot
+        IsGoingBackToDepot = false
+        IsGoingToDelivery = false
     else
-        TriggerEvent("notification:send", {text = "You must be in the job vehicle to return to the depot.", color = "red", duration = 4000})
+        TriggerEvent("notification:send", {
+            text = "You must be in the job vehicle to return to the depot.",
+            color = "red",
+            time = 4000
+        })
     end
 end
 
@@ -425,24 +640,36 @@ Citizen.CreateThread(function()
         if distance < 2.0 and not MenuDisplay then
             if not OnMission then
                 MenuDisplay = true
-                TriggerEvent("side-menu:addOptions", {
-                    {id = "trucking_job_jobs", label = "Number of Jobs:", quantity = tostring(truckingData.jobs)},
-                    {id = "trucking_job_level", label = "Job Level:", quantity = tostring(truckingData.level)},
-                    {id = "trucking_job_start", label = "Start Job", cb = function()
+                TriggerEvent("side-menu:addOptions", {{
+                    id = "trucking_job_jobs",
+                    label = "Number of Jobs:",
+                    quantity = tostring(truckingData.jobs)
+                }, {
+                    id = "trucking_job_level",
+                    label = "Job Level:",
+                    quantity = tostring(truckingData.level)
+                }, {
+                    id = "trucking_job_start",
+                    label = "Start Job",
+                    cb = function()
                         CloseAllMenus(100)
                         Mission()
-                    end}
-                })
+                    end
+                }})
             else
                 MenuDisplay = true
-                TriggerEvent("side-menu:addOptions", {
-                    {id = "trucking_job_cancel_mission", label = "Cancel Job", cb = function()
+                TriggerEvent("side-menu:addOptions", {{
+                    id = "trucking_job_cancel_mission",
+                    label = "Cancel Job",
+                    cb = function()
                         CloseAllMenus()
                         RemoveAllWaypoints()
                         DeleteMissionVeh(SpawnedMissionVeh)
                         OnMission = false
-                    end}
-                })
+                        IsGoingBackToDepot = nil
+                        IsGoingToDelivery = nil
+                    end
+                }})
             end
         elseif distance > 2.0 and distance <= 3.0 and MenuDisplay then
             CloseAllMenus()
