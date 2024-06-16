@@ -374,10 +374,10 @@ function Mission()
 
     WaypointerCreate("depot", MissionVehSpawn, nil, 1, true, 5, "Depot", false, true, true)
 
-    local distance = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
-    while distance > 5 do
+    local distanceToDepot = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
+    while distanceToDepot > 5 do
         Citizen.Wait(100)
-        distance = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
+        distanceToDepot = #(GetEntityCoords(playerPed) - vector3(MissionVehSpawn.x, MissionVehSpawn.y, MissionVehSpawn.z))
     end
 
     if IsPedInVehicle(playerPed, SpawnedMissionVeh, false) then
