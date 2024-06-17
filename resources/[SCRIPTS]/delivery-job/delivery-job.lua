@@ -140,7 +140,7 @@ function DeleteMissionVeh()
     SpawnedMissionVeh = nil
 end
 
-function CreateMarkers(id, coordsX, coordsY, coordsZ, color)
+function CreateMarkers(id, coordsX, coordsY, coordsZ, color, scale)
     local chosenColor = color
 
     if chosenColor == "green" then
@@ -149,7 +149,7 @@ function CreateMarkers(id, coordsX, coordsY, coordsZ, color)
         chosenColor = {0, 0, 255, 255}
     end
 
-    DrawMarker(id, coordsX, coordsY, coordsZ, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, chosenColor[1],
+    DrawMarker(id, coordsX, coordsY, coordsZ - 1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, scale, scale, scale, chosenColor[1],
         chosenColor[2], chosenColor[3], chosenColor[4], false, false, 2, false, false, false, false)
 end
 
@@ -249,6 +249,21 @@ function GetDifferentDeliverySpots()
     return deliverySpots
 end
 
+function GetCorrectRadiusForMissionVeh()
+    radius = nil
+
+    if GetVehicleForLevel() == "monstrociti" then
+        radius = 3.0
+    elseif GetVehicleForLevel() == "speedo" then
+        radius = 4.0
+    elseif GetVehicleForLevel() == "mule" then
+        radius = 5.0
+    elseif GetVehicleForLevel() == "benson" then
+        radius = 6.0
+    end
+    return radius
+end
+
 function PickupBox()
     local playerPed = GetPlayerPed(-1)
     local playerCoords = GetEntityCoords(playerPed)
@@ -283,6 +298,7 @@ end
 function StartingDeliveries()
     local deliverySpots = GetDifferentDeliverySpots()
     local playerPed = GetPlayerPed(-1)
+    local isCompleted = false
 
     TriggerEvent("notification:send", {time = 7000, color = "blue", text = "You have " .. NumberOfDeliveries .. " deliveries to make."})
 
@@ -291,45 +307,69 @@ function StartingDeliveries()
 
         WaypointerCreate("delivery_job_" .. i, vector3(coords.x, coords.y, coords.z), nil, 1, true, 43, "Delivery Spot", true, false, true)
 
+        while #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z)) > 30.0 do
+            Citizen.Wait(100)
+        end
+
+        local hasPickUpBox = false
         local hasDeliveredBox = false
 
-        while not hasDeliveredBox do
+        while not hasPickUpBox do
             Citizen.Wait(1)
-            
-            local missionVehHeading = GetEntityHeading(SpawnedMissionVeh)
-            local missionVehCoords = GetEntityCoords(SpawnedMissionVeh)
-            local rearCoords = GetRearOfVehicle(missionVehHeading, missionVehCoords, 4.0)
+            -- I can add different radius for different vehicles here
+            rearOfVehicle = GetRearOfVehicle(GetEntityHeading(SpawnedMissionVeh), GetEntityCoords(SpawnedMissionVeh), GetCorrectRadiusForMissionVeh())
+            CreateMarkers(1, rearOfVehicle.x, rearOfVehicle.y, rearOfVehicle.z, "blue", 1.5)
 
-            local hasPickedUpBox = false
-
-            if #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z)) < 30.0 then
-                CreateMarkers(1, rearCoords.x, rearCoords.y, rearCoords.z, "blue")
-
-                if not IsPedInVehicle(playerPed, SpawnedMissionVeh, false) and #(playerPed - vector3(rearCoords.x, rearCoords.y, rearCoords.z)) <= 1.5 then
-                    PickupBox()
-                    hasPickedUpBox = true
-                end
+            if #(GetEntityCoords(playerPed) - rearOfVehicle) < 1.5 then
+                hasPickUpBox = true
+                PickupBox()
+                break
             end
+        end
 
-            if hasPickedUpBox then
-                CreateMarkers(1, coords.x, coords.y, coords.z, "green")
+        while hasPickUpBox and not hasDeliveredBox do
+            Citizen.Wait(1)
+            CreateMarkers(1, coords.x, coords.y, coords.z, "green", 1.5)
 
-                if #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z)) < 1.5 then
-                    RemoveAllWaypoints()
-                    WaypointerCreate("delivery_job_mission_veh", nil, SpawnedMissionVeh, 1, true, 43, "Mission Vehicle", true, false, false)
-                    if i == NumberOfDeliveries then
-                        DropBox()
-                        hasBox = false
-                        hasDeliveredBox = true
-                        break                    
-                    else
-                        TriggerEvent("notification:send", {time = 7000, color = "blue", text = "You have " .. NumberOfDeliveries - i .. " deliveries left."})
-                        hasDeliveredBox = true
-                        break
-                    end
-                end
-            elseif not hasPickedUpBox and #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z)) < 1.5 then
-                TriggerEvent("notification:send", {time = 7000, color = "red", text = "You need to pick up the box from the vehicle."})
+            if #(GetEntityCoords(playerPed) - vector3(coords.x, coords.y, coords.z)) < 1.5 then
+                hasDeliveredBox = true
+                DropBox()
+                break
+            end
+        end
+
+        if hasDeliveredBox and hasPickUpBox then
+            RemoveAllWaypoints()
+            WaypointerCreate("delivery_job_mission_veh", nil, SpawnedMissionVeh, 1, true, 43, "Mission Vehicle", true, false, false)
+        end
+    end
+    
+    RemoveAllWaypoints()
+    WaypointerCreate("delivery_job_mission_veh", nil, SpawnedMissionVeh, 1, true, 43, "Mission Vehicle", true, false, false)
+    WaypointerCreate("delivery_job_depot", vector3(DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z), nil, 1, true, 43, "Depot", true, true, true)
+    TriggerEvent("notification:send", {time = 7000, color = "blue", text = "You have completed all deliveries. Go back to the depot."})
+    isCompleted = true
+
+    while true do
+        Citizen.Wait(1)
+
+        while #(GetEntityCoords(playerPed) - vector3(DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z)) > 30.0 and not isCompleted do
+            Citizen.Wait(100)
+        end
+    
+        while #(GetEntityCoords(playerPed) - vector3(DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z)) <= 30.0 and isCompleted do
+            Citizen.Wait(1)
+            CreateMarkers(1, DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z, "green", 3.0)
+    
+            if #(GetEntityCoords(playerPed) - vector3(DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z)) < 3.0 then
+                DeleteMissionVeh()
+                RemoveAllWaypoints()
+                GettingPaid()
+                OnMission = false
+                NumberOfDeliveries = nil
+                SpawnedMissionVeh = nil
+                isCompleted = false
+                break
             end
         end
     end
@@ -345,21 +385,6 @@ function Mission()
     WaypointerCreate("delivery_job_mission_veh", nil, SpawnedMissionVeh, 1, true, 43, "Mission Vehicle", true, false, false)
 
     StartingDeliveries()
-
-    TriggerEvent("notification:send", {time = 7000, color = "blue", text = "You have completed all deliveries. Go back to the depot."})
-
-    WaypointerCreate("delivery_job_depot", vector3(DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z), nil, 1, true, 43, "Depot", false, false, true)
-
-    while #(playerPed - vector3(DeliverMissionVehCoords[1].x, DeliverMissionVehCoords[1].y, DeliverMissionVehCoords[1].z)) > 10.0 do
-        Citizen.Wait(100)
-    end
-
-    DeleteMissionVeh()
-    RemoveAllWaypoints()
-    OnMission = false
-    GettingPaid()
-    SpawnedMissionVeh = nil
-    NumberOfDeliveries = nil
 end
 
 Citizen.CreateThread(function()
