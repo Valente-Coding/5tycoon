@@ -80,6 +80,34 @@ end
 function DeleteMissionVeh()
     DeleteVehicle(SpawnedMissionVeh)
     SpawnedMissionVeh = nil
+    DeleteEntity(prop)
+    RearOfVehicle = nil
+    prop = nil
+end
+
+function FinishMissionSuccess()
+    OnMission = false
+    DeleteMissionVeh()
+    WaypointsCreated = {}
+    BoxModel = nil
+    Box = nil
+    DeliveriesCompleted = false
+    NumberOfDeliveries = nil
+    CloseAllMenus()
+    RemoveAllWaypoints()
+    GettingPaid()
+end
+
+function MissionCanceled()
+    OnMission = false
+    DeleteMissionVeh()
+    WaypointsCreated = {}
+    BoxModel = nil
+    Box = nil
+    DeliveriesCompleted = false
+    NumberOfDeliveries = nil
+    CloseAllMenus()
+    RemoveAllWaypoints()
 end
 
 function CreateMarkers(id, coordsX, coordsY, coordsZ, color)
@@ -180,15 +208,14 @@ end
 function SpawnMissionVeh()
     local pizzaData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
     local vehModel = nil
-    if pizzaData.level < 3 then
-        local vehModel = GetHashKey("faggio2")
+    if pizzaData.level > 3 then
+        vehModel = GetHashKey("faggio2")
         RequestModel(vehModel)
         while not HasModelLoaded(vehModel) do
             Citizen.Wait(1)
         end
-        return vehModel
     else
-        local vehModel = GetHashKey("faggio")
+        vehModel = GetHashKey("faggio")
         RequestModel(vehModel)
         while not HasModelLoaded(vehModel) do
             Citizen.Wait(1)
@@ -226,5 +253,5 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
-    SpawnMissionVeh()
+    
 end)
