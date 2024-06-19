@@ -5,10 +5,15 @@ local WaypointsCreated = {}
 local RearOfVehicle = nil
 local BoxModel = nil
 local Box = nil
+local prop = nil
 local DeliveriesCompleted = false
 local NumberOfDeliveries = nil
 
+--NEED TO TEST SPAWN OF BOX ON BOTH FAGGIOS FAGGIO2 | FAGGIO
+
 local shopCoords = vector3(215.2651, -17.2666, 74.9873)
+
+local MissionVehSpawnPoint = vector4(226.8631, -26.3724, 69.2689, 181.6043)
 
 function CreateBrainlessNpc(pedModel, x, y, z, h, network)
     local ped = CreatePed(26, GetHashKey(pedModel), x, y, z, h, network, true)
@@ -173,9 +178,39 @@ function GettingNumberOfDeliveries()
 end
 
 function SpawnMissionVeh()
-    --faggio2
-    --faggio
-    --h4_prop_h4_box_delivery_01a
+    local pizzaData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
+    local vehModel = nil
+    if pizzaData.level < 3 then
+        local vehModel = GetHashKey("faggio2")
+        RequestModel(vehModel)
+        while not HasModelLoaded(vehModel) do
+            Citizen.Wait(1)
+        end
+        return vehModel
+    else
+        local vehModel = GetHashKey("faggio")
+        RequestModel(vehModel)
+        while not HasModelLoaded(vehModel) do
+            Citizen.Wait(1)
+        end
+    end
+
+    SpawnedMissionVeh = CreateVehicle(vehModel, MissionVehSpawnPoint.x, MissionVehSpawnPoint.y, MissionVehSpawnPoint.z, MissionVehSpawnPoint.w, true, false)
+    SetVehicleOnGroundProperly(SpawnedMissionVeh)
+    
+    SetVehicleNumberPlateText(SpawnedMissionVeh, "PIZZA")
+
+    local propHash = GetHashKey("h4_prop_h4_box_delivery_01a")
+    RequestModel(propHash)
+    while not HasModelLoaded(propHash) do
+        Citizen.Wait(1)
+    end
+
+    prop = CreateObject(propHash, MissionVehSpawnPoint.x, MissionVehSpawnPoint.y, MissionVehSpawnPoint.z, true, true, true)
+
+    AttachEntityToEntity(prop, SpawnedMissionVeh, GetEntityBoneIndexByName(SpawnedMissionVeh, "chassis"), 0.0, 0.0, -0.05, 0.0, 0.0, 270.0, true, true, false, true, 1, true)
+
+    FreezeEntityPosition(prop, true)
 end
 
 Citizen.CreateThread(function()
@@ -188,4 +223,8 @@ Citizen.CreateThread(function()
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString("Pizza Deliveries Job")
         EndTextCommandSetBlipName(blip)
+end)
+
+Citizen.CreateThread(function()
+    SpawnMissionVeh()
 end)
