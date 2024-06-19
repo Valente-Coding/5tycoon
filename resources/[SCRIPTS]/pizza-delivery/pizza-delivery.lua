@@ -8,12 +8,59 @@ local Box = nil
 local prop = nil
 local DeliveriesCompleted = false
 local NumberOfDeliveries = nil
+local DeliveriesList = {}
 
 --NEED TO TEST SPAWN OF BOX ON BOTH FAGGIOS FAGGIO2 | FAGGIO
 
-local shopCoords = vector3(215.2651, -17.2666, 74.9873)
+local shopCoords = vector3(538.0167, 101.0657, 96.5154)
 
-local MissionVehSpawnPoint = vector4(226.8631, -26.3724, 69.2689, 181.6043)
+local MissionVehSpawnPoint = vector4(534.0449, 98.1231, 95.8393, 111.1317)
+
+local DeliveryLocations = {
+    {coords = vector4(352.8840, -142.1516, 66.6883, 336.6996)},
+    {coords = vector4(315.4273, -127.6960, 69.9769, 300.5992)},
+    {coords = vector4(206.5419, -85.4131, 69.2303, 320.5391)},
+    {coords = vector4(151.8950, -72.2296, 67.6748, 303.7264)},
+    {coords = vector4(44.4700, -29.7022, 69.3948, 351.0341)},
+    {coords = vector4(17.6281, -13.4799, 70.1162, 1.2589)},
+    {coords = vector4(3.3512, 36.3320, 71.5304, 160.7409)},
+    {coords = vector4(-23.5509, -23.1969, 73.2453, 39.6906)},
+    {coords = vector4(-41.2128, -58.6034, 63.6596, 49.3704)},
+    {coords = vector4(329.3545, -225.1010, 54.2218, 19.2883)},
+    {coords = vector4(336.8373, -224.7392, 54.2218, 67.7717)},
+    {coords = vector4(342.5986, -209.6110, 54.2218, 91.9533)},
+    {coords = vector4(319.2983, -196.2302, 54.2264, 171.1218)},
+    {coords = vector4(311.4390, -203.5754, 54.2218, 246.3873)},
+    {coords = vector4(312.9554, -218.6556, 54.2218, 275.4140)},
+    {coords = vector4(318.0927, 562.1662, 154.5393, 14.9102)},
+    {coords = vector4(331.1593, 466.0323, 151.1773, 13.3131)},
+    {coords = vector4(347.0937, 441.0122, 147.7020, 298.8540)},
+    {coords = vector4(373.4636, 428.0474, 145.6845, 39.3713)},
+    {coords = vector4(231.9250, 672.7750, 189.9455, 30.3517)},
+    {coords = vector4(215.7179, 620.5779, 187.6097, 82.8299)},
+    {coords = vector4(128.2679, 566.1705, 183.9595, 325.2135)},
+    {coords = vector4(119.2916, 564.5428, 183.9592, 1.9169)},
+    {coords = vector4(84.8310, 562.8320, 182.5733, 354.7420)},
+    {coords = vector4(8.4496, 540.0305, 176.0274, 343.2691)},
+    {coords = vector4(-66.1548, 491.1794, 144.6804, 272.2845)},
+    {coords = vector4(-7.5049, 468.4937, 145.8717, 321.5077)},
+    {coords = vector4(57.7795, 450.0781, 147.0314, 331.4542)},
+    {coords = vector4(43.3254, 468.1015, 148.0959, 251.8222)},
+    {coords = vector4(223.4402, 514.1429, 140.7672, 47.7934)},
+    {coords = vector4(1060.8601, -378.7049, 68.2311, 220.8671)},
+    {coords = vector4(1029.4583, -409.1934, 65.9493, 215.2174)},
+    {coords = vector4(1011.8624, -422.7015, 64.9528, 285.1942)},
+    {coords = vector4(987.8803, -433.3712, 63.8909, 221.6617)},
+    {coords = vector4(967.2228, -451.7144, 62.7896, 218.5313)},
+    {coords = vector4(943.9718, -463.6181, 61.3957, 140.1016)},
+    {coords = vector4(906.6165, -490.0168, 59.4362, 205.7331)},
+    {coords = vector4(879.1467, -498.5617, 57.8760, 226.6476)},
+    {coords = vector4(920.0397, -570.1446, 58.3663, 208.5900)},
+    {coords = vector4(965.9835, -543.0161, 59.3591, 211.1909)},
+    {coords = vector4(1006.0899, -511.4730, 60.8339, 148.7974)},
+    {coords = vector4(1089.9586, -484.4218, 65.6605, 80.2621)},
+    {coords = vector4(1100.1779, -411.4412, 67.5551, 85.4772)}
+}
 
 function CreateBrainlessNpc(pedModel, x, y, z, h, network)
     local ped = CreatePed(26, GetHashKey(pedModel), x, y, z, h, network, true)
@@ -205,24 +252,42 @@ function GettingNumberOfDeliveries()
     end
 end
 
+function GettingNumberOfPizzasForDeliveries()
+    for i = 1, NumberOfDeliveries, 1 do
+        
+    end
+end
+
 function SpawnMissionVeh()
     local pizzaData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
     local vehModel = nil
-    if pizzaData.level > 3 then
+    if pizzaData.level < 3 then
         vehModel = GetHashKey("faggio2")
         RequestModel(vehModel)
         while not HasModelLoaded(vehModel) do
             Citizen.Wait(1)
         end
-    else
+    elseif pizzaData.level >= 3 and pizzaData.level < 6 then
         vehModel = GetHashKey("faggio")
+        RequestModel(vehModel)
+        while not HasModelLoaded(vehModel) do
+            Citizen.Wait(1)
+        end
+    elseif pizzaData.level >= 6 and pizzaData.level < 9 then
+        vehModel = GetHashKey("bagger")
+        RequestModel(vehModel)
+        while not HasModelLoaded(vehModel) do
+            Citizen.Wait(1)
+        end
+    else
+        vehModel = GetHashKey("reever")
         RequestModel(vehModel)
         while not HasModelLoaded(vehModel) do
             Citizen.Wait(1)
         end
     end
 
-    SpawnedMissionVeh = CreateVehicle(vehModel, MissionVehSpawnPoint.x, MissionVehSpawnPoint.y, MissionVehSpawnPoint.z, MissionVehSpawnPoint.w, true, false)
+    SpawnedMissionVeh = CreateVehicle(vehModel, MissionVehSpawnPoint, true, false)
     SetVehicleOnGroundProperly(SpawnedMissionVeh)
     
     SetVehicleNumberPlateText(SpawnedMissionVeh, "PIZZA")
