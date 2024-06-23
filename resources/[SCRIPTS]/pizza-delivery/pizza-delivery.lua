@@ -4,7 +4,10 @@ local SpawnedMissionVeh = nil
 local WaypointsCreated = {}
 local RearOfVehicle = nil
 local BoxModel = nil
-local Box = nil
+--[[ local Box1 = nil
+local Box2 = nil
+local Box3 = nil ]]
+local Boxes = {}
 local prop = nil
 local DeliveriesCompleted = false
 local NumberOfDeliveries = nil
@@ -149,8 +152,29 @@ function MissionCanceled()
     OnMission = false
     DeleteMissionVeh()
     WaypointsCreated = {}
-    BoxModel = nil
-    Box = nil
+    if BoxModel == not nil then
+        DeleteEntity(BoxModel)
+        BoxModel = nil
+    end
+
+    --[[ if Box1 == not nil then
+        DeleteEntity(Box1)
+        Box1 = nil
+    end
+    if Box2 == not nil then
+        DeleteEntity(Box2)
+        Box2 = nil
+    end
+    if Box3 == not nil then
+        DeleteEntity(Box3)
+        Box3 = nil
+    end ]]
+
+    for _, box in pairs(Boxes) do
+        DeleteEntity(box)
+    end
+
+    Boxes = {}
     DeliveriesCompleted = false
     NumberOfDeliveries = nil
     CloseAllMenus()
@@ -179,7 +203,7 @@ function GetRearOfVehicle(heading, coords, distance)
     return vector3(x, y, coords.z)
 end
 
-function PickupBox(boxPickup)
+function PickupBox(numBoxes)
     local playerPed = GetPlayerPed(-1)
     local playerCoords = GetEntityCoords(playerPed)
     BoxModel = GetHashKey("prop_pizza_box_01")
@@ -196,18 +220,78 @@ function PickupBox(boxPickup)
 
     TaskPlayAnim(playerPed, 'anim@heists@box_carry@', 'idle', 8.0, -8.0, -1, 50, 0, false, false, false)
 
-    Box = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
-    AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-        true, true, false, true, 1, true)
+    --[[ if numBoxes == 1 then
+        Box1 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
+        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+    elseif numBoxes == 2 then
+        Box1 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
+        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+
+        Box2 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z + 0.1, true, true, true)
+        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+    elseif numBoxes == 3 then
+        Box1 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
+        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+
+        Box2 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z + 0.1, true, true, true)
+        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+
+        Box3 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z + 0.2, true, true, true)
+        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+    end ]]
+
+    for i = 1, numBoxes, 1 do
+        local tempBox = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
+
+        AttachEntityToEntity(tempBox, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255 + ((i - 1) * 0.005), -145.0, 290.0, 0.0,
+            true, true, false, true, 1, true)
+
+        table.insert(Boxes, tempBox)
+    end
 end
 
-function DropBox(boxDropoff)
+function DropBox(numBox)
     local playerPed = GetPlayerPed(-1)
 
-    DetachEntity(Box, false, false)
-    DeleteEntity(Box)
+    --[[ if numBox == 1 then
+        DetachEntity(Box1, false, false)
+        DeleteEntity(Box1)
+        ClearPedTasks(playerPed)
+        SetModelAsNoLongerNeeded(Box1)
+    elseif numBox == 2 then
+        DetachEntity(Box1, false, false)
+        DeleteEntity(Box1)
+        SetModelAsNoLongerNeeded(Box1)
+        DetachEntity(Box2, false, false)
+        DeleteEntity(Box2)
+        SetModelAsNoLongerNeeded(Box2)
+        ClearPedTasks(playerPed)
+    elseif numBox == 3 then
+        DetachEntity(Box1, false, false)
+        DeleteEntity(Box1)
+        SetModelAsNoLongerNeeded(Box1)
+        DetachEntity(Box2, false, false)
+        DeleteEntity(Box2)
+        SetModelAsNoLongerNeeded(Box2)
+        DetachEntity(Box3, false, false)
+        DeleteEntity(Box3)
+        SetModelAsNoLongerNeeded(Box3)
+        ClearPedTasks(playerPed)
+    end ]]
+
+
+    for _, box in pairs(Boxes) do
+        DetachEntity(box, false, false)
+        DeleteEntity(box)
+    end
+
     ClearPedTasks(playerPed)
-    SetModelAsNoLongerNeeded(Box)
 end
 
 function GettingPaid()
@@ -253,8 +337,11 @@ function GettingNumberOfDeliveries()
 end
 
 function GettingNumberOfPizzasForDeliveries()
+    GettingNumberOfDeliveries()
     for i = 1, NumberOfDeliveries, 1 do
-        
+        local deliveriesToDo = math.random(1, #DeliveryLocations)
+        local numberOfPizzaBoxes = math.random(1, 3)
+        table.insert(DeliveriesList, {coords = DeliveryLocations[deliveriesToDo].coords, pizzas = numberOfPizzaBoxes})
     end
 end
 
@@ -305,6 +392,10 @@ function SpawnMissionVeh()
     FreezeEntityPosition(prop, true)
 end
 
+function Mission()
+    
+end
+
 Citizen.CreateThread(function()
         local blip = AddBlipForCoord(shopCoords)
 
@@ -318,5 +409,45 @@ Citizen.CreateThread(function()
 end)
 
 Citizen.CreateThread(function()
-    
+    while true do
+        Citizen.Wait(10)
+        local playerPed = GetPlayerPed(-1)
+        local playerCoords = GetEntityCoords(playerPed)
+        local distance = #(playerCoords - shopCoords)
+
+        local pizzaData = json.decode(GetExternalKvpString("save-load", "FOODDELIVERY_DATA"))
+
+        if distance < 2.0 and not MenuDisplay then
+            if not OnMission then
+                MenuDisplay = true
+                TriggerEvent("side-menu:addOptions", {{
+                    id = "pizza_job_jobs",
+                    label = "Number of Jobs:",
+                    quantity = tostring(pizzaData.jobs)
+                }, {
+                    id = "pizza_job_level",
+                    label = "Job Level:",
+                    quantity = tostring(pizzaData.level)
+                }, {
+                    id = "pizza_job_start",
+                    label = "Start Job",
+                    cb = function()
+                        CloseAllMenus(100)
+                        Mission()
+                    end
+                }})
+            else
+                MenuDisplay = true
+                TriggerEvent("side-menu:addOptions", {{
+                    id = "pizza_job_cancel_mission",
+                    label = "Cancel Job",
+                    cb = function()
+                        MissionCanceled()
+                    end
+                }})
+            end
+        elseif distance > 2.0 and distance <= 3.0 and MenuDisplay then
+            CloseAllMenus()
+        end
+    end
 end)
