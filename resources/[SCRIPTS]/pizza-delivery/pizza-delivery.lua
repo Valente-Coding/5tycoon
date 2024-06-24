@@ -4,16 +4,14 @@ local SpawnedMissionVeh = nil
 local WaypointsCreated = {}
 local RearOfVehicle = nil
 local BoxModel = nil
---[[ local Box1 = nil
-local Box2 = nil
-local Box3 = nil ]]
 local Boxes = {}
 local prop = nil
 local DeliveriesCompleted = false
 local NumberOfDeliveries = nil
 local DeliveriesList = {}
+local pizza_ped = nil
 
---NEED TO TEST SPAWN OF BOX ON BOTH FAGGIOS FAGGIO2 | FAGGIO
+--NEED TO TEST SPAWN OF BOX ON ALL BIKES
 
 local shopCoords = vector3(538.0167, 101.0657, 96.5154)
 
@@ -63,6 +61,35 @@ local DeliveryLocations = {
     {coords = vector4(1006.0899, -511.4730, 60.8339, 148.7974)},
     {coords = vector4(1089.9586, -484.4218, 65.6605, 80.2621)},
     {coords = vector4(1100.1779, -411.4412, 67.5551, 85.4772)}
+}
+
+local NpcModels = {
+    "a_m_m_afriamer_01", "a_m_m_beach_01", "a_m_m_beach_02", "a_m_m_bevhills_01", "a_m_m_bevhills_02",
+    "a_m_m_business_01", "a_m_m_eastsa_01", "a_m_m_eastsa_02", "a_m_m_farmer_01", "a_m_m_fatlatin_01",
+    "a_m_m_genfat_01", "a_m_m_genfat_02", "a_m_m_golfer_01", "a_m_m_hasjew_01", "a_m_m_hillbilly_01",
+    "a_m_m_hillbilly_02", "a_m_m_indian_01", "a_m_m_ktown_01", "a_m_m_malibu_01", "a_m_m_mexcntry_01",
+    "a_m_m_mexlabor_01", "a_m_m_og_boss_01", "a_m_m_paparazzi_01", "a_m_m_polynesian_01",
+    "a_m_m_prolhost_01", "a_m_m_rurmeth_01", "a_m_m_salton_01", "a_m_m_salton_02", "a_m_m_salton_03",
+    "a_m_m_salton_04", "a_m_m_skater_01", "a_m_m_skidrow_01", "a_m_m_socenlat_01", "a_m_m_soucent_01",
+    "a_m_m_soucent_02", "a_m_m_soucent_03", "a_m_m_soucent_04", "a_m_m_stlat_02", "a_m_m_tennis_01",
+    "a_m_m_tourist_01", "a_m_m_tramp_01", "a_m_m_trampbeac_01", "a_m_m_tranvest_01", "a_m_m_tranvest_02",
+    "a_m_o_acult_01", "a_m_o_acult_02", "a_m_o_beach_01", "a_m_o_genstreet_01", "a_m_o_ktown_01",
+    "a_m_o_salton_01", "a_m_o_soucent_01", "a_m_o_soucent_02", "a_m_o_soucent_03", "a_m_o_tramp_01",
+    "a_m_y_acult_01", "a_m_y_acult_02", "a_m_y_beach_01", "a_m_y_beach_02", "a_m_y_beach_03",
+    "a_m_y_beachvesp_01", "a_m_y_beachvesp_02", "a_m_y_bevhills_01", "a_m_y_bevhills_02",
+    "a_m_y_breakdance_01", "a_m_y_busicas_01", "a_m_y_business_01", "a_m_y_business_02",
+    "a_m_y_business_03", "a_m_y_cyclist_01", "a_m_y_dhill_01", "a_m_y_downtown_01", "a_m_y_eastsa_01",
+    "a_m_y_eastsa_02", "a_m_y_epsilon_01", "a_m_y_epsilon_02", "a_m_y_gay_01", "a_m_y_gay_02",
+    "a_m_y_genstreet_01", "a_m_y_genstreet_02", "a_m_y_golfer_01", "a_m_y_hasjew_01", "a_m_y_hiker_01",
+    "a_m_y_hippy_01", "a_m_y_hipster_01", "a_m_y_hipster_02", "a_m_y_hipster_03", "a_m_y_indian_01",
+    "a_m_y_jetski_01", "a_m_y_juggalo_01", "a_m_y_ktown_01", "a_m_y_ktown_02", "a_m_y_latino_01",
+    "a_m_y_methhead_01", "a_m_y_mexthug_01", "a_m_y_motox_01", "a_m_y_motox_02", "a_m_y_musclbeac_01",
+    "a_m_y_musclbeac_02", "a_m_y_polynesian_01", "a_m_y_roadcyc_01", "a_m_y_runner_01",
+    "a_m_y_runner_02", "a_m_y_salton_01", "a_m_y_skater_01", "a_m_y_skater_02", "a_m_y_soucent_01",
+    "a_m_y_soucent_02", "a_m_y_soucent_03", "a_m_y_soucent_04", "a_m_y_stbla_01", "a_m_y_stbla_02",
+    "a_m_y_stlat_01", "a_m_y_stwhi_01", "a_m_y_stwhi_02", "a_m_y_sunbathe_01", "a_m_y_surfer_01",
+    "a_m_y_vindouche_01", "a_m_y_vinewood_01", "a_m_y_vinewood_02", "a_m_y_vinewood_03",
+    "a_m_y_vinewood_04", "a_m_y_yoga_01"
 }
 
 function CreateBrainlessNpc(pedModel, x, y, z, h, network)
@@ -139,8 +166,18 @@ function FinishMissionSuccess()
     OnMission = false
     DeleteMissionVeh()
     WaypointsCreated = {}
-    BoxModel = nil
-    Box = nil
+    if BoxModel == not nil then
+        DeleteEntity(BoxModel)
+        BoxModel = nil
+    end
+
+    for _, box in pairs(Boxes) do
+        DeleteEntity(box)
+    end
+
+    ClearPedTasks(GetPlayerPed(-1))
+    Boxes = {}
+    pizza_ped = nil
     DeliveriesCompleted = false
     NumberOfDeliveries = nil
     CloseAllMenus()
@@ -157,24 +194,13 @@ function MissionCanceled()
         BoxModel = nil
     end
 
-    --[[ if Box1 == not nil then
-        DeleteEntity(Box1)
-        Box1 = nil
-    end
-    if Box2 == not nil then
-        DeleteEntity(Box2)
-        Box2 = nil
-    end
-    if Box3 == not nil then
-        DeleteEntity(Box3)
-        Box3 = nil
-    end ]]
-
     for _, box in pairs(Boxes) do
         DeleteEntity(box)
     end
 
+    ClearPedTasks(GetPlayerPed(-1))
     Boxes = {}
+    pizza_ped = nil
     DeliveriesCompleted = false
     NumberOfDeliveries = nil
     CloseAllMenus()
@@ -195,7 +221,6 @@ function CreateMarkers(id, coordsX, coordsY, coordsZ, color)
 end
 
 function GetRearOfVehicle(heading, coords, distance)
-    -- Adjust the heading by 180 degrees to get the rear direction
     local angle = math.rad(heading - 90)
     local x = coords.x + distance * math.cos(angle)
     local y = coords.y + distance * math.sin(angle)
@@ -203,9 +228,8 @@ function GetRearOfVehicle(heading, coords, distance)
     return vector3(x, y, coords.z)
 end
 
-function PickupBox(numBoxes)
-    local playerPed = GetPlayerPed(-1)
-    local playerCoords = GetEntityCoords(playerPed)
+function PickupBox(ped, numBoxes)
+    local playerCoords = GetEntityCoords(ped)
     BoxModel = GetHashKey("prop_pizza_box_01")
 
     RequestModel(BoxModel)
@@ -218,80 +242,26 @@ function PickupBox(numBoxes)
         Citizen.Wait(1)
     end
 
-    TaskPlayAnim(playerPed, 'anim@heists@box_carry@', 'idle', 8.0, -8.0, -1, 50, 0, false, false, false)
-
-    --[[ if numBoxes == 1 then
-        Box1 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
-        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-            true, true, false, true, 1, true)
-    elseif numBoxes == 2 then
-        Box1 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
-        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-            true, true, false, true, 1, true)
-
-        Box2 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z + 0.1, true, true, true)
-        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-            true, true, false, true, 1, true)
-    elseif numBoxes == 3 then
-        Box1 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
-        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-            true, true, false, true, 1, true)
-
-        Box2 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z + 0.1, true, true, true)
-        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-            true, true, false, true, 1, true)
-
-        Box3 = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z + 0.2, true, true, true)
-        AttachEntityToEntity(Box, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255, -145.0, 290.0, 0.0,
-            true, true, false, true, 1, true)
-    end ]]
+    TaskPlayAnim(ped, 'anim@heists@box_carry@', 'idle', 8.0, -8.0, -1, 50, 0, false, false, false)
 
     for i = 1, numBoxes, 1 do
         local tempBox = CreateObject(BoxModel, playerCoords.x, playerCoords.y, playerCoords.z, true, true, true)
 
-        AttachEntityToEntity(tempBox, playerPed, GetPedBoneIndex(playerPed, 60309), 0.025, 0.08, 0.255 + ((i - 1) * 0.005), -145.0, 290.0, 0.0,
+        AttachEntityToEntity(tempBox, ped, GetPedBoneIndex(ped, 60309), 0.025, 0.08, 0.255 + ((i - 1) * 0.005), -145.0, 290.0, 0.0,
             true, true, false, true, 1, true)
 
         table.insert(Boxes, tempBox)
     end
 end
 
-function DropBox(numBox)
-    local playerPed = GetPlayerPed(-1)
-
-    --[[ if numBox == 1 then
-        DetachEntity(Box1, false, false)
-        DeleteEntity(Box1)
-        ClearPedTasks(playerPed)
-        SetModelAsNoLongerNeeded(Box1)
-    elseif numBox == 2 then
-        DetachEntity(Box1, false, false)
-        DeleteEntity(Box1)
-        SetModelAsNoLongerNeeded(Box1)
-        DetachEntity(Box2, false, false)
-        DeleteEntity(Box2)
-        SetModelAsNoLongerNeeded(Box2)
-        ClearPedTasks(playerPed)
-    elseif numBox == 3 then
-        DetachEntity(Box1, false, false)
-        DeleteEntity(Box1)
-        SetModelAsNoLongerNeeded(Box1)
-        DetachEntity(Box2, false, false)
-        DeleteEntity(Box2)
-        SetModelAsNoLongerNeeded(Box2)
-        DetachEntity(Box3, false, false)
-        DeleteEntity(Box3)
-        SetModelAsNoLongerNeeded(Box3)
-        ClearPedTasks(playerPed)
-    end ]]
-
+function DropBox(ped)
 
     for _, box in pairs(Boxes) do
         DetachEntity(box, false, false)
         DeleteEntity(box)
     end
 
-    ClearPedTasks(playerPed)
+    ClearPedTasks(ped)
 end
 
 function GettingPaid()
@@ -393,7 +363,100 @@ function SpawnMissionVeh()
 end
 
 function Mission()
-    
+    OnMission = true
+
+    SpawnMissionVeh()
+
+    WaypointerCreate("pizza_job_mission_veh", nil, SpawnedMissionVeh, 144, true, 46, "Pizza Bike", true, false, false)
+
+    GettingNumberOfPizzasForDeliveries()
+
+    for _, spots in ipairs(DeliveriesList) do
+        PickupBox(GetPlayerPed(-1), spots.pizzas)
+        TriggerEvent("notification:send", {time = 7000, color = "blue", text = "You have " .. NumberOfDeliveries .. " deliveries to make."})
+        TriggerEvent("notification:send", {time = 10000, color = "blue", text = "Get the pizzas in the transporation box on the motorcycle."})
+
+        local rearOfDeliveryBike = GetRearOfVehicle(GetEntityHeading(SpawnedMissionVeh), GetEntityCoords(SpawnedMissionVeh), 1.5)
+
+        while true do
+            Citizen.Wait(1)
+            local playerPed = GetPlayerPed(-1)
+            local playerCoords = GetEntityCoords(playerPed)
+            local distance = #(playerCoords - rearOfDeliveryBike)
+
+            CreateMarkers(1, rearOfDeliveryBike.x, rearOfDeliveryBike.y, rearOfDeliveryBike.z, "blue")
+            
+            if distance < 1.5 then
+                DropBox(GetPlayerPed(-1))
+                break
+            end
+        end
+    end
+
+    for _, spots in ipairs(DeliveriesList) do
+        WaypointerCreate("pizza_job_delivery", spots.coords, nil, 144, true, 46, "Delivery Location", true, false, true)
+        TriggerEvent("notification:send", {time = 10000, color = "blue", text = "Deliver the pizzas to the location."})
+
+        local npcModel = NpcModels[math.random(1, #NpcModels)]
+        RequestModel(GetHashKey(npcModel))
+        
+        while not HasModelLoaded(GetHashKey(npcModel)) do
+            Citizen.Wait(1)
+        end
+
+        pizza_ped = CreateBrainlessNpc(npcModel, spots.coords.x, spots.coords.y, spots.coords.z, spots.coords.w, true)
+
+        local rearOfDeliveryBike = GetRearOfVehicle(GetEntityHeading(SpawnedMissionVeh), GetEntityCoords(SpawnedMissionVeh), 1.5)
+
+        while true do
+            Citizen.Wait(1)
+            local playerPed = GetPlayerPed(-1)
+            local playerCoords = GetEntityCoords(playerPed)
+            local distance = #(playerCoords - rearOfDeliveryBike)
+
+            CreateMarkers(1, rearOfDeliveryBike.x, rearOfDeliveryBike.y, rearOfDeliveryBike.z, "blue")
+
+            if distance < 1.5 then
+                PickupBox(GetPlayerPed(-1), spots.pizzas)
+                break
+            end
+        end
+
+        TriggerEvent("notification:send", {time = 7000, color = "green", text = "Deliver the " .. spots.pizzas .. " pizzas to the customer."})
+
+        while true do
+            Citizen.Wait(1)
+            local playerPed = GetPlayerPed(-1)
+            local playerCoords = GetEntityCoords(playerPed)
+            local distance = #(playerCoords - spots.coords)
+
+            if distance < 1.5 then
+                PickupBox(pizza_ped, spots.pizzas)
+                DropBox(playerPed)
+                break
+            end
+        end
+    end
+
+    RemoveAllWaypoints()
+    WaypointerCreate("pizza_job_mission_veh", nil, SpawnedMissionVeh, 144, true, 46, "Pizza Bike", true, false, false)
+    TriggerEvent("notification:send", {time = 10000, color = "blue", text = "Return the bike to the shop."})
+
+    WaypointerCreate("pizza_job_shop_deliver_veh", vector3(MissionVehSpawnPoint.x, MissionVehSpawnPoint.y, MissionVehSpawnPoint.z), nil, 144, true, 46, "Return Bike", false, true, true)
+
+    while true do
+        Citizen.Wait(1)
+        local playerPed = GetPlayerPed(-1)
+        local playerCoords = GetEntityCoords(playerPed)
+        local distance = #(playerCoords - vector3(MissionVehSpawnPoint.x, MissionVehSpawnPoint.y, MissionVehSpawnPoint.z))
+
+        CreateMarkers(1, MissionVehSpawnPoint.x, MissionVehSpawnPoint.y, MissionVehSpawnPoint.z, "green")
+
+        if distance < 1.5 then
+            FinishMissionSuccess()
+            break
+        end
+    end
 end
 
 Citizen.CreateThread(function()
